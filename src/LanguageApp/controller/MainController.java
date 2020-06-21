@@ -326,7 +326,7 @@ public class MainController {
          currentTab = "Leer";
 
          // Setting the current node
-         currentNode = listViewV;
+         currentNode = anchorListViewV;
          oldNode = listViewH01Reading;
          listViewV.requestFocus();
          // Settiong the intial border
@@ -1362,7 +1362,7 @@ public class MainController {
 
 
       } catch (Exception e) {
-        /* message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainController / showListViewH()", e);*/
+         /* message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainController / showListViewH()", e);*/
 
       }
    }
@@ -1968,11 +1968,31 @@ public class MainController {
          @Override
          public void handle (KeyEvent ke)
          {
+
             indexItemV = listViewV.getSelectionModel().getSelectedIndex();
-            showListViewH();
-            System.out.println("event " + ke.getCode());
+
 
             switch (ke.getCode()) {
+
+               case UP:
+                  if (indexItemV > 0) {
+                     indexItemV--;
+                     listViewV.getSelectionModel().select(indexItemV);
+                     showListViewH();
+                     listViewV.getSelectionModel().select(indexItemV + 1);
+                     //ke.consume();
+                  }
+
+                  break;
+               case DOWN:
+                  if (indexItemV < itemsOriginal.length) {
+                     indexItemV++;
+                     listViewV.getSelectionModel().select(indexItemV);
+                     showListViewH();
+                     listViewV.getSelectionModel().select(indexItemV - 1);
+                     //ke.consume();
+                  }
+                  break;
 
                case LEFT:
                   handleBackButtonItemOriginal();
@@ -1989,6 +2009,10 @@ public class MainController {
                         currentTab = "Abajo";
                      }
                   }
+                  System.out.println("event " + ke.getCode());
+                  System.out.println("indexItemV " + indexItemV);
+                  System.out.println("oldNode " + oldNode);
+                  System.out.println("currentNode " + currentNode);
                   oldNode.requestFocus();
                   setBorder(oldNode);
                   ke.consume();
@@ -2683,8 +2707,8 @@ public class MainController {
               "Control + Derecha: Subir nivel.\n" +
               "Izquierda / Derecha: Cambia de zona.";
       String t2 = "Izquierda: Ir a la lista de frases.\n" +
-              "Space: Reproduce la frase.\n" +
-              "Enter: Reproduce la palabra.\n";
+              "Enter: Reproduce la frase.\n" +
+              "Space: Reproduce la palabra.\n";
       String t3 = "Arriba / Abajo: Desplazarte por la lista.\n" +
               "Space: Reproduce la frase.\n" +
               "Izquierda: Retrocede la frase.\n" +
