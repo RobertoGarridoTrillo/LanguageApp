@@ -2326,8 +2326,8 @@ public class MainController {
 
          oldNode = currentNode;
          currentNode = n;
-         System.out.println("oldNode " + oldNode);
-         System.out.println("currentNode " + currentNode + "\n");
+         //System.out.println("oldNode " + oldNode);
+         //System.out.println("currentNode " + currentNode + "\n");
          return;
       }
 
@@ -2342,8 +2342,8 @@ public class MainController {
 
          oldNode = currentNode;
          currentNode = n;
-         System.out.println("oldNode " + oldNode);
-         System.out.println("currentNode " + currentNode + "\n");
+         //System.out.println("oldNode " + oldNode);
+         //System.out.println("currentNode " + currentNode + "\n");
          return;
       }
 
@@ -2352,8 +2352,8 @@ public class MainController {
       oldNode = currentNode;
       currentNode = n;
 
-      System.out.println("oldNode " + oldNode);
-      System.out.println("currentNode " + currentNode + "\n");
+      //System.out.println("oldNode " + oldNode);
+      //System.out.println("currentNode " + currentNode + "\n");
    }
    //</editor-fold>
 
@@ -2659,7 +2659,7 @@ public class MainController {
                event.consume();
             }
 
-            if (event.getCode().equals(KeyCode.LEFT) && textFieldWriting.getCaretPosition() <= 0) {
+            if (event.getCode().equals(KeyCode.LEFT) && tf.getCaretPosition() <= 0) {
                listViewV.requestFocus();
                setBorder(listViewV);
                event.consume();
@@ -2667,9 +2667,13 @@ public class MainController {
          }
 
       });
-      
+
       tf.setOnMouseClicked((e) -> {
-         tf.setVisible(false);
+         if (tf.equals(textFieldWriting)) {
+            listViewH02Writing.setVisible(false);
+         } else {
+            listViewH02Translation.setVisible(false);
+         }
          setBorder(tf);
          oldNode = tf;
          e.consume();
