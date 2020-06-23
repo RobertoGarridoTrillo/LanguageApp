@@ -1,0 +1,79 @@
+/* 
+    Created on : 19 may. 2020, 9:16:37
+    Author     : ROBEG
+*/
+
+.root {
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 10pt;
+  -fx-font-weight: normal;
+  -fx-font-style: normal;
+
+  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
+}
+
+/* fuentes */
+.dialog-pane{
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 11pt;
+  -fx-font-weight: bold;
+  -fx-font-style: normal;
+}
+.listViewV{
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 10pt;
+  -fx-font-weight: bold;
+  -fx-font-style: normal;
+
+}
+/* borro el borde por defecto de los botones y de los slider*/
+.button:focused, .button:hover, .slider:focused, .slider:hover   {
+  -fx-border-color: coral;
+  -fx-background-color: transparent;
+  -fx-border-width: 3;
+  -fx-border-radius: 3;
+  -fx-border-insets: 0;
+  -fx-border-style: solid line-join bevel line-cap square;
+}
+
+/* borde transparente inicial para luego cambiarlo de color*/
+.initialBorder, .button{  
+  -fx-border-color: transparent;
+  -fx-background-color: transparent;  
+  -fx-border-width: 3;
+  -fx-border-radius: 3;
+  -fx-border-insets: 0;  
+}
+.borderVisible{
+  -fx-border-color: coral;
+}
+
+
+/* para las pestañas del tab */
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+  -fx-background-color: #004f8b ;
+}
+
+.tab-pane {
+  -fx-tab-min-height: 1.8333em; 
+  -fx-tab-max-height: 1.8333em; 
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+  -fx-background-insets: 0 1 1 0, 1 2 1 1, 2 3 1 2;
+  -fx-background-radius: 3 3 0 0, 2 2 0 0, 1 1 0 0;
+  -fx-padding: 0.083333em 0.5em 0.0769em 0.5em; 
+}
+
+
+/*  listView */
+.listViewH{
+  -fx-font-size: 9pt;
+  -fx-font-weight: 900 ;
+  -fx-font-style: normal;
+  -fx-background-color:#000000B0;
+}
+
+
+
+
