@@ -68,11 +68,6 @@
                                  </styleClass></TextField>
         <Label fx:id="timeLabelReading" alignment="CENTER_RIGHT" layoutX="499.0" layoutY="85.0" prefWidth="90.0" textAlignment="CENTER" AnchorPane.bottomAnchor="55.0" AnchorPane.rightAnchor="5.0">
                                             </Label>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
         <ListView fx:id="listViewH02Reading" disable="true" orientation="HORIZONTAL" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="listViewH" />
@@ -81,23 +76,11 @@
         </ListView>
         <ListView fx:id="listViewH02Writing" disable="true" orientation="HORIZONTAL" prefHeight="50.0" styleClass="listViewH" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
         <ListView fx:id="listViewH02Translation" disable="true" orientation="HORIZONTAL" prefHeight="50.0" styleClass="listViewH" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                   </children>
                 </AnchorPane>
                 <AnchorPane>
                   <children>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="LEFT" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-=======
                     <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
->>>>>>> Stashed changes
-=======
-                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
->>>>>>> Stashed changes
                       <tabs>
                         <Tab closable="false" text="Leer">
                           <content>
@@ -145,28 +128,6 @@
                                                                </VBox.margin>
                           
                                         </HBox>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                                        <HBox fillHeight="false" prefHeight="50.0" VBox.vgrow="ALWAYS">
-                                          <children>
-                                            <ListView fx:id="listViewH02Reading" disable="true" orientation="HORIZONTAL" HBox.hgrow="ALWAYS">
-                                              <HBox.margin>
-                                                <Insets />
-                                              </HBox.margin>
-                                                                     <styleClass>
-                                                                        <String fx:value="listViewH" />
-                                                                        <String fx:value="initialBorder" />
-                                                                     </styleClass>
-                                            </ListView>
-                                          </children>
-                                          <VBox.margin>
-                                            <Insets />
-                                          </VBox.margin>
-                                        </HBox>
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                                           <GridPane prefHeight="60.0">
                                             <columnConstraints>
                                               <ColumnConstraints hgrow="SOMETIMES" />                        
@@ -284,24 +245,6 @@
                                                                   <Insets />
                                                                </VBox.margin>
                                         </HBox>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                                        <HBox fillHeight="false" prefHeight="50.0" styleClass="listViewH" VBox.vgrow="ALWAYS">
-                                          <children>
-                                            <ListView fx:id="listViewH02Writing" disable="true" orientation="HORIZONTAL" styleClass="listViewH" visible="false" HBox.hgrow="ALWAYS">
-                                              <HBox.margin>
-                                                <Insets />
-                                              </HBox.margin>
-                                            </ListView>
-                                          </children>
-                                                               <VBox.margin>
-                                                                  <Insets />
-                                                               </VBox.margin>
-                                        </HBox>
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                                           <GridPane prefHeight="60.0">
                                             <children>
                                               <AnchorPane prefHeight="40.0">
@@ -416,24 +359,6 @@
                                                                   <Insets />
                                                                </VBox.margin>
                                         </HBox>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                                        <HBox fillHeight="false" prefHeight="50.0" styleClass="listViewH" VBox.vgrow="ALWAYS">
-                                          <children>
-                                            <ListView fx:id="listViewH02Translation" disable="true" orientation="HORIZONTAL" styleClass="listViewH" visible="false" HBox.hgrow="ALWAYS">
-                                              <HBox.margin>
-                                                <Insets />
-                                              </HBox.margin>
-                                            </ListView>
-                                          </children>
-                                                               <VBox.margin>
-                                                                  <Insets />
-                                                               </VBox.margin>
-                                        </HBox>
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                                           <GridPane prefHeight="60.0">
                                             <children>
                                               <AnchorPane prefHeight="40.0">
