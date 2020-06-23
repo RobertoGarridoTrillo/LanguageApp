@@ -290,7 +290,8 @@ public class MainController {
 
 
          node = new Node[]{
-            tabPanelListViewH, listViewH01Reading,
+            listViewV, tabPanelListViewH,
+            listViewH01Reading,
             playButtonReading, backButtonReading, forwardButtonReading, stopButtonReading,
             mediaSliderReading,
             playButtonItemOriginalReading, backButtonItemOriginalReading,
@@ -318,6 +319,9 @@ public class MainController {
          listViewH01Reading.setVisible(true);
          textFieldWriting.setVisible(false);
          textFieldTranslation.setVisible(false);
+         listViewH02Reading.setVisible(true);
+         listViewH02Writing.setVisible(false);
+         listViewH02Translation.setVisible(false);
 
          // Setting the transversal focus of the nodes
          setTransversalFocus();
@@ -326,7 +330,7 @@ public class MainController {
          currentTab = "Leer";
 
          // Setting the current node
-         currentNode = anchorListViewV;
+         currentNode = listViewV;
          oldNode = listViewH01Reading;
          listViewV.requestFocus();
          // Settiong the intial border
@@ -1034,7 +1038,7 @@ public class MainController {
          // Extract the orignial text and the answer
          if (currentTab.equals("Escribir")) {
             itemWordsOriginal = swal.cleanWords(markerTextOriginal);
-         } else if (currentTab.equals("Traducir") || currentTab.equals("Abajo")) {
+         } else if (currentTab.equals("Traducir")) {
             itemWordsOriginal = swal.cleanWords(markerTextTranslation);
          }
          // Count the letters within blanc spaces
@@ -1053,7 +1057,7 @@ public class MainController {
          if (currentTab.equals("Escribir")) {
             listViewH02Writing.setVisible(true);
             listViewH02Writing.setItems(listItemOriginal);
-         } else if (currentTab.equals("Traducir") || currentTab.equals("Abajo")) {
+         } else if (currentTab.equals("Traducir")) {
             listViewH02Translation.setVisible(true);
             listViewH02Translation.setItems(listItemOriginal);
          }
@@ -1127,7 +1131,7 @@ public class MainController {
          success /= 100;
          if (currentTab.equals("Escribir")) {
             indicatorSuccessWriting.setProgress(success);
-         } else if (currentTab.equals("Traducir") || currentTab.equals("Abajo")) {
+         } else if (currentTab.equals("Traducir")) {
             indicatorSuccessTranslation.setProgress(success);
          }
       } catch (Exception e) {
@@ -1312,7 +1316,12 @@ public class MainController {
             @Override
             public void handle (MouseEvent event)
             {
+               // Setting the current node
+               listViewV.requestFocus();
                setBorder(listViewV);
+
+               oldNode = tabPanelListViewH;
+
                indexItemV = listViewV.getSelectionModel().getSelectedIndex();
                showListViewH();
 
@@ -1971,7 +1980,6 @@ public class MainController {
 
             indexItemV = listViewV.getSelectionModel().getSelectedIndex();
 
-
             switch (ke.getCode()) {
 
                case UP:
@@ -1982,8 +1990,8 @@ public class MainController {
                      listViewV.getSelectionModel().select(indexItemV + 1);
                      //ke.consume();
                   }
-
                   break;
+
                case DOWN:
                   if (indexItemV < itemsOriginal.length) {
                      indexItemV++;
@@ -2002,23 +2010,19 @@ public class MainController {
                case RIGHT:
                   if (oldNode.equals(currentNode)) {
                      oldNode = tabPanelListViewH;
-                     if (currentTab.equals("Leer")) {
-                        currentTab = "Arriba";
-                     }
-                     if (currentTab.equals("Traducir")) {
-                        currentTab = "Abajo";
-                     }
                   }
-                  System.out.println("event " + ke.getCode());
-                  System.out.println("indexItemV " + indexItemV);
-                  System.out.println("oldNode " + oldNode);
-                  System.out.println("currentNode " + currentNode);
+
                   oldNode.requestFocus();
                   setBorder(oldNode);
                   ke.consume();
                   break;
 
                case SPACE:
+                  handlePlayButtonItemOriginal();
+                  ke.consume();
+                  break;
+
+               case ENTER:
                   handlePlayButtonItemOriginal();
                   ke.consume();
                   break;
@@ -2035,23 +2039,43 @@ public class MainController {
          {
 
             if (event.getCode().equals(KeyCode.UP)) {
+               listViewV.requestFocus();
+               setBorder(listViewV);
                event.consume();
             }
 
             if (event.getCode().equals(KeyCode.DOWN)) {
 
-               if (oldNode.equals(anchorListViewV)) {
-                  oldNode = tabPanelListViewH;
+               int[] i = new int[]{3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 32, 33, 34, 35, 36};
+               boolean salida = false;
+
+               for (int j : i) {
+                  if (oldNode.equals(node[j])) {
+                     salida = true;
+                  }
                }
-               currentTab = "Arriba";
+               if (!salida) {
+                  switch (currentTab) {
+                     case "Leer":
+                        oldNode = playButtonReading;
+                        break;
+                     case "Escribir":
+                        oldNode = playButtonWriting;
+                        break;
+                     case "Traducir":
+                        oldNode = playButtonTranslation;
+                        break;
+                     default:
+                        break;
+                  }
+               }
+
                oldNode.requestFocus();
                setBorder(oldNode);
                event.consume();
-
             }
 
-            if (event.getCode()
-                    .equals(KeyCode.LEFT)) {
+            if (event.getCode().equals(KeyCode.LEFT)) {
                if (listViewH01Reading.getSelectionModel().getSelectedIndex() == 0) {
                   listViewV.requestFocus();
                   setBorder(listViewV);
@@ -2059,107 +2083,64 @@ public class MainController {
                }
             }
 
-            if (event.getCode()
-                    .equals(KeyCode.SPACE)) {
+            if (event.getCode().equals(KeyCode.SPACE)) {
                handlePlayButtonItemMachine();
                event.consume();
             }
 
-            if (event.getCode()
-                    .equals(KeyCode.ENTER)) {
+            if (event.getCode().equals(KeyCode.ENTER)) {
                handlePlayButtonItemOriginal();
                event.consume();
             }
          }
-      }
-      );
+      });
 
       // the event onclick is in Setting the listview
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Play Button">
-      eventButton(playButtonReading,
-              1, 7, 3, 0);
-      eventButton(backButtonReading,
-              1, 8, 4, 2);
-      eventButton(forwardButtonReading,
-              1, 9, 5, 3);
-      eventButton(stopButtonReading,
-              1, 10, 6, 4);
-      eventMediaSlider(mediaSliderReading,
-              1, 11, -1, 5);
-      eventButtonOriginalReading(playButtonItemOriginalReading,
-              2, 13, 8, 0);
-      eventButton(backButtonItemOriginalReading,
-              3, 13, 9, 7);
-      eventButton(forwardButtonItemOriginalReading,
-              4, 14, 10, 8);
-      eventButton(stopButtonItemOriginalReading,
-              5, 14, 11, 9);
-      eventButton(playButtonItemMachineReading,
-              6, 14, 12, 10);
-      eventButton(stopButtonItemMachineReading,
-              6, 15, -1, 11);
-      eventFilterSlider(rateSliderReading,
-              0, 14, 0.5, 2, 0.01);
-      eventFilterSlider(balanceSliderReading,
-              13, 15, -1.0, 1, 0.1);
-      eventFilterSlider(volumeSliderReading,
-              14, -1, 0.0, 100, 1);
+//<editor-fold defaultstate="collapsed" desc="Button">
+      eventButton(playButtonReading, 2, 8, 4, 0);
+      eventButton(backButtonReading, 2, 9, 5, 3);
+      eventButton(forwardButtonReading, 2, 10, 6, 4);
+      eventButton(stopButtonReading, 2, 11, 7, 5);
+      eventMediaSlider(mediaSliderReading, 2, 12, -1, 6);
+      eventButtonOriginalReading(playButtonItemOriginalReading, 3, 14, 9, 0);
+      eventButton(backButtonItemOriginalReading, 4, 14, 10, 8);
+      eventButton(forwardButtonItemOriginalReading, 5, 15, 11, 9);
+      eventButton(stopButtonItemOriginalReading, 6, 15, 12, 10);
+      eventButton(playButtonItemMachineReading, 7, 16, 13, 11);
+      eventButton(stopButtonItemMachineReading, 7, 16, -1, 12);
+      eventFilterSlider(rateSliderReading, 8, 1, 15, 0, 0.5, 2, 0.01);
+      eventFilterSlider(balanceSliderReading, 10, 1, 16, 14, -1.0, 1, 0.1);
+      eventFilterSlider(volumeSliderReading, 12, 1, -1, 15, 0.0, 100, 1);
 
-      eventButton(playButtonWriting,
-              16, 22, 18, 0);
-      eventButton(backButtonWriting,
-              16, 23, 19, 17);
-      eventButton(forwardButtonWriting,
-              16, 24, 20, 18);
-      eventButton(stopButtonWriting,
-              16, 25, 21, 19);
-      eventMediaSlider(mediaSliderWriting,
-              16, 26, -1, 20);
-      eventButtonOriginalReading(playButtonItemOriginalWriting,
-              17, 27, 23, 0);
-      eventButton(backButtonItemOriginalWriting,
-              18, 27, 24, 22);
-      eventButton(forwardButtonItemOriginalWriting,
-              19, 28, 25, 23);
-      eventButton(stopButtonItemOriginalWriting,
-              20, 28, 26, 24);
-      eventButton(correctionButtonWriting,
-              21, 29, -1, 25);
-      eventFilterSlider(rateSliderWriting,
-              0, 28, 0.5, 2, 0.01);
-      eventFilterSlider(balanceSliderWriting,
-              27, 29, -1.0, 1, 0.1);
-      eventFilterSlider(volumeSliderWriting,
-              28, -1, 0.0, 100, 1);
+      eventButton(playButtonWriting, 17, 23, 19, 0);
+      eventButton(backButtonWriting, 17, 24, 20, 18);
+      eventButton(forwardButtonWriting, 17, 25, 21, 19);
+      eventButton(stopButtonWriting, 17, 26, 22, 20);
+      eventMediaSlider(mediaSliderWriting, 17, 27, -1, 21);
+      eventButtonOriginalReading(playButtonItemOriginalWriting, 18, 28, 24, 0);
+      eventButton(backButtonItemOriginalWriting, 19, 28, 25, 23);
+      eventButton(forwardButtonItemOriginalWriting, 20, 29, 26, 24);
+      eventButton(stopButtonItemOriginalWriting, 21, 29, 27, 25);
+      eventButton(correctionButtonWriting, 22, 30, -1, 26);
+      eventFilterSlider(rateSliderWriting, 23, 1, 29, 0, 0.5, 2, 0.01);
+      eventFilterSlider(balanceSliderWriting, 25, 1, 30, 28, -1.0, 1, 0.1);
+      eventFilterSlider(volumeSliderWriting, 27, 1, -1, 29, 0.0, 100, 1);
 
-      eventButton(playButtonTranslation,
-              30, 36, 32, 0);
-      eventButton(backButtonTranslation,
-              30, 37, 33, 31);
-      eventButton(forwardButtonTranslation,
-              30, 38, 34, 32);
-      eventButton(stopButtonTranslation,
-              30, 39, 35, 33);
-      eventMediaSlider(mediaSliderTranslation,
-              30, 40, -1, 34);
-      eventButtonOriginalReading(playButtonItemOriginalTranslation,
-              31, 41, 37, 0);
-      eventButton(backButtonItemOriginalTranslation,
-              32, 41, 38, 36);
-      eventButton(forwardButtonItemOriginalTranslation,
-              33, 42, 39, 37);
-      eventButton(stopButtonItemOriginalTranslation,
-              34, 42, 40, 38);
-      eventButton(correctionButtonTranslation,
-              35, 43, -1, 39);
-      eventFilterSlider(rateSliderTranslation,
-              0, 42, 0.5, 2, 0.01);
-      eventFilterSlider(balanceSliderTranslation,
-              41, 43, -1.0, 1, 0.1);
-      eventFilterSlider(volumeSliderTranslation,
-              42, -1, 0.0, 100, 1);
+      eventButton(playButtonTranslation, 31, 37, 33, 0);
+      eventButton(backButtonTranslation, 31, 38, 34, 32);
+      eventButton(forwardButtonTranslation, 31, 39, 35, 33);
+      eventButton(stopButtonTranslation, 31, 40, 36, 34);
+      eventMediaSlider(mediaSliderTranslation, 31, 41, -1, 35);
+      eventButtonOriginalReading(playButtonItemOriginalTranslation, 32, 42, 38, 0);
+      eventButton(backButtonItemOriginalTranslation, 33, 42, 39, 37);
+      eventButton(forwardButtonItemOriginalTranslation, 34, 43, 40, 38);
+      eventButton(stopButtonItemOriginalTranslation, 35, 43, 41, 39);
+      eventButton(correctionButtonTranslation, 36, 44, -1, 40);
+      eventFilterSlider(rateSliderTranslation, 37, 1, 43, 0, 0.5, 2, 0.01);
+      eventFilterSlider(balanceSliderTranslation, 39, 1, 44, 42, -1.0, 1, 0.1);
+      eventFilterSlider(volumeSliderTranslation, 41, 1, -1, 43, 0.0, 100, 1);
 
 //</editor-fold>
 
@@ -2200,35 +2181,34 @@ public class MainController {
                        case "Leer":
                           slw.setListView(listViewV, itemsOriginal);
                           setListViewH();
+                          oldNode = rateSliderReading;
                           break;
 
                        case "Escribir":
                           slw.setListView(listViewV, itemsTranslation);
+                          oldNode = rateSliderWriting;
                           break;
 
                        case "Traducir":
                           slw.setListView(listViewV, itemsOriginal);
+                          oldNode = rateSliderTranslation;
                           break;
 
                        default:
                           break;
                     }
                     listViewV.getSelectionModel().select(indexItemV);
-                    //listViewV.requestFocus();
+
                     currentTab = t1.getText();
                     listViewH01Reading.setVisible(false);
                     textFieldWriting.setVisible(false);
                     textFieldTranslation.setVisible(false);
                     listViewH01Reading.setVisible(currentTab.equals("Leer"));
                     textFieldWriting.setVisible(currentTab.equals("Escribir"));
-                    textFieldTranslation.setVisible(currentTab.equals("Traducir") || currentTab.equals("Abajo"));
-
-                    if (t.getText().equals("Escribir") && t1.getText().equals("Leer")) {
-                       currentTab = "Arriba";
-                    }
-                    if (t.getText().equals("Escribir") && t1.getText().equals("Traducir")) {
-                       currentTab = "Abajo";
-                    }
+                    textFieldTranslation.setVisible(currentTab.equals("Traducir"));
+                    listViewH02Reading.setVisible(currentTab.equals("Leer"));
+                    listViewH02Writing.setVisible(currentTab.equals("Escribir"));
+                    listViewH02Translation.setVisible(currentTab.equals("Traducir"));
 
                  }
 
@@ -2238,52 +2218,52 @@ public class MainController {
                     return super.toString();
                  }
 
-              }
-              );
+              });
 
       tabPanelListViewH.addEventFilter(KeyEvent.KEY_PRESSED,
               new EventHandler<KeyEvent>() {
          @Override
-         public void handle (KeyEvent event
-         )
+         public void handle (KeyEvent event)
          {
-
             // An triger
             if (!event.getTarget().equals(tabPanelListViewH)) {
                return;
             }
 
-
-            if (event.getCode().equals(KeyCode.RIGHT)) {
+            if (event.getCode().equals(KeyCode.UP)) {
                event.consume();
-               if (currentTab.equals("Leer") || currentTab.equals("Arriba")) {
-                  setBorder(playButtonReading);
-                  playButtonReading.requestFocus();
+               if (oldNode.equals(listViewV)) {
+                  if (currentTab.equals("Leer")) {
+                     rateSliderReading.requestFocus();
+                     setBorder(rateSliderReading);
+                  }
+
+                  if (currentTab.equals("Escribir")) {
+                     rateSliderWriting.requestFocus();
+                     setBorder(rateSliderWriting);
+                  }
+                  if (currentTab.equals("Traducir")) {
+                     rateSliderTranslation.requestFocus();
+                     setBorder(rateSliderTranslation);
+                  }
+               } else {
+                  oldNode.requestFocus();
+                  setBorder(oldNode);
                }
-               if (currentTab.equals("Escribir")) {
-                  setBorder(playButtonWriting);
-                  playButtonWriting.requestFocus();
-               }
-               if (currentTab.equals("Traducir") || currentTab.equals("Abajo")) {
-                  setBorder(playButtonTranslation);
-                  playButtonTranslation.requestFocus();
-               }
+
             }
 
-            if (event.getCode().equals(KeyCode.LEFT)) {
-               event.consume();
-               listViewV.requestFocus();
+            if (event.getCode().equals(KeyCode.LEFT) && currentTab.equals("Leer")) {
                setBorder(listViewV);
-            }
-
-            if (event.getCode().equals(KeyCode.UP) && currentTab.equals("Arriba")) {
+               listViewV.requestFocus();
                event.consume();
-               listViewH01Reading.requestFocus();
-               setBorder(listViewH01Reading);
-               currentTab = "Leer";
             }
 
-            if (event.getCode().equals(KeyCode.DOWN) && currentTab.equals("Abajo")) {
+            if (event.getCode().equals(KeyCode.RIGHT) && currentTab.equals("Traducir")) {
+               event.consume();
+            }
+
+            if (event.getCode().equals(KeyCode.DOWN)) {
                event.consume();
             }
          }
@@ -2292,104 +2272,35 @@ public class MainController {
 
       tabPanelListViewH.setOnMouseClicked(
               (MouseEvent) -> {
-         if (currentTab.equals("Leer")) {
-            currentTab = "Arriba";
-         }
-         if (currentTab.equals("Traducir")) {
-            currentTab = "Abajo";
-         }
          setBorder(tabPanelListViewH);
          MouseEvent.consume();
-      }
-      );
+         switch (currentTab) {
+            case "Leer":
+               slw.setListView(listViewV, itemsOriginal);
+               setListViewH();
+               oldNode = rateSliderReading;
+               break;
+
+            case "Escribir":
+               slw.setListView(listViewV, itemsTranslation);
+               oldNode = rateSliderWriting;
+               break;
+
+            case "Traducir":
+               slw.setListView(listViewV, itemsOriginal);
+               oldNode = rateSliderTranslation;
+               break;
+
+            default:
+               break;
+         }
+      });
       //</editor-fold>        
 
 //<editor-fold defaultstate="collapsed" desc="TextField">
 
-      textFieldWriting.addEventFilter(KeyEvent.KEY_PRESSED,
-              new EventHandler<KeyEvent>() {
-         @Override
-         public void handle (KeyEvent event
-         )
-         {
-
-            listViewH02Writing.setVisible(false);
-
-            if (event.getCode().equals(KeyCode.ENTER)) {
-               listViewH02Writing.setVisible(true);
-               handleCorrectionButton(textFieldWriting);
-               handlePlayButtonItemOriginal();
-               event.consume();
-            }
-
-            if (event.getCode().equals(KeyCode.DOWN) && !oldNode.equals(currentNode)) {
-               oldNode.requestFocus();
-               setBorder(oldNode);
-               event.consume();
-            } else if (event.getCode().equals(KeyCode.DOWN) && oldNode.equals(currentNode)) {
-               node[17].requestFocus();
-               setBorder(node[17]);
-               event.consume();
-            }
-
-            if (event.getCode().equals(KeyCode.UP)) {
-               event.consume();
-            }
-         }
-      }
-      );
-
-      textFieldWriting.setOnMouseClicked(
-              (e) -> {
-         listViewH02Writing.setVisible(false);
-         setBorder(textFieldWriting);
-         oldNode = textFieldWriting;
-         e.consume();
-      }
-      );
-
-      textFieldTranslation.addEventFilter(KeyEvent.KEY_PRESSED,
-              new EventHandler<KeyEvent>() {
-         @Override
-         public void handle (KeyEvent event
-         )
-         {
-
-            listViewH02Translation.setVisible(false);
-
-            if (event.getCode().equals(KeyCode.ENTER)) {
-               listViewH02Translation.setVisible(true);
-               handleCorrectionButton(textFieldTranslation);
-               handlePlayButtonItemOriginal();
-               event.consume();
-            }
-
-            if (event.getCode().equals(KeyCode.DOWN)) {
-               oldNode.requestFocus();
-               setBorder(oldNode);
-               event.consume();
-            } else if (event.getCode().equals(KeyCode.DOWN) && oldNode.equals(currentNode)) {
-               node[31].requestFocus();
-               setBorder(node[17]);
-               event.consume();
-            }
-
-            if (event.getCode().equals(KeyCode.UP)) {
-               event.consume();
-
-            }
-         }
-      }
-      );
-
-      textFieldTranslation.setOnMouseClicked(
-              (e) -> {
-         listViewH02Translation.setVisible(false);
-         setBorder(textFieldTranslation);
-         oldNode = textFieldTranslation;
-         e.consume();
-      }
-      );
+      eventTextfield(textFieldWriting, listViewH02Writing, playButtonWriting);
+      eventTextfield(textFieldTranslation, listViewH02Translation, playButtonTranslation);
    }
    //</editor-fold>
 
@@ -2402,34 +2313,47 @@ public class MainController {
    private void setBorder (Node n)
    {
 
-      /* ObservableList<String> styleClasses = currentNode.getStyleClass();
-      if(!styleClasses.contains("borderVisible")){
-         styleClasses.add("borderVisible");
-      } else {
-      // remove all occurrences:
-      styleClasses.removeAll(Collections.singleton("invalid-field"));
-      }*/
-
+      // si el que va a pintar o del que viene es listviewV lo cambio por AnchorPanel,
+      // para que pinte mejor
       if (n.equals(listViewV)) {
-         n = anchorListViewV;
-      }
-      int[] s = new int[]{13, 14, 15, 27, 28, 29, 41, 42, 43};
 
-      boolean salida = true;
-      for (int i : s) {
-         if (node[i].equals(currentNode)) {
-            salida = false;
-         }
-      }
-      if (salida) {
+         n = anchorListViewV;
+
+         currentNode.getStyleClass().removeAll(Collections.singleton("borderVisible"));
+         n.getStyleClass().add("borderVisible");
+
+         n = listViewV;
+
          oldNode = currentNode;
+         currentNode = n;
+         System.out.println("oldNode " + oldNode);
+         System.out.println("currentNode " + currentNode + "\n");
+         return;
+      }
+
+      if (currentNode.equals(listViewV)) {
+
+         currentNode = anchorListViewV;
+
+         currentNode.getStyleClass().removeAll(Collections.singleton("borderVisible"));
+         n.getStyleClass().add("borderVisible");
+
+         currentNode = listViewV;
+
+         oldNode = currentNode;
+         currentNode = n;
+         System.out.println("oldNode " + oldNode);
+         System.out.println("currentNode " + currentNode + "\n");
+         return;
       }
 
       currentNode.getStyleClass().removeAll(Collections.singleton("borderVisible"));
-
       n.getStyleClass().add("borderVisible");
-
+      oldNode = currentNode;
       currentNode = n;
+
+      System.out.println("oldNode " + oldNode);
+      System.out.println("currentNode " + currentNode + "\n");
    }
    //</editor-fold>
 
@@ -2465,12 +2389,6 @@ public class MainController {
             }
 
             if (ke.getCode().equals(KeyCode.LEFT)) {
-               if (currentTab.equals("Leer") || currentTab.equals("Arriba")) {
-                  currentTab = "Arriba";
-               }
-               if (currentTab.equals("Traducir") || currentTab.equals("Abajo")) {
-                  currentTab = "Abajo";
-               }
                i = left;
             }
             if (i != -1) {
@@ -2482,8 +2400,7 @@ public class MainController {
          }
       });
 
-      n.setOnMouseClicked(
-              (MouseEvent) -> {
+      n.setOnMouseClicked((MouseEvent) -> {
          n.requestFocus();
          setBorder(n);
          oldNode = n;
@@ -2502,8 +2419,7 @@ public class MainController {
     */
    private void eventButtonOriginalReading (Node n, int up, int down, int right, int left)
    {
-      n.setOnKeyPressed(
-              new EventHandler<KeyEvent>() {
+      n.setOnKeyPressed(new EventHandler<KeyEvent>() {
          @Override
          public void handle (KeyEvent ke)
          {
@@ -2539,12 +2455,6 @@ public class MainController {
                return;
             }
             if (ke.getCode().equals(KeyCode.LEFT)) {
-               if (currentTab.equals("Leer") || currentTab.equals("Arriba")) {
-                  currentTab = "Arriba";
-               }
-               if (currentTab.equals("Traducir") || currentTab.equals("Abajo")) {
-                  currentTab = "Abajo";
-               }
                i = left;
             }
             if (i != -1) {
@@ -2564,7 +2474,6 @@ public class MainController {
          MouseEvent.consume();
       });
    }
-
 
    /**
     * Helper to the slider media event
@@ -2640,8 +2549,7 @@ public class MainController {
     * @param max The max value of the slider
     * @param per The step
     */
-   private void eventFilterSlider (Slider slider, int left, int right, double min, double max,
-           double per)
+   private void eventFilterSlider (Slider slider, int up, int down, int right, int left, double min, double max, double per)
    {
 
       slider.addEventFilter(KeyEvent.KEY_PRESSED, (event) -> {
@@ -2664,17 +2572,39 @@ public class MainController {
             return;
          }
 
+         if (code.equals(KeyCode.UP)) {
+            int[] i = new int[]{0, 1, 14, 15, 16, 28, 29, 30, 42, 43, 44};
+            boolean salida = false;
+
+            for (int j : i) {
+               if (oldNode.equals(node[j])) {
+                  salida = true;
+               }
+            }
+            if (salida) {
+               node[up].requestFocus();
+               setBorder(node[up]);
+               event.consume();
+            } else {
+               oldNode.requestFocus();
+               setBorder(oldNode);
+               event.consume();
+            }
+         }
+
+         if (code.equals(KeyCode.DOWN)) {
+            node[down].requestFocus();
+            setBorder(node[down]);
+            event.consume();
+            return;
+         }
+
+
          if (code.equals(KeyCode.LEFT)) {
             node[left].requestFocus();
             setBorder(node[left]);
             event.consume();
             return;
-         }
-
-         if (code.equals(KeyCode.UP)) {
-            oldNode.requestFocus();
-            setBorder(oldNode);
-            event.consume();
          }
 
          if (code.equals(KeyCode.RIGHT) && right != -1) {
@@ -2695,6 +2625,57 @@ public class MainController {
       });
    }
 
+   private void eventTextfield (TextField tf, ListView lw, Button bt)
+   {
+      tf.addEventFilter(KeyEvent.KEY_PRESSED,
+              new EventHandler<KeyEvent>() {
+         @Override
+         public void handle (KeyEvent event)
+         {
+
+            lw.setVisible(false);
+
+            if (event.getCode().equals(KeyCode.ENTER)) {
+               lw.setVisible(true);
+               handleCorrectionButton(tf);
+               handlePlayButtonItemOriginal();
+               event.consume();
+            }
+
+            if (event.getCode().equals(KeyCode.DOWN) &&
+                    (oldNode.equals(currentNode) || oldNode.equals(listViewV))) {
+               bt.requestFocus();
+               setBorder(bt);
+               event.consume();
+            } else if (event.getCode().equals(KeyCode.DOWN) && !oldNode.equals(currentNode)) {
+               oldNode.requestFocus();
+               setBorder(oldNode);
+               event.consume();
+            }
+
+            if (event.getCode().equals(KeyCode.UP)) {
+               listViewV.requestFocus();
+               setBorder(listViewV);
+               event.consume();
+            }
+
+            if (event.getCode().equals(KeyCode.LEFT) && textFieldWriting.getCaretPosition() <= 0) {
+               listViewV.requestFocus();
+               setBorder(listViewV);
+               event.consume();
+            }
+         }
+
+      });
+      
+      tf.setOnMouseClicked((e) -> {
+         tf.setVisible(false);
+         setBorder(tf);
+         oldNode = tf;
+         e.consume();
+      });
+   }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Tooltips">
@@ -2709,7 +2690,7 @@ public class MainController {
       String t2 = "Izquierda: Ir a la lista de frases.\n" +
               "Enter: Reproduce la frase.\n" +
               "Space: Reproduce la palabra.\n";
-      String t3 = "Arriba / Abajo: Desplazarte por la lista.\n" +
+      String t3 = "Izquierda / Derecha: Desplazarte por la lista.\n" +
               "Space: Reproduce la frase.\n" +
               "Izquierda: Retrocede la frase.\n" +
               "Derecha: Cambia de zona.";

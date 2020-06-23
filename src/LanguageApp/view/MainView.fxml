@@ -68,11 +68,19 @@
                                  </styleClass></TextField>
         <Label fx:id="timeLabelReading" alignment="CENTER_RIGHT" layoutX="499.0" layoutY="85.0" prefWidth="90.0" textAlignment="CENTER" AnchorPane.bottomAnchor="55.0" AnchorPane.rightAnchor="5.0">
                                             </Label>
+        <ListView fx:id="listViewH02Reading" disable="true" orientation="HORIZONTAL" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <styleClass>
+                                    <String fx:value="listViewH" />
+                                    <String fx:value="initialBorder" />
+                                 </styleClass>
+        </ListView>
+        <ListView fx:id="listViewH02Writing" disable="true" orientation="HORIZONTAL" prefHeight="50.0" styleClass="listViewH" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        <ListView fx:id="listViewH02Translation" disable="true" orientation="HORIZONTAL" prefHeight="50.0" styleClass="listViewH" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   </children>
                 </AnchorPane>
                 <AnchorPane>
                   <children>
-                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="LEFT" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <tabs>
                         <Tab closable="false" text="Leer">
                           <content>
@@ -119,22 +127,6 @@
                                                                   <Insets />
                                                                </VBox.margin>
                           
-                                        </HBox>
-                                        <HBox fillHeight="false" prefHeight="50.0" VBox.vgrow="ALWAYS">
-                                          <children>
-                                            <ListView fx:id="listViewH02Reading" disable="true" orientation="HORIZONTAL" HBox.hgrow="ALWAYS">
-                                              <HBox.margin>
-                                                <Insets />
-                                              </HBox.margin>
-                                                                     <styleClass>
-                                                                        <String fx:value="listViewH" />
-                                                                        <String fx:value="initialBorder" />
-                                                                     </styleClass>
-                                            </ListView>
-                                          </children>
-                                          <VBox.margin>
-                                            <Insets />
-                                          </VBox.margin>
                                         </HBox>
                                           <GridPane prefHeight="60.0">
                                             <columnConstraints>
@@ -253,18 +245,6 @@
                                                                   <Insets />
                                                                </VBox.margin>
                                         </HBox>
-                                        <HBox fillHeight="false" prefHeight="50.0" styleClass="listViewH" VBox.vgrow="ALWAYS">
-                                          <children>
-                                            <ListView fx:id="listViewH02Writing" disable="true" orientation="HORIZONTAL" styleClass="listViewH" visible="false" HBox.hgrow="ALWAYS">
-                                              <HBox.margin>
-                                                <Insets />
-                                              </HBox.margin>
-                                            </ListView>
-                                          </children>
-                                                               <VBox.margin>
-                                                                  <Insets />
-                                                               </VBox.margin>
-                                        </HBox>
                                           <GridPane prefHeight="60.0">
                                             <children>
                                               <AnchorPane prefHeight="40.0">
@@ -374,18 +354,6 @@
                                             <Label prefWidth="90.0" text="Corregir Traducción" textAlignment="CENTER" wrapText="true" />
                                             <Button fx:id="correctionButtonTranslation" mnemonicParsing="false" onAction="#handlecorrectionButtonTranslation" styleClass="initialBorder" />
                                             <ProgressIndicator fx:id="indicatorSuccessTranslation" progress="0.0" />
-                                          </children>
-                                                               <VBox.margin>
-                                                                  <Insets />
-                                                               </VBox.margin>
-                                        </HBox>
-                                        <HBox fillHeight="false" prefHeight="50.0" styleClass="listViewH" VBox.vgrow="ALWAYS">
-                                          <children>
-                                            <ListView fx:id="listViewH02Translation" disable="true" orientation="HORIZONTAL" styleClass="listViewH" visible="false" HBox.hgrow="ALWAYS">
-                                              <HBox.margin>
-                                                <Insets />
-                                              </HBox.margin>
-                                            </ListView>
                                           </children>
                                                                <VBox.margin>
                                                                   <Insets />
