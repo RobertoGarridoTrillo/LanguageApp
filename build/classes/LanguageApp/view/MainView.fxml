@@ -68,14 +68,22 @@
                                  </styleClass></TextField>
         <Label fx:id="timeLabelReading" alignment="CENTER_RIGHT" layoutX="499.0" layoutY="85.0" prefWidth="90.0" textAlignment="CENTER" AnchorPane.bottomAnchor="55.0" AnchorPane.rightAnchor="5.0">
                                             </Label>
-        <ListView fx:id="listViewH02Reading" disable="true" orientation="HORIZONTAL" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ListView fx:id="listViewH02Reading" orientation="HORIZONTAL" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="listViewH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass>
         </ListView>
-        <ListView fx:id="listViewH02Writing" disable="true" orientation="HORIZONTAL" prefHeight="50.0" styleClass="listViewH" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-        <ListView fx:id="listViewH02Translation" disable="true" orientation="HORIZONTAL" prefHeight="50.0" styleClass="listViewH" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        <ListView fx:id="listViewH02Writing" orientation="HORIZONTAL" prefHeight="50.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <styleClass>
+                                    <String fx:value="listViewH" />
+                                    <String fx:value="initialBorder" />
+                                 </styleClass></ListView>
+        <ListView fx:id="listViewH02Translation" orientation="HORIZONTAL" prefHeight="50.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <styleClass>
+                                    <String fx:value="listViewH" />
+                                    <String fx:value="initialBorder" />
+                                 </styleClass></ListView>
                   </children>
                 </AnchorPane>
                 <AnchorPane>
