@@ -4,6 +4,8 @@ import LanguageApp.controller.MainController;
 import LanguageApp.model.Item;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +17,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 
 
 /**
@@ -23,81 +31,84 @@ import javafx.scene.control.Alert;
  */
 public class SaveWordsAsList {
 
-    /**
-     * Save in a File a list of words
-     *
-     * @param items An item of item objects
-     * @param titleMP4 An string with the name of the file
-     * @param lastDirectory the last open directory
-     * @return
-     */
-    public Set<String> saveWordsAsList (Item[] items, String titleMP4,
-            String lastDirectory) {
+   /**
+    * Save in a File a list of words
+    *
+    * @param items An item of item objects
+    * @param titleMP4 An string with the name of the file
+    * @param lastDirectory the last open directory
+    * @return
+    */
+   public Set<String> saveWordsAsList (Item[] items, String titleMP4,
+           String lastDirectory)
+   {
 
-        // Array with the words of one phrase
-        String[] wordPhrase;
-        // Set with all the words (no repeat words)
-        Set<String> ws = new HashSet<>();
-        // The "words set" above pased to String, to save in disk
-        String wString = "";
+      // Array with the words of one phrase
+      String[] wordPhrase;
+      // Set with all the words (no repeat words)
+      Set<String> ws = new HashSet<>();
+      // The "words set" above pased to String, to save in disk
+      String wString = "";
 
-        try {
+      try {
 
-            for (int i = 0; i < items.length - 1; i++) {
+         for (int i = 0; i < items.length - 1; i++) {
+
+            String phrase = items[i].getText();
+
+            wordPhrase = cleanWords(phrase);
+            // Adding the words of this phrase to the List
+            ws.addAll(Arrays.asList(wordPhrase));
+         }
+
+         // Sorting the Set (Set doesn´t sort, I put it in a list)
+         List<String> wordList = new ArrayList<>(ws);
+         Collections.sort(wordList);
+
+         // Passing the List to String to save into a file
+         for (Iterator<String> iterator = wordList.iterator();
+                 iterator.hasNext();) {
+            wString = wString.concat(iterator.next()).concat("\n");
+
+         }
+         // create the path
+         titleMP4 = titleMP4.replace(".mp4", ".txt");
+
+         String pathWriter = lastDirectory + titleMP4;
+
+         // To file
+         FileWriter writer = new FileWriter(pathWriter);
+         BufferedWriter buffer = new BufferedWriter(writer);
+         buffer.write(wString);
+         buffer.flush();
+         buffer.close();
+         writer.close();
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message",
+                 e.getMessage(), "SaveWordsAsList.java / handleSaveAsList()", e);
+      }
+      return ws;
+   }
 
 
-                String phrase = items[i].getText();
+   public String[] cleanWords (String phrase)
+   {
 
-                wordPhrase = cleanWords(phrase);
-                // Adding the words of this phrase to the List
-                ws.addAll(Arrays.asList(wordPhrase));
-            }
-
-            // Sorting the Set (Set doesn´t sort, I put it in a list)
-            List<String> wordList = new ArrayList<>(ws);
-            Collections.sort(wordList);
-
-            // Passing the List to String to save into a file
-            for (Iterator<String> iterator = wordList.iterator();
-                    iterator.hasNext();) {
-                wString = wString.concat(iterator.next()).concat("\n");
-
-            }
-            // create the path
-            titleMP4 = titleMP4.replace(".mp4", ".txt");
-
-            String pathWriter = lastDirectory + titleMP4;
-
-            // To file
-            FileWriter writer = new FileWriter(pathWriter);
-            BufferedWriter buffer = new BufferedWriter(writer);
-            buffer.write(wString);
-            buffer.flush();
-            buffer.close();
-            writer.close();
-        } catch (Exception e) {
-            new MainController().message(Alert.AlertType.ERROR, "Error message",
-                    e.getMessage(), "SaveWordsAsList.java / handleSaveAsList()", e);
-        }
-        return ws;
-    }
-
-
-    public String[] cleanWords (String phrase) {
-
-        String[] wordPhrase = null;
-        Pattern pattern;
-        Matcher matcher;
-        String sub;
-        String s;
-        try {
-
+      String[] wordPhrase = null;
+      Pattern pattern;
+      Matcher matcher;
+      String sub;
+      String s;
+      try {
+         // I'm going to probe without the normalizer
+         s = phrase;
+         /*
             // Deleting accents
             s = Normalizer.normalize(phrase, Normalizer.Form.NFD);
             s = s.replaceAll("\\p{InCombiningDiacriticalMarks}+",
                     "");
-
-            // Deleting the first blank space of th phrase
+            
+            // Deleting the first blank space of the phrase
             pattern = Pattern.compile("[^a-zA-Z0-9]");
             for (int i = 0; i < s.length(); i++) {
 
@@ -131,38 +142,101 @@ public class SaveWordsAsList {
                 }
 
             }
-            // To lowerCase
-            phrase = s.toLowerCase();
-            phrase = phrase.replace("  ", "");
+            
+          */
+         // To lowerCase
+         phrase = s.toLowerCase();
+         phrase = phrase.replace("  ", "");
 
-            // Breaking down the phrase in words aput then in a Array
-            wordPhrase = phrase.split(" ");
-            // Deleting the first and last 'dot, comma, acent... of every
-            // word of the phrase
-            for (int k = 0; k < wordPhrase.length; k++) {
-                String first = wordPhrase[k].substring(0, 1);
-                String last = wordPhrase[k].
-                        substring(wordPhrase[k].length() - 1);
+         // Breaking down the phrase in words aput then in a Array
+         wordPhrase = phrase.split(" ");
+         // Deleting the first and last 'dot, comma, acent... of every
+         // word of the phrase
+         for (int k = 0; k < wordPhrase.length; k++) {
+            //pattern = Pattern.compile("[^a-zA-Z0-9]");
+            pattern = Pattern.compile("[ ºª\\\\!|\"@·#$~%€&¬/()=?¿¡^`+*ç\\[\\]\\{\\}_\\-\\.:\\,\\;'´<>]");
 
-                pattern = Pattern.compile("[^a-zA-Z0-9]");
-                Matcher matcherFirst = pattern.matcher(first);
-                Matcher matcherLast = pattern.matcher(last);
+            for (int i = 0; i < 4; i++) {
+               String first = wordPhrase[k].substring(0, 1);
+               String last = wordPhrase[k].substring(wordPhrase[k].length() - 1);
 
-                if (matcherFirst.find()) {
-                    wordPhrase[k] = wordPhrase[k].substring(1, wordPhrase[k].
-                            length());
-                }
-                if (matcherLast.find()) {
-                    wordPhrase[k] = wordPhrase[k].substring(0, wordPhrase[k].
-                            length() - 1);
-                }
+               Matcher matcherFirst = pattern.matcher(first);
+               Matcher matcherLast = pattern.matcher(last);
+               if (matcherFirst.find()) {
+                  wordPhrase[k] = wordPhrase[k].substring(1, wordPhrase[k].length());
+               }
+               if (matcherLast.find()) {
+                  wordPhrase[k] = wordPhrase[k].substring(0, wordPhrase[k].length() - 1);
+               }
             }
-        } catch (Exception e) {
-            new MainController().message(Alert.AlertType.ERROR, "Error message",
-                    e.getMessage(), "SaveWordsAsList.java / cleanWords()", e);
-        }
-        return wordPhrase;
-    }
+         }
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message",
+                 e.getMessage(), "SaveWordsAsList.java / cleanWords()", e);
+      }
+      return wordPhrase;
+   }
+
+//<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
+
+   /**
+    * show a standard emergent message
+    *
+    * @param alertType alertType.CONFIRMATION, ERROR, INFORMATION, NONE, WARNING
+    * @param title The title of the windows
+    * @param about The them to expose
+    * @param contextText The showed text
+    * @param ex The thrown exception
+    */
+   public void message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
+   {
+
+      Alert alert = new Alert(alertType);
+      alert.setTitle(title);
+      alert.getDialogPane().setMinWidth(600);
+      alert.getDialogPane().setMinHeight(480);
+      alert.getDialogPane().setPrefWidth(600);
+      alert.getDialogPane().setPrefHeight(480);
+      alert.setResizable(true);
+      alert.setHeaderText(about);
+      alert.getDialogPane().setContentText(contextText);
+
+      if (ex != null) {
+         // Create expandable Exception.
+         StringWriter sw = new StringWriter();
+         PrintWriter pw = new PrintWriter(sw);
+         ex.printStackTrace(pw);
+         String exceptionText = sw.toString();
+
+         Label label = new Label("The exception stacktrace was:");
+
+         TextArea textArea = new TextArea(exceptionText);
+         textArea.setEditable(true);
+         textArea.setWrapText(true);
+
+         textArea.setMaxWidth(Double.MAX_VALUE);
+         textArea.setMaxHeight(Double.MAX_VALUE);
+         GridPane.setVgrow(textArea, Priority.ALWAYS);
+         GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+         GridPane expContent = new GridPane();
+         expContent.setMaxWidth(Double.MAX_VALUE);
+         expContent.add(label, 0, 0);
+         expContent.add(textArea, 0, 1);
+         // Set expandable Exception into the dialog pane.
+         alert.getDialogPane().setExpandableContent(expContent);
+
+      }
+
+      alert.getDialogPane().getStylesheets().add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
+      alert.getDialogPane().getStyleClass().add("style");
+
+      Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+      Image icon = new Image(getClass().getResourceAsStream("/LanguageApp/resources/images/languages_128.png"));
+      stage.getIcons().add(icon);
 
 
+      alert.showAndWait();
+   }
+//</editor-fold>
 }

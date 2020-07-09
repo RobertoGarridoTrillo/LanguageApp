@@ -8,8 +8,8 @@
   -fx-font-size: 10pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
-
-  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
+  -fx-background-color: black;
+    -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
 }
 
 /* fuentes */
@@ -27,7 +27,7 @@
 
 }
 /* borro el borde por defecto de los botones y de los slider*/
-.button:focused, .button:hover, .slider:focused, .slider:hover   {
+.button:focused, .button:hover, .slider:focused, .slider:hover, .hyperlink, .hyperlink:focused, .hyperlinkk:hover    {
   -fx-border-color: coral;
   -fx-background-color: transparent;
   -fx-border-width: 3;
@@ -37,7 +37,7 @@
 }
 
 /* borde transparente inicial para luego cambiarlo de color*/
-.initialBorder, .button{  
+.initialBorder, .button .link{  
   -fx-border-color: transparent;
   -fx-background-color: transparent;  
   -fx-border-width: 3;
@@ -72,6 +72,20 @@
   -fx-font-weight: 900 ;
   -fx-font-style: normal;
   -fx-background-color:#000000a0;
+}
+
+/* Menu */
+.menu-item:focused {
+     -fx-background: #333333;
+     -fx-background-color: -fx-background;
+     -fx-text-fill:  -fx-text-background-color;
+}
+
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:focused,
+.menu-bar > .container > .menu-button:showing {
+    -fx-background: #004f8a;
+    -fx-background-color: -fx-background;
 }
 
 
