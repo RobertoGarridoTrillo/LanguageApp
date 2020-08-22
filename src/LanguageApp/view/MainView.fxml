@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
 
-<BorderPane fx:id="MainViewBorderPane" styleClass="root" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.MainController">
+<BorderPane fx:id="MainViewBorderPane" styleClass="root" stylesheets="@../style/principal.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.MainController">
   <top>
 <MenuBar maxHeight="35.0" minHeight="35.0" prefHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     <menus>
@@ -21,7 +21,7 @@
             <Menu mnemonicParsing="false" text="Usuario">
               <items>
                 <MenuItem fx:id="loginMenu" mnemonicParsing="false" onAction="#handleLoginMenu" text="Login" />
-                  <MenuItem fx:id="resultadosMenu" mnemonicParsing="false" onAction="#handleResultadosMenu" text="Resultados" />
+                  <MenuItem fx:id="databaseMenu" mnemonicParsing="false" onAction="#handleDatabaseMenu" text="Database" />
                   <MenuItem fx:id="DashBoard" mnemonicParsing="false" onAction="#handleDashBoardMenu" text="DashBoard" />
               </items>
             </Menu>

@@ -1,3 +1,4 @@
+
 package LanguageApp.controller;
 
 //<editor-fold defaultstate="collapsed" desc="Import">
@@ -511,7 +512,30 @@ public class PrincipalController {
          textFieldTranslation.setText("");
 
          handleStopButton();
-         setChangedSize();
+
+         // Delete and create and empty initial file
+         dir.createIni();
+
+         // change the mainStage´s height depending of the media´s height
+         // Setting the initial size
+
+         // media = null;
+         // mediaPlayer = null;
+         // mediaView = null;
+         // mediaView.setFitHeight(0);
+         
+         // mediaView.setMediaPlayer(null);
+         //anchorMedia.setMaxHeight(0);
+         anchorMedia.setMinHeight(120);
+         // anchorMedia.setPrefHeight(115);
+
+
+         int height = 404;
+         mainStage.setHeight(height);
+         height -= 71;
+         listViewV.setMinHeight(height);
+         listViewV.setMaxHeight(height);
+         listViewV.setPrefHeight(height);
 
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleMenuClose()", e);
@@ -524,7 +548,8 @@ public class PrincipalController {
     */
    public void handleAboutMenu ()
    {
-      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo", null);
+      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
+              null);
    }
 
 
@@ -1338,28 +1363,31 @@ public class PrincipalController {
     */
    public String getMediaStatus ()
    {
-      Status s = mediaPlayer.getStatus();
-      if (s.equals(Status.PLAYING)) {
-         if (originalButton) {
-            return "playingOriginal";
-         } else {
-            return "playing";
+      try {
+         Status s = mediaPlayer.getStatus();
+         if (s.equals(Status.PLAYING)) {
+            if (originalButton) {
+               return "playingOriginal";
+            } else {
+               return "playing";
+            }
          }
-      }
 
-      if (s.equals(Status.PAUSED)) {
-         if (originalButton) {
-            return "originalPause";
-         } else {
-            return "pause";
+         if (s.equals(Status.PAUSED)) {
+            if (originalButton) {
+               return "originalPause";
+            } else {
+               return "pause";
+            }
          }
+      } catch (Exception e) {
       }
       return "stop";
 
    }
    //</editor-fold>
 
-   //<editor-fold defaultstate="collapsed" desc="Setting the listView">
+//<editor-fold defaultstate="collapsed" desc="Setting the listView">
    /**
     * Set the Handler event for the listview V
     */
@@ -1797,7 +1825,8 @@ public class PrincipalController {
 
       }
 
-      alert.getDialogPane().getStylesheets().add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
+      alert.getDialogPane().getStylesheets().
+              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
       alert.getDialogPane().getStyleClass().add("style");
 
       Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -1959,7 +1988,7 @@ public class PrincipalController {
             mediaPlayer.play();
             mediaPlayer.stop();
 
-            setChangedSize();
+            setChangedSizeDashboard();
 
             anchorMedia.setPrefHeight(media.getHeight());
             anchorMedia.setMinHeight(media.getHeight());
@@ -1972,15 +2001,26 @@ public class PrincipalController {
    /**
     * Change the size of the elements when close the media
     */
-   private void setChangedSize ()
+   public void setChangedSizeDashboard ()
    {
+      int height = 404;
       // change the mainStage´s height depending of the media´s height
-      int height = 764 - (480 - media.getHeight());
+      if (media != null) {
+         height = 764 - (480 - media.getHeight());
+      }
       mainStage.setHeight(height);
       height -= 71;
       listViewV.setMinHeight(height);
       listViewV.setMaxHeight(height);
       listViewV.setPrefHeight(height);
+   }
+
+   /**
+    * Change the size of the elements when open the login
+    */
+   public void setChangedSizeLogin ()
+   {
+      mainStage.setHeight(640);
    }
 
    /**
@@ -2062,56 +2102,60 @@ public class PrincipalController {
          public void handle (KeyEvent ke)
          {
 
-            indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+            try {
+               indexItemV = listViewV.getSelectionModel().getSelectedIndex();
 
-            switch (ke.getCode()) {
+               switch (ke.getCode()) {
 
-               case UP:
-                  if (indexItemV > 0) {
-                     indexItemV--;
-                     listViewV.getSelectionModel().select(indexItemV);
-                     showListViewH();
-                     listViewV.getSelectionModel().select(indexItemV + 1);
-                     //ke.consume();
-                  }
-                  break;
+                  case UP:
+                     if (indexItemV > 0) {
+                        indexItemV--;
+                        listViewV.getSelectionModel().select(indexItemV);
+                        showListViewH();
+                        listViewV.getSelectionModel().select(indexItemV + 1);
+                        //ke.consume();
+                     }
+                     break;
 
-               case DOWN:
-                  if (indexItemV < itemsOriginal.length) {
-                     indexItemV++;
-                     listViewV.getSelectionModel().select(indexItemV);
-                     showListViewH();
-                     listViewV.getSelectionModel().select(indexItemV - 1);
-                     //ke.consume();
-                  }
-                  break;
+                  case DOWN:
+                     if (indexItemV < itemsOriginal.length) {
+                        indexItemV++;
+                        listViewV.getSelectionModel().select(indexItemV);
+                        showListViewH();
+                        listViewV.getSelectionModel().select(indexItemV - 1);
+                        //ke.consume();
+                     }
+                     break;
 
-               case LEFT:
-                  handleBackButtonItemOriginal();
-                  ke.consume();
-                  break;
+                  case LEFT:
+                     handleBackButtonItemOriginal();
+                     ke.consume();
+                     break;
 
-               case RIGHT:
-                  if (oldNode.equals(currentNode)) {
-                     oldNode = tabPanelListViewH;
-                  }
+                  case RIGHT:
+                     if (oldNode.equals(currentNode)) {
+                        oldNode = tabPanelListViewH;
+                     }
 
-                  oldNode.requestFocus();
-                  setBorder(oldNode);
-                  ke.consume();
-                  break;
+                     oldNode.requestFocus();
+                     setBorder(oldNode);
+                     ke.consume();
+                     break;
 
-               case SPACE:
-                  handlePlayButtonItemOriginal();
-                  ke.consume();
-                  break;
+                  case SPACE:
+                     handlePlayButtonItemOriginal();
+                     ke.consume();
+                     break;
 
-               case ENTER:
-                  handlePlayButtonItemOriginal();
-                  ke.consume();
-                  break;
-               default:
-                  break;
+                  case ENTER:
+                     handlePlayButtonItemOriginal();
+                     ke.consume();
+                     break;
+                  default:
+                     break;
+               }
+            } catch (Exception e) {
+
             }
          }
       });
@@ -2121,60 +2165,64 @@ public class PrincipalController {
          @Override
          public void handle (KeyEvent event)
          {
+            try {
 
-            if (event.getCode().equals(KeyCode.UP)) {
-               youtubeLink.requestFocus();
-               setBorder(youtubeLink);
-               event.consume();
-            }
-
-            if (event.getCode().equals(KeyCode.DOWN)) {
-
-               int[] i = new int[]{3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 32, 33, 34, 35, 36};
-               boolean salida = false;
-
-               for (int j : i) {
-                  if (oldNode.equals(node[j])) {
-                     salida = true;
-                  }
-               }
-               if (!salida) {
-                  switch (currentTab) {
-                     case "Leer":
-                        oldNode = playButtonReading;
-                        break;
-                     case "Escribir":
-                        oldNode = playButtonWriting;
-                        break;
-                     case "Traducir":
-                        oldNode = playButtonTranslation;
-                        break;
-                     default:
-                        break;
-                  }
-               }
-
-               oldNode.requestFocus();
-               setBorder(oldNode);
-               event.consume();
-            }
-
-            if (event.getCode().equals(KeyCode.LEFT)) {
-               if (listViewH01Reading.getSelectionModel().getSelectedIndex() == 0) {
-                  listViewV.requestFocus();
-                  setBorder(listViewV);
+               if (event.getCode().equals(KeyCode.UP)) {
+                  youtubeLink.requestFocus();
+                  setBorder(youtubeLink);
                   event.consume();
                }
-            }
 
-            if (event.getCode().equals(KeyCode.SPACE)) {
-               handlePlayButtonItemMachine();
-               event.consume();
-            }
+               if (event.getCode().equals(KeyCode.DOWN)) {
 
-            if (event.getCode().equals(KeyCode.ENTER)) {
-               handlePlayButtonItemOriginal();
-               event.consume();
+                  int[] i = new int[]{3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 32, 33, 34, 35, 36};
+                  boolean salida = false;
+
+                  for (int j : i) {
+                     if (oldNode.equals(node[j])) {
+                        salida = true;
+                     }
+                  }
+                  if (!salida) {
+                     switch (currentTab) {
+                        case "Leer":
+                           oldNode = playButtonReading;
+                           break;
+                        case "Escribir":
+                           oldNode = playButtonWriting;
+                           break;
+                        case "Traducir":
+                           oldNode = playButtonTranslation;
+                           break;
+                        default:
+                           break;
+                     }
+                  }
+
+                  oldNode.requestFocus();
+                  setBorder(oldNode);
+                  event.consume();
+               }
+
+               if (event.getCode().equals(KeyCode.LEFT)) {
+                  if (listViewH01Reading.getSelectionModel().getSelectedIndex() == 0) {
+                     listViewV.requestFocus();
+                     setBorder(listViewV);
+                     event.consume();
+                  }
+               }
+
+               if (event.getCode().equals(KeyCode.SPACE)) {
+                  handlePlayButtonItemMachine();
+                  event.consume();
+               }
+
+               if (event.getCode().equals(KeyCode.ENTER)) {
+                  handlePlayButtonItemOriginal();
+                  event.consume();
+               }
+            } catch (Exception e) {
+
             }
          }
       });
@@ -2685,7 +2733,8 @@ public class PrincipalController {
     * @param max The max value of the slider
     * @param per The step
     */
-   private void eventFilterSlider (Slider slider, int up, int down, int right, int left, double min, double max, double per)
+   private void eventFilterSlider (Slider slider, int up, int down, int right, int left, double min, double max,
+           double per)
    {
 
       slider.addEventFilter(KeyEvent.KEY_PRESSED, (event) -> {

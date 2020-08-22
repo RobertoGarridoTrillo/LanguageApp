@@ -23,7 +23,7 @@ public class MainController {
    @FXML private MenuItem controlesMenu;
    @FXML private MenuItem aboutMenu;
    @FXML private MenuItem loginMenu;
-   @FXML private MenuItem resultadosMenu;
+   @FXML private MenuItem databaseMenu;
    @FXML private MenuItem DashBoard;
 
    // Reference to the main Stage from the main Scene
@@ -60,7 +60,7 @@ public class MainController {
    /**
     * Open a SelectFile and seek a json to load the phrases (Part 1)
     */
-   @FXML public void handleOpenMenu ()
+   @FXML private void handleOpenMenu ()
    {
       mainScene.handleOpenMenu();
    }
@@ -101,9 +101,9 @@ public class MainController {
    /**
     * handle of the Resultados menu
     */
-   @FXML private void handleResultadosMenu ()
+   @FXML private void handleDatabaseMenu ()
    {
-      mainScene.handleResultadosMenu();
+      mainScene.handleDatabaseMenu();
    }
       
    /**

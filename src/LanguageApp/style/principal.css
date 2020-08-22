@@ -8,8 +8,8 @@
   -fx-font-size: 10pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
-  -fx-background-color: black;
-    -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
+  -fx-background-color: #333333;
+  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
 }
 
 /* fuentes */
@@ -44,6 +44,7 @@
   -fx-border-radius: 3;
   -fx-border-insets: 0;  
 }
+
 .borderVisible{
   -fx-border-color: coral;
 }
@@ -76,19 +77,16 @@
 
 /* Menu */
 .menu-item:focused {
-     -fx-background: #333333;
-     -fx-background-color: -fx-background;
-     -fx-text-fill:  -fx-text-background-color;
+  -fx-background: #333333;
+  -fx-background-color: -fx-background;
+
+  -fx-text-fill:  -fx-text-background-color;
 }
 
 .menu-bar > .container > .menu-button:hover,
 .menu-bar > .container > .menu-button:focused,
 .menu-bar > .container > .menu-button:showing {
-    -fx-background: #004f8a;
-    -fx-background-color: -fx-background;
+  -fx-background: #004f8a;
+  -fx-background-color: -fx-background;
 }
-
-
-
-
 

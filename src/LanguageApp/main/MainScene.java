@@ -1,8 +1,11 @@
 package LanguageApp.main;
 
+import LanguageApp.controller.DataBaseController;
+import LanguageApp.controller.FormController;
 import LanguageApp.controller.LoginController;
 import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
+import LanguageApp.controller.RegistrationController;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,9 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
-import javafx.scene.media.MediaView;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
@@ -31,9 +32,15 @@ public class MainScene extends Application {
    private MainController mainController;
    private PrincipalController principalController;
    private LoginController loginController;
+   private FormController formController;
+   private RegistrationController registrationController;
+   private DataBaseController dataBaseController;
    private BorderPane mainView;
    private AnchorPane principalView;
-   private AnchorPane loginView;
+   private HBox loginView;
+   private AnchorPane formView;
+   
+   private AnchorPane registrationView;
    private AnchorPane dataBaseView;
 //</editor-fold>
 
@@ -41,9 +48,11 @@ public class MainScene extends Application {
    /**
     * load the initial configuration before all the other things loads
     *
-    * @throws Exception FilerException - if the same pathname has already been opened for writing, if the source module cannot be determined, or if the target module is not writable, or if an explicit
-    * target module is specified and the location does not support it. IOException - if the file cannot be opened IllegalArgumentException - for an unsupported location IllegalArgumentException - if
-    * moduleAndPkg is ill-formed IllegalArgumentException - if relativeName is not relative
+    * @throws Exception FilerException - if the same pathname has already been opened for writing, if the source module
+    * cannot be determined, or if the target module is not writable, or if an explicit target module is specified and
+    * the location does not support it. IOException - if the file cannot be opened IllegalArgumentException - for an
+    * unsupported location IllegalArgumentException - if moduleAndPkg is ill-formed IllegalArgumentException - if
+    * relativeName is not relative
     */
    @Override
    public void init () throws Exception
@@ -76,8 +85,11 @@ public class MainScene extends Application {
 
       // 
       mainView();
-      principalView();
+      formView();
       loginView();
+      registrationView();
+      dataBaseView();
+      principalView();
 
       this.mainStage.setResizable(false);
       this.mainStage.setWidth(1215);
@@ -120,7 +132,6 @@ public class MainScene extends Application {
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="pricipalView">
-
    private void principalView ()
    {
 
@@ -130,9 +141,6 @@ public class MainScene extends Application {
          loader.setLocation(MainScene.class
                  .getResource("/LanguageApp/view/PrincipalView.fxml"));
          principalView = (AnchorPane) loader.load();
-
-         // Create the Scene and put it in the center or the borderLayout
-         mainView.setCenter(principalView);
 
          // Give the mainController access to the main app (It´s like a instance)
          principalController = loader.getController();
@@ -147,7 +155,7 @@ public class MainScene extends Application {
       }
    }
 //</editor-fold>
-
+   
 //<editor-fold defaultstate="collapsed" desc="LoginView">
    private void loginView ()
    {
@@ -157,14 +165,87 @@ public class MainScene extends Application {
          FXMLLoader loader = new FXMLLoader();
          loader.setLocation(MainScene.class
                  .getResource("/LanguageApp/view/LoginView.fxml"));
-         loginView = (AnchorPane) loader.load();
+         loginView = (HBox) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
          loginController = loader.getController();
          loginController.setMainScene(this);
+         loginController.loginViewAnchorPane.getChildren().add(formView);
+
+         // Create the Scene and put it in the center or the borderLayout
+         mainView.setCenter(loginView);
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="FormView">
+
+   /**
+    *
+    */
+   private void formView ()
+   {
+
+      try {
+         // Create the FXMLLoader
+         FXMLLoader loader = new FXMLLoader();
+         loader.setLocation(MainScene.class
+                 .getResource("/LanguageApp/view/FormView.fxml"));
+         formView = (AnchorPane) loader.load();
+
+         // Give the mainController access to the main app (It´s like a instance)
+         formController = loader.getController();
+         formController.setMainScene(this);
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="RegisterView">
+   private void registrationView ()
+   {
+
+      try {
+         // Create the FXMLLoader
+         FXMLLoader loader = new FXMLLoader();
+         loader.setLocation(MainScene.class
+                 .getResource("/LanguageApp/view/RegistrationView.fxml"));
+
+         registrationView = (AnchorPane) loader.load();
+
+         // Give the mainController access to the main app (It´s like a instance)
+         registrationController = loader.getController();
+         registrationController.setMainScene(this);
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+//</editor-fold>
+
+
+//<editor-fold defaultstate="collapsed" desc="DataBaseView">
+   private void dataBaseView ()
+   {
+
+      try {
+         // Create the FXMLLoader
+         FXMLLoader loader = new FXMLLoader();
+         loader.setLocation(MainScene.class
+                 .getResource("/LanguageApp/view/DataBaseView.fxml"));
+         dataBaseView = (AnchorPane) loader.load();
+
+         // Give the mainController access to the main app (It´s like a instance)
+         dataBaseController = loader.getController();
+         dataBaseController.setMainScene(this);
 
          // Adding dark style
-         //JMetro jMetro = new JMetro(Style.DARK);
+         //JMetro jMetro = new JMetro(Style.LIGHT);
          //jMetro.setScene(mainScene);         
 
       } catch (IOException e) {
@@ -234,23 +315,43 @@ public class MainScene extends Application {
    public void handleLoginMenu ()
    {
 
-      // Create the Scene and put it in the center or the borderLayout
-      mainView.getChildren().remove(principalView);
-      mainView.setCenter(loginView);
+      try {
+         // Create the Scene and put it in the center or the borderLayout
+         mainView.getChildren().remove(principalView);
+         mainView.setCenter(loginView);
 
-      String result = principalController.getMediaStatus();
-      if (result.equals("playing")) {
-         principalController.handlePlayButton();
-      } else if (result.equals("playingOriginal")) {
-         principalController.handlePlayButtonItemOriginal();
+         // return to the originall size
+         principalController.setChangedSizeLogin();
+
+         String result = principalController.getMediaStatus();
+         if (result.equals("playing")) {
+            principalController.handlePlayButton();
+         } else if (result.equals("playingOriginal")) {
+            principalController.handlePlayButtonItemOriginal();
+         }
+
+      } catch (Exception e) {
       }
    }
 
    /**
-    * it's called by mainController when i click in the About menu
+    * it's called by mainController when i click in the Resultados menu
     */
-   public void handleResultadosMenu ()
+   public void handleDatabaseMenu ()
    {
+      try {
+         // Create the Scene and put it in the center or the borderLayout
+         mainView.getChildren().remove(principalView);
+         mainView.setCenter(dataBaseView);
+
+         String result = principalController.getMediaStatus();
+         if (result.equals("playing")) {
+            principalController.handlePlayButton();
+         } else if (result.equals("playingOriginal")) {
+            principalController.handlePlayButtonItemOriginal();
+         }
+      } catch (Exception e) {
+      }
    }
 
    /**
@@ -260,7 +361,11 @@ public class MainScene extends Application {
    {
       mainView.getChildren().remove(loginView);
       mainView.setCenter(principalView);
-      
+
+      // return to the originall size
+      principalController.setChangedSizeDashboard();
+
+
       String result = principalController.getMediaStatus();
       if (result.equals("pause")) {
          principalController.handlePlayButton();
@@ -270,5 +375,46 @@ public class MainScene extends Application {
    }
 //</editor-fold>
 
+   /**
+    * Change the scene from form to register
+    *
+    * @param n
+    */
+   public void handleNuevoUsuario ()
+   {
+      // Create the Scene Registration and put it in login 
+      loginView.getChildren().remove(formView);
+      loginView.getChildren().add(registrationView);
+   }
+   
+   /**
+    * Change the scene from form to register
+    *
+    * @param n
+    */
+   public void handleAntiguoUsuario ()
+   {
+      // Create the Scene Login and put it in login 
+      loginView.getChildren().remove(registrationView);
+      loginView.getChildren().add(formView);
+   }
+
+   /**
+    * Change the scene from form to register
+    *
+    * @param n
+    */
+   public void handelLogin ()
+   {
+      
+   }
+   
+   /**
+    * 
+    */
+   public void handleRegistro ()
+   {
+   }
+   
 
 }

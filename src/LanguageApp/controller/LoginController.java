@@ -4,10 +4,7 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 //</editor-fold>
 
@@ -16,12 +13,12 @@ import javafx.stage.Stage;
  * @author Roberto Garrido Trillo
  */
 public class LoginController {
-   
+
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
-   @FXML private AnchorPane loginViewAnchorPane;
-   @FXML private Button boton;
-           
+   @FXML public HBox loginViewAnchorPane;
+
+
    // Reference to the main Stage from the main Scene
    private Stage mainStage;
    // Reference to the main Scene
@@ -30,8 +27,8 @@ public class LoginController {
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
    /**
-    * 
-    * @param aThis 
+    *
+    * @param aThis
     */
    public void setMainScene (MainScene aThis)
    {
@@ -48,7 +45,8 @@ public class LoginController {
       // References to mainStage
       mainStage = MainScene.getMainStage();
    }
-//</editor-fold>   
-   
 
+
+//</editor-fold>  
+   
 }
