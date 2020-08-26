@@ -33,8 +33,8 @@ public class FormController {
    @FXML private JFXPasswordField passwordTextField;
    @FXML private Label errorPasswordLabel;
    @FXML private JFXButton loginButton;
-   @FXML private JFXButton forgetButton;
    @FXML private JFXCheckBox activoCheckBox;
+   @FXML private JFXButton forgetButton;
    @FXML private Label newUserLabel;
 
    @FXML private HBox HBoxUsuario;
@@ -56,6 +56,9 @@ public class FormController {
    private Stage mainStage;
    // Reference to the main Scene
    private MainScene mainScene;
+
+   // The Login or not Login
+   boolean login, loginUser, loginPassword;
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
@@ -138,6 +141,8 @@ public class FormController {
       n.focusedProperty().addListener((o, oldVal, newVal) ->
       {
          if (newVal) {
+            errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
             setBorder(n);
          }
       });
@@ -148,6 +153,9 @@ public class FormController {
          @Override
          public void handle (KeyEvent ke)
          {
+            errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
+
             int i = -1;
 
             if (ke.getCode().equals(KeyCode.UP)) {
@@ -159,17 +167,16 @@ public class FormController {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                switch (n.getId()) {
                   case "usuarioTextField":
-                     handleValidation();
+                     handleValidationUser();
                      break;
                   case "passwordTextField":
-                     handleValidation();
+                     handleValidationPassword();
                      break;
                   case "loginButton":
                      handlelogin();
                      break;
                   case "activoCheckBox":
                      activoCheckBox.setSelected(!activoCheckBox.isSelected());
-                     handleActivo();
                      break;
                   case "forgetButton":
                      handleforget();
@@ -185,9 +192,6 @@ public class FormController {
                switch (n.getId()) {
                   case "loginButton":
                      handlelogin();
-                     break;
-                  case "activoCheckBox":
-                     handleActivo();
                      break;
                   case "forgetButton":
                      handleforget();
@@ -207,10 +211,15 @@ public class FormController {
 
             }
          }
+
       });
 
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
+         // HBoxError disabled
+         errorUserLabel.setManaged(false);
+         errorPasswordLabel.setManaged(false);
+
          n.requestFocus();
          setBorder(n);
          oldNode = n;
@@ -320,13 +329,7 @@ public class FormController {
 
 //</editor-fold>
 
-   /**
-    *
-    */
-   private void handlelogin ()
-   {
-   }
-
+//<editor-fold defaultstate="collapsed" desc="Handles">   
    /**
     *
     */
@@ -334,13 +337,6 @@ public class FormController {
    {
    }
 
-   /**
-    *
-    */
-   private void handleActivo ()
-   {
-   }
-   
    /**
     *
     */
@@ -352,8 +348,79 @@ public class FormController {
    /**
     *
     */
-   private void handleValidation ()
+   private String handleValidationUser ()
    {
+      String usuarioString = usuarioTextField.getText().trim();
+      loginUser = true;
+
+      if (usuarioString.isEmpty() || usuarioString.length() == 0) {
+         showErrorUser("No puede estar vacío");
+         return null;
+      }
+      if (usuarioString.length() > 100) {
+         showErrorUser("No puede tener mas de 100 letras");
+         return null;
+      }
+      return usuarioString;
    }
+
+   /**
+    *
+    * @param text
+    */
+   private void showErrorUser (String text)
+   {
+      errorUserLabel.setManaged(true);
+      errorUserLabel.setText(text);
+      loginUser = false;
+   }
+
+   /**
+    *
+    */
+   private String handleValidationPassword ()
+   {
+      String passwordString = passwordTextField.getText().trim();
+      loginPassword = true;
+
+      if (passwordString.isEmpty() || passwordString.length() == 0) {
+         showErrorPassword("No puede estar vacío");
+         return null;
+      }
+      if (passwordString.length() > 40) {
+         showErrorPassword("No puede tener mas de 40 letras");
+         return null;
+      }
+      return passwordString;
+   }
+
+   /**
+    *
+    * @param text
+    */
+   private void showErrorPassword (String text)
+   {
+      errorPasswordLabel.setManaged(true);
+      errorPasswordLabel.setText(text);
+      loginPassword = false;
+   }
+
+   /**
+    *
+    */
+   private void handlelogin ()
+   {
+      String usuarioString = handleValidationUser();
+      String passwordString = handleValidationPassword();
+      boolean activoBoolean = activoCheckBox.isSelected();
+      if (loginUser == true && loginPassword == true) {
+         boolean result =
+                 mainScene.handlelogin(usuarioString, passwordString, activoBoolean);
+         if (!result) {
+            showErrorUser("El usuario no existe");
+         }
+      }
+   }
+//</editor-fold>
 
 }

@@ -7,13 +7,25 @@ import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
 import LanguageApp.controller.RegistrationController;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
@@ -39,7 +51,7 @@ public class MainScene extends Application {
    private AnchorPane principalView;
    private HBox loginView;
    private AnchorPane formView;
-   
+
    private AnchorPane registrationView;
    private AnchorPane dataBaseView;
 //</editor-fold>
@@ -155,7 +167,7 @@ public class MainScene extends Application {
       }
    }
 //</editor-fold>
-   
+
 //<editor-fold defaultstate="collapsed" desc="LoginView">
    private void loginView ()
    {
@@ -227,7 +239,6 @@ public class MainScene extends Application {
       }
    }
 //</editor-fold>
-
 
 //<editor-fold defaultstate="collapsed" desc="DataBaseView">
    private void dataBaseView ()
@@ -318,6 +329,9 @@ public class MainScene extends Application {
       try {
          // Create the Scene and put it in the center or the borderLayout
          mainView.getChildren().remove(principalView);
+         loginView.getChildren().remove(formView);
+         loginView.getChildren().remove(registrationView);
+         handleAntiguoUsuario();
          mainView.setCenter(loginView);
 
          // return to the originall size
@@ -331,6 +345,7 @@ public class MainScene extends Application {
          }
 
       } catch (Exception e) {
+         e.printStackTrace();
       }
    }
 
@@ -375,6 +390,161 @@ public class MainScene extends Application {
    }
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="Handles">
+
+   /**
+    * @param usuarioString
+    * @param passwordString
+    * @param user
+    * @return
+    */
+   public boolean handlelogin (String usuarioString, String passwordString, boolean activoBoolean)
+   {
+      // in SQLinte doesn't exit boolean
+      int activoInteger = (activoBoolean) ? 1 : 0;
+
+      Connection conn = null;
+      PreparedStatement pstmt = null;
+      Statement stmt = null;
+      int usuario_id = 0;
+
+      // Preparing statement
+      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
+      try {
+         // Try connection
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         // preparing statement
+         pstmt = conn.prepareStatement(sql);
+
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, passwordString);
+
+         //
+         ResultSet rs = pstmt.executeQuery();
+
+         int count = 0;
+         while (rs.next()) {
+            count++;
+            usuario_id = rs.getInt("usuario_id");
+         }
+
+         if (count > 0) {
+
+            // put the user activo or not
+            if (activoBoolean) {
+               try {
+
+                  sql = "UPDATE usuarios SET activo = 0;";
+                  stmt = conn.createStatement();
+                  stmt.executeUpdate(sql);
+                  conn.commit();
+                  stmt.close();
+
+                  // set the value
+                  sql = "UPDATE usuarios SET activo = 1 " +
+                          "WHERE usuario_id = ?";
+                  pstmt = conn.prepareStatement(sql);
+                  pstmt.setInt(1, usuario_id);
+                  pstmt.executeUpdate();
+                  conn.commit();
+
+               } catch (SQLException e) {
+                  message(Alert.AlertType.ERROR, "Error message", e.getMessage(),
+                          "MainScene / handleLogin() - activoBoolean", e);
+               }
+            }
+            pstmt.close();
+            conn.close();
+            // if exits the user and password return true
+            return true;
+         }
+      } catch (SQLException e) {
+         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainScene / handleLogin()", e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (SQLException e) {
+            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainScene / handleLogin()", e);
+         }
+      }
+      return false;
+   }
+
+   /**
+    * @param usuarioString
+    * @param passwordString
+    * @param preguntaString
+    * @param respuestaString
+    * @param user
+    * @return
+    */
+   public boolean handleRegistro (String usuarioString, String passwordString, 
+           String preguntaString, String respuestaString)
+   {
+
+      Connection conn = null;
+      PreparedStatement pstmt = null;
+
+      // Preparing statement
+      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
+      try {
+         // Try connection
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         // preparing statement
+         pstmt = conn.prepareStatement(sql);
+
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, passwordString);
+
+         //
+         ResultSet rs = pstmt.executeQuery();
+
+         int count = 0;
+         while (rs.next()) {
+            count++;           
+         }
+
+         if (count > 0) {
+            pstmt.close();
+            conn.close();
+            // if exits the user and password return true
+            return true;
+         }
+
+         sql = "INSERT INTO  usuarios (nombre, password, activo, pregunta, respuesta) " +
+                 "VALUES (?,?,0,?,?)";
+         pstmt = conn.prepareStatement(sql);
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, passwordString);
+         pstmt.setString(3, preguntaString);
+         pstmt.setString(4, respuestaString);
+         pstmt.executeUpdate();
+         conn.commit();
+         pstmt.close();
+
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainScene / handleRegistro()", e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (Exception e) {
+            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / handleRegistro()", e);
+         }
+      }
+      return false;
+   }
+
    /**
     * Change the scene from form to register
     *
@@ -386,7 +556,7 @@ public class MainScene extends Application {
       loginView.getChildren().remove(formView);
       loginView.getChildren().add(registrationView);
    }
-   
+
    /**
     * Change the scene from form to register
     *
@@ -399,22 +569,68 @@ public class MainScene extends Application {
       loginView.getChildren().add(formView);
    }
 
-   /**
-    * Change the scene from form to register
-    *
-    * @param n
-    */
-   public void handelLogin ()
-   {
-      
-   }
-   
-   /**
-    * 
-    */
-   public void handleRegistro ()
-   {
-   }
-   
+//</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
+   /**
+    * show a standard emergent message
+    *
+    * @param alertType alertType.CONFIRMATION, ERROR, INFORMATION, NONE, WARNING
+    * @param title The title of the windows
+    * @param about The them to expose
+    * @param contextText The showed text
+    * @param ex The thrown exception
+    */
+   public void message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
+   {
+
+      Alert alert = new Alert(alertType);
+      alert.setTitle(title);
+      alert.getDialogPane().setMinWidth(600);
+      alert.getDialogPane().setMinHeight(480);
+      alert.getDialogPane().setPrefWidth(600);
+      alert.getDialogPane().setPrefHeight(480);
+      alert.setResizable(true);
+      alert.setHeaderText(about);
+      alert.getDialogPane().setContentText(contextText);
+
+      if (ex != null) {
+         // Create expandable Exception.
+         StringWriter sw = new StringWriter();
+         PrintWriter pw = new PrintWriter(sw);
+         ex.printStackTrace(pw);
+         String exceptionText = sw.toString();
+
+         Label label = new Label("The exception stacktrace was:");
+
+         TextArea textArea = new TextArea(exceptionText);
+         textArea.setEditable(true);
+         textArea.setWrapText(true);
+
+         textArea.setMaxWidth(Double.MAX_VALUE);
+         textArea.setMaxHeight(Double.MAX_VALUE);
+         GridPane.setVgrow(textArea, Priority.ALWAYS);
+         GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+         GridPane expContent = new GridPane();
+         expContent.setMaxWidth(Double.MAX_VALUE);
+         expContent.add(label, 0, 0);
+         expContent.add(textArea, 0, 1);
+         // Set expandable Exception into the dialog pane.
+         alert.getDialogPane().setExpandableContent(expContent);
+
+      }
+
+      alert.getDialogPane().getStylesheets().
+              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
+      alert.getDialogPane().getStyleClass().add("style");
+
+      Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+      Image icon = new Image(getClass().getResourceAsStream("/LanguageApp/resources/images/languages_128.png"));
+      stage.getIcons().add(icon);
+
+
+      alert.showAndWait();
+   }
+//</editor-fold>
 }

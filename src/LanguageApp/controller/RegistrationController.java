@@ -34,7 +34,7 @@ public class RegistrationController {
    @FXML private Label errorPasswordLabel;
    @FXML private JFXComboBox preguntaComboBox;
    @FXML private JFXTextField respuestaTextField;
-   @FXML private Label errorSeguridadLabel;
+   @FXML private Label errorRespuestaLabel;
    @FXML private JFXButton registroButton;
    @FXML private Label oldUserLabel;
 
@@ -58,6 +58,12 @@ public class RegistrationController {
    private Stage mainStage;
    // Reference to the main Scene
    private MainScene mainScene;
+
+   // The string fields
+   String usuarioString, passwordString, preguntaString, respuestaString;
+
+   // The Login or not Login
+   boolean registro, registroUser, registroPassword, registroPregunta, registroRespuesta;
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
@@ -103,20 +109,22 @@ public class RegistrationController {
       // Setting the ConboBox options
       preguntaComboBox.getItems().removeAll(preguntaComboBox.getItems());
       preguntaComboBox.getItems().addAll(
-              "Option A",
-              "Option B",
-              "Option C");
+              "¿Cuál es tu comida favorita?",
+              "¿Cuál es tu color favorita?",
+              "¿Cuál es tu ciudad favorita",
+              "¿Cuál es tu ropa favorita?",
+              "¿Cuál es tu bebida favorita?");
       // preguntaComboBox.getSelectionModel().select("Option B");
 
       // HBoxError disabled
       errorUserLabel.setManaged(false);
       errorPasswordLabel.setManaged(false);
-      errorSeguridadLabel.setManaged(false);
+      errorRespuestaLabel.setManaged(false);
 
    }
 //</editor-fold> 
 
-   //<editor-fold defaultstate="collapsed" desc="Setting Field">
+//<editor-fold defaultstate="collapsed" desc="Setting Field">
    /**
     *
     */
@@ -131,7 +139,7 @@ public class RegistrationController {
    }
 //</editor-fold>
 
-   //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
+//<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
 //<editor-fold defaultstate="collapsed" desc="Button">
    /**
@@ -149,16 +157,22 @@ public class RegistrationController {
       n.focusedProperty().addListener((o, oldVal, newVal) ->
       {
          if (newVal) {
+            errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
             setBorder(n);
          }
       });
 
-      // setting onClick
+      // setting setOnKeyPressed
       n.setOnKeyPressed(
               new EventHandler<KeyEvent>() {
          @Override
          public void handle (KeyEvent ke)
          {
+            errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
             int i = -1;
 
             if (ke.getCode().equals(KeyCode.UP)) {
@@ -168,20 +182,18 @@ public class RegistrationController {
                i = down;
             }
             if (ke.getCode().equals(KeyCode.ENTER)) {
-               System.out.println("ENTER" + n.getId());
-               
                switch (n.getId()) {
                   case "usuarioTextField":
-                     handleValidation();
+                     handleValidationUser();
                      break;
                   case "passwordTextField":
-                     handleValidation();
+                     handleValidationPassword();
                      break;
                   case "preguntaComboBox":
                      handlePregunta();
                      break;
                   case "respuestaTextField":
-                     handleRespuesta();
+                     handleValidationRespuesta();
                      break;
                   case "registroButton":
                      handleRegistro();
@@ -194,8 +206,6 @@ public class RegistrationController {
                }
             }
             if (ke.getCode().equals(KeyCode.SPACE)) {
-               System.out.println("SPACE" + n.getId());
-               
                switch (n.getId()) {
                   case "preguntaComboBox":
                      handlePregunta();
@@ -223,11 +233,15 @@ public class RegistrationController {
 
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
+         // HBoxError disabled
+         errorUserLabel.setManaged(false);
+         errorPasswordLabel.setManaged(false);
+         errorRespuestaLabel.setManaged(false);
+
          n.requestFocus();
          setBorder(n);
          oldNode = n;
          MouseEvent.consume();
-         System.out.println("mouse " + n.getId());
 
          switch (n.getId()) {
             case "registroButton":
@@ -330,19 +344,60 @@ public class RegistrationController {
 
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="Handlers">
    /**
     *
     */
-   private void handleValidation ()
+   private void handleValidationUser ()
    {
+      usuarioString = usuarioTextField.getText().trim();
+      registroUser = true;
+
+      if (usuarioString.isEmpty() || usuarioString.length() == 0) {
+         showErrorUser("No puede estar vacío");
+      }
+      if (usuarioString.length() > 100) {
+         showErrorUser("No puede tener mas de 100 letras");
+      }
 
    }
 
    /**
     *
+    * @param text
     */
-   private void handleRegistro ()
+   private void showErrorUser (String text)
    {
+      errorUserLabel.setManaged(true);
+      errorUserLabel.setText(text);
+      registroUser = false;
+   }
+
+   /**
+    *
+    */
+   private void handleValidationPassword ()
+   {
+      passwordString = passwordTextField.getText().trim();
+      registroPassword = true;
+
+      if (passwordString.isEmpty() || passwordString.length() == 0) {
+         showErrorPassword("No puede estar vacío");
+      }
+      if (passwordString.length() > 40) {
+         showErrorPassword("No puede tener mas de 40 letras");
+      }
+   }
+
+   /**
+    *
+    * @param text
+    */
+   private void showErrorPassword (String text)
+   {
+      errorPasswordLabel.setManaged(true);
+      errorPasswordLabel.setText(text);
+      registroPassword = false;
    }
 
    /**
@@ -356,8 +411,62 @@ public class RegistrationController {
    /**
     *
     */
-   private void handleRespuesta ()
+   private void handleValidationRespuesta ()
    {
+      Object preguntaObject = preguntaComboBox.getValue();
+      respuestaString = respuestaTextField.getText().trim();
+      registroPregunta = true;
+      registroRespuesta = true;
+
+      if (preguntaObject == null) {
+         showErrorRespuesta("Elige una pregunta de seguridad");
+         return;
+      } else {
+         preguntaString = preguntaObject.toString();
+      }
+      
+      if (respuestaString.isEmpty() || respuestaString.length() == 0) {
+         showErrorRespuesta("No puede estar vacío");
+      }
+      if (respuestaString.length() > 100) {
+         showErrorRespuesta("No puede tener mas de 100 letras");
+      }
+   }
+
+   /**
+    *
+    * @param text
+    */
+   private void showErrorRespuesta (String text)
+   {
+      errorRespuestaLabel.setManaged(true);
+      errorRespuestaLabel.setText(text);
+      registroPregunta = false;
+      registroRespuesta = false;
+   }
+
+   /**
+    *
+    */
+   private void handleRegistro ()
+   {
+      handleValidationUser();
+      handleValidationPassword();
+      handleValidationRespuesta();
+
+      //boolean activoBoolean = activoCheckBox.isSelected();
+      if (registroUser == true && registroPassword == true &&
+              registroPregunta == true && registroRespuesta == true) {
+         boolean result =
+                 mainScene.handleRegistro(
+                         usuarioString,
+                         passwordString,
+                         preguntaString,
+                         respuestaString);
+         if (result) {
+            showErrorUser("El usuario ya existe");
+         }
+      }
    }
 
    /**
@@ -367,4 +476,5 @@ public class RegistrationController {
    {
       mainScene.handleAntiguoUsuario();
    }
+//</editor-fold>
 }

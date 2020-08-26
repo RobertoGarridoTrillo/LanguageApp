@@ -222,6 +222,7 @@
 
 .labelError, labelError:hover, .labelError:focused{
   -fx-border: #333333;
+  -fx-text-fill: #ff0000;
 }
 
 .labelRegistrate{

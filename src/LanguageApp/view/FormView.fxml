@@ -52,8 +52,8 @@
         </HBox>
         <HBox fx:id="HBoxErrorUser" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
           <children>
-            <Pane prefWidth="90.0" />
-            <Label fx:id="errorUserLabel" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
+            <Pane minWidth="-Infinity" prefWidth="50.0" />
+            <Label fx:id="errorUserLabel" focusTraversable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
           </children>
         </HBox>
         <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
@@ -85,10 +85,10 @@
                   <Insets bottom="20.0" />
                </VBox.margin>
         </HBox>
-        <HBox fx:id="HBoxErrorPassword" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0" visible="false">
+        <HBox fx:id="HBoxErrorPassword" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
           <children>
-            <Pane prefWidth="98.0" />
-            <Label fx:id="errorPasswordLabel" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
+            <Pane minWidth="-Infinity" prefWidth="50.0" />
+            <Label fx:id="errorPasswordLabel" alignment="TOP_LEFT" contentDisplay="TOP" focusTraversable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
           </children>
         </HBox>
         <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">

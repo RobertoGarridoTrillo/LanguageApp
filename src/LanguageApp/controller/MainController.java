@@ -65,7 +65,6 @@ public class MainController {
       mainScene.handleOpenMenu();
    }
 
-
    /**
     * When click on the close menu
     */

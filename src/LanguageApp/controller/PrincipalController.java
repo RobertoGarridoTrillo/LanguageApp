@@ -401,7 +401,7 @@ public class PrincipalController {
       // Open a new fileChooser, set the stage where it´s shows,return un File
       dir.readIni();
       File file = sf.getSelectedFile(mainStage, dir.getLastDirectory());
-      handleOpenMenu2(file);
+      if (file!=null) handleOpenMenu2(file);
 
    }
 
@@ -481,7 +481,7 @@ public class PrincipalController {
          setEndTimefile();
 
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleOpenMenu2()", e);
+         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleOpenMenu2()", e);
       }
 
    }

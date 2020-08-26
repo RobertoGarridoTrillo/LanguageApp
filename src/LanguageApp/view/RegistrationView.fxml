@@ -56,8 +56,8 @@
             </HBox>
             <HBox fx:id="HBoxErrorUser" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
                <children>
-                  <Pane prefWidth="90.0" />
-                  <Label fx:id="errorUserLabel" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" text="asdfasdfasdf" />
+                  <Pane minWidth="-Infinity" prefWidth="50.0" />
+                  <Label fx:id="errorUserLabel" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
                </children>
             </HBox>
             <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
@@ -90,8 +90,8 @@
             </HBox>
             <HBox fx:id="HBoxErrorPassword" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
                <children>
-                  <Pane prefWidth="90.0" />
-                  <Label fx:id="errorPasswordLabel" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
+                  <Pane minWidth="-Infinity" prefWidth="50.0" />
+                  <Label fx:id="errorPasswordLabel" focusTraversable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
                </children>
             </HBox>
             <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
@@ -153,8 +153,8 @@
             </HBox>
             <HBox fx:id="HBoxErrorRespuesta" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
                <children>
-                  <Pane prefWidth="90.0" />
-                  <Label fx:id="errorSeguridadLabel" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
+                  <Pane minWidth="-Infinity" prefWidth="50.0" />
+                  <Label fx:id="errorRespuestaLabel" alignment="TOP_LEFT" contentDisplay="TOP" focusTraversable="false" prefHeight="40.0" prefWidth="250.0" styleClass="labelError" />
                </children>
             </HBox>
             <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
@@ -212,7 +212,7 @@
                               <Insets left="10.0" />
                            </padding>
                         </Label>
-                        <Label fx:id="oldUserLabel" focusTraversable="false" styleClass="labelRegistrate" text="Ingresa" textFill="WHITE">
+                        <Label fx:id="oldUserLabel" focusTraversable="false" styleClass="labelRegistrate" text="Identificate" textFill="WHITE">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
