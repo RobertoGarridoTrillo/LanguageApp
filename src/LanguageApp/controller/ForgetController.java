@@ -4,17 +4,18 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 //</editor-fold>
 
@@ -22,7 +23,7 @@ import javafx.stage.Stage;
  *
  * @author Roberto Garrido Trillo
  */
-public class FormController {
+public class ForgetController {
 
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
@@ -30,21 +31,21 @@ public class FormController {
 
    @FXML private JFXTextField usuarioTextField;
    @FXML private Label errorUserLabel;
-   @FXML private JFXPasswordField passwordTextField;
-   @FXML private Label errorPasswordLabel;
-   @FXML private JFXButton loginButton;
-   @FXML private JFXCheckBox activoCheckBox;
-   @FXML private JFXButton forgetButton;
-   @FXML private Label newUserLabel;
+   @FXML private JFXComboBox preguntaComboBox;
+   @FXML private JFXTextField respuestaTextField;
+   @FXML private Label errorRespuestaLabel;
+   @FXML private JFXButton enviarButton;
+   @FXML private Label oldUserLabel;
+   @FXML private JFXTextField errorPasswordLabel;
+   @FXML private Pane errorPasswordPane;
 
    @FXML private HBox HBoxUsuario;
    @FXML private HBox HBoxErrorUser;
-   @FXML private HBox HBoxPassword;
-   @FXML private HBox HBoxErrorPassword;
-   @FXML private HBox HBoxLogin;
-   @FXML private HBox HBoxRecordar;
-   @FXML private HBox HBoxOlvidaste;
-   @FXML private HBox HBoxNuevoUsuario;
+   @FXML private HBox HBoxPregunta;
+   @FXML private HBox HBoxRespuesta;
+   @FXML private HBox HBoxErrorRespuesta;
+   @FXML private HBox HBoxEnviar;
+   @FXML private HBox HBoxAntiguoUsuario;
 
    // The nodes of the view
    private Node[] node;
@@ -57,8 +58,11 @@ public class FormController {
    // Reference to the main Scene
    private MainScene mainScene;
 
+   // The string fields
+   String usuarioString, passwordString, preguntaString, respuestaString;
+
    // The Login or not Login
-   boolean login, loginUser, loginPassword;
+   boolean registro, registroUser, registroPassword, registroPregunta, registroRespuesta;
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
@@ -83,11 +87,11 @@ public class FormController {
 
       node = new Node[]{
          usuarioTextField,
-         passwordTextField,
-         loginButton,
-         activoCheckBox,
-         forgetButton,
-         newUserLabel};
+         preguntaComboBox,
+         respuestaTextField,
+         enviarButton,
+         oldUserLabel
+      };
 
       // Setting the current node
       currentNode = usuarioTextField;
@@ -100,26 +104,35 @@ public class FormController {
       // Settiong the intial border
       setBorder(usuarioTextField);
 
+      // Setting the ConboBox options
+      preguntaComboBox.getItems().removeAll(preguntaComboBox.getItems());
+      preguntaComboBox.getItems().addAll(
+              "¿Cuál es tu comida favorita?",
+              "¿Cuál es tu color favorita?",
+              "¿Cuál es tu ciudad favorita",
+              "¿Cuál es tu ropa favorita?",
+              "¿Cuál es tu bebida favorita?");
+      // preguntaComboBox.getSelectionModel().select("Option B");
+
       // HBoxError disabled
       errorUserLabel.setManaged(false);
+      errorRespuestaLabel.setManaged(false);
       errorPasswordLabel.setManaged(false);
-   }
-
-
+      }
 //</editor-fold> 
-   
+
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
    /**
     *
     */
    private void setJFXTextField ()
    {
-      eventButton(usuarioTextField, 5, 1);
-      eventButton(passwordTextField, 0, 2);
-      eventButton(loginButton, 1, 3);
-      eventButton(activoCheckBox, 2, 4);
-      eventButton(forgetButton, 3, 5);
-      eventButton(HBoxNuevoUsuario, 4, 0);
+      eventButton(usuarioTextField, 4, 1);
+      eventButton(preguntaComboBox, 0, 2);
+      eventButton(respuestaTextField, 1, 3);
+      eventButton(enviarButton, 2, 4);
+      eventButton(HBoxAntiguoUsuario, 3, 0);
+
    }
 //</editor-fold>
 
@@ -142,20 +155,21 @@ public class FormController {
       {
          if (newVal) {
             errorUserLabel.setManaged(false);
-            errorPasswordLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);     
             setBorder(n);
          }
       });
 
-      // setting onClick
+      // setting setOnKeyPressed
       n.setOnKeyPressed(
               new EventHandler<KeyEvent>() {
          @Override
          public void handle (KeyEvent ke)
          {
             errorUserLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
             errorPasswordLabel.setManaged(false);
-
             int i = -1;
 
             if (ke.getCode().equals(KeyCode.UP)) {
@@ -169,20 +183,17 @@ public class FormController {
                   case "usuarioTextField":
                      handleValidationUser();
                      break;
-                  case "passwordTextField":
-                     handleValidationPassword();
+                  case "preguntaComboBox":
+                     handlePregunta();
                      break;
-                  case "loginButton":
-                     handlelogin();
+                  case "respuestaTextField":
+                     handleValidationRespuesta();
                      break;
-                  case "activoCheckBox":
-                     activoCheckBox.setSelected(!activoCheckBox.isSelected());
+                  case "enviarButton":
+                     handleEnviar();
                      break;
-                  case "forgetButton":
-                     handleForget();
-                     break;
-                  case "HBoxNuevoUsuario":
-                     handleNuevoUsuario();
+                  case "HBoxAntiguoUsuario":
+                     handleAntiguoUsuario();
                      break;
                   default:
                      break;
@@ -190,14 +201,14 @@ public class FormController {
             }
             if (ke.getCode().equals(KeyCode.SPACE)) {
                switch (n.getId()) {
-                  case "loginButton":
-                     handlelogin();
+                  case "preguntaComboBox":
+                     handlePregunta();
                      break;
-                  case "forgetButton":
-                     handleForget();
+                  case "enviarButton":
+                     handleEnviar();
                      break;
-                  case "HBoxNuevoUsuario":
-                     handleNuevoUsuario();
+                  case "HBoxAntiguoUsuario":
+                     handleAntiguoUsuario();
                      break;
                   default:
                      break;
@@ -211,36 +222,33 @@ public class FormController {
 
             }
          }
-
-      });
+      }
+      );
 
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
          // HBoxError disabled
          errorUserLabel.setManaged(false);
+         errorRespuestaLabel.setManaged(false);
          errorPasswordLabel.setManaged(false);
 
          n.requestFocus();
          setBorder(n);
          oldNode = n;
          MouseEvent.consume();
+
          switch (n.getId()) {
-            case "loginButton":
-               handlelogin();
+            case "enviarButton":
+               handleEnviar();
                break;
-            case "activoCheckBox":
-               activoCheckBox.setSelected(activoCheckBox.isSelected());
-               break;
-            case "forgetButton":
-               handleForget();
-               break;
-            case "HBoxNuevoUsuario":
-               handleNuevoUsuario();
+            case "HBoxAntiguoUsuario":
+               handleAntiguoUsuario();
                break;
             default:
                break;
          }
-      });
+      }
+      );
    }
 //</editor-fold>
 
@@ -259,41 +267,34 @@ public class FormController {
          currentNode = n;
          return;
       }
-
-      if (n.equals(passwordTextField)) {
+      
+      if (n.equals(preguntaComboBox)) {
          eraserBorder();
-         HBoxPassword.getStyleClass().add("borderLoginVisible");
+         HBoxPregunta.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(loginButton)) {
+      if (n.equals(respuestaTextField)) {
          eraserBorder();
-         HBoxLogin.getStyleClass().add("borderLoginVisible");
+         HBoxRespuesta.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(activoCheckBox)) {
+      if (n.equals(enviarButton)) {
          eraserBorder();
-         HBoxRecordar.getStyleClass().add("borderLoginVisible");
+         HBoxEnviar.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(forgetButton)) {
+      if (n.equals(oldUserLabel)) {
          eraserBorder();
-         HBoxOlvidaste.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
-      if (n.equals(newUserLabel)) {
-         eraserBorder();
-         HBoxNuevoUsuario.getStyleClass().add("borderLoginVisible");
+         HBoxAntiguoUsuario.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
@@ -314,55 +315,35 @@ public class FormController {
               .removeAll("borderLoginVisible", "borderLoginInvisible");
       HBoxUsuario.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxPassword.getStyleClass()
+      HBoxPregunta.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxLogin.getStyleClass()
+      HBoxRespuesta.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxRecordar.getStyleClass()
+      HBoxEnviar.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxOlvidaste.getStyleClass()
-              .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxNuevoUsuario.getStyleClass()
+      HBoxAntiguoUsuario.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
 //</editor-fold>
 
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Handles">   
+//<editor-fold defaultstate="collapsed" desc="Handlers">
    /**
     *
     */
-   private void handleForget ()
+   private void handleValidationUser ()
    {
-      mainScene.handleForgetUsuario();
-   }
-
-   /**
-    *
-    */
-   private void handleNuevoUsuario ()
-   {
-      mainScene.handleNuevoUsuario();
-   }
-
-   /**
-    *
-    */
-   private String handleValidationUser ()
-   {
-      String usuarioString = usuarioTextField.getText().trim();
-      loginUser = true;
+      usuarioString = usuarioTextField.getText().trim();
+      registroUser = true;
 
       if (usuarioString.isEmpty() || usuarioString.length() == 0) {
          showErrorUser("No puede estar vacío");
-         return null;
       }
       if (usuarioString.length() > 100) {
          showErrorUser("No puede tener mas de 100 letras");
-         return null;
       }
-      return usuarioString;
+
    }
 
    /**
@@ -373,55 +354,92 @@ public class FormController {
    {
       errorUserLabel.setManaged(true);
       errorUserLabel.setText(text);
-      loginUser = false;
+      registroUser = false;
    }
 
    /**
     *
     */
-   private String handleValidationPassword ()
+   private void handlePregunta ()
    {
-      String passwordString = passwordTextField.getText().trim();
-      loginPassword = true;
+      preguntaComboBox.show();
+   }
 
-      if (passwordString.isEmpty() || passwordString.length() == 0) {
-         showErrorPassword("No puede estar vacío");
-         return null;
+   /**
+    *
+    */
+   private void handleValidationRespuesta ()
+   {
+      Object preguntaObject = preguntaComboBox.getValue();
+      respuestaString = respuestaTextField.getText().trim();
+      registroPregunta = true;
+      registroRespuesta = true;
+
+      if (preguntaObject == null) {
+         showErrorRespuesta("Elige una pregunta de seguridad");
+         return;
+      } else {
+         preguntaString = preguntaObject.toString();
       }
-      if (passwordString.length() > 20) {
-         showErrorPassword("No puede tener mas de 20 letras");
-         return null;
+      
+      if (respuestaString.isEmpty() || respuestaString.length() == 0) {
+         showErrorRespuesta("No puede estar vacío");
       }
-      return passwordString;
+      if (respuestaString.length() > 100) {
+         showErrorRespuesta("No puede tener mas de 100 letras");
+      }
    }
 
    /**
     *
     * @param text
     */
-   private void showErrorPassword (String text)
+   private void showErrorRespuesta (String text)
    {
-      errorPasswordLabel.setManaged(true);
-      errorPasswordLabel.setText(text);
-      loginPassword = false;
+      errorRespuestaLabel.setManaged(true);
+      errorRespuestaLabel.setText(text);
+      registroPregunta = false;
+      registroRespuesta = false;
    }
 
    /**
     *
     */
-   private void handlelogin ()
+   private void handleEnviar ()
    {
-      String usuarioString = handleValidationUser();
-      String passwordString = handleValidationPassword();
-      boolean activoBoolean = activoCheckBox.isSelected();
-      if (loginUser == true && loginPassword == true) {
-         boolean result =
-                 mainScene.handlelogin(usuarioString, passwordString, activoBoolean);
-         if (!result) {
-            showErrorUser("El usuario no existe");
+      handleValidationUser();
+      handleValidationRespuesta();
+
+      //boolean activoBoolean = activoCheckBox.isSelected();
+      if (registroUser == true && registroPregunta == true && registroRespuesta == true) {
+         String result =
+                 mainScene.handleRecordar(usuarioString,preguntaString,respuestaString);
+         if (result != null) {
+            showErrorPassword("Password: " + result);
+         } else {
+            showErrorPassword("El usuario no existe");
          }
       }
    }
-//</editor-fold>
 
+      /**
+    *
+    * @param text
+    */
+   private void showErrorPassword (String text)
+   {
+      errorPasswordLabel.setManaged(true);
+      errorPasswordPane.setManaged(true);
+      errorPasswordLabel.setText(text);
+      registroPregunta = false;
+      registroRespuesta = false;
+   }
+   /**
+    *
+    */
+   private void handleAntiguoUsuario ()
+   {
+      mainScene.handleAntiguoUsuarioForget();
+   }
+//</editor-fold>
 }

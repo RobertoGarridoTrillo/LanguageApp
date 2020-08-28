@@ -1,0 +1,124 @@
+/* 
+    Created on : 13-jul-2020, 17:13:18
+    Author     : Roberto Garrido Trillo
+*/
+
+.root2 {
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 10pt;
+  -fx-font-weight: normal;
+  -fx-font-style: normal;
+  -fx-background-color: #004f8a;
+}
+
+
+.vboxLoginRight {
+  -fx-background-color: #004f8a;
+}
+.titleHeaderLogin{
+  -fx-font-family: 'Ebrina';
+  -fx-font-size: 24pt;
+  -fx-font-weight: bold;
+}
+.titleSubHeaderLogin{
+  -fx-font-family: 'Ebrina';
+  -fx-font-size: 20pt;
+  -fx-font-weight: bold;
+}
+
+
+/*        textField login  */
+.jfx-text-field {
+  -jfx-focus-color: coral; /*#4059A9; */
+  -jfx-unfocus-color: #004f8a;
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 11pt;
+  -fx-border-color: #004f8a;
+}
+
+.jfx-text-field  .input-line {
+  -fx-background-color: -jfx-unfocus-color;
+  -fx-pref-height: 1px;
+  -fx-translate-y: 1;
+}
+
+.jfx-text-field  .input-focused-line {
+  -fx-background-color: -jfx-focus-color; 
+  -fx-pref-height: 2px;
+}
+
+.jfx-text-field, .jfx-text-field:focused, .jfx-text-field:hover {
+  -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+  -fx-prompt-text-fill: #0f9d58; /* #4D4D4D; */
+  -fx-text-fill: white;
+  -fx-highlight-fill: #004f8a;
+
+}
+
+
+/*        Genericos */
+.textFieldLogin, textFieldLogin:active, textFieldLogin:hover, textFieldLogin:focus {
+  -fx-text-fill: white;
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 11pt; 
+  -fx-font-weight: bold;
+}
+
+.borderLoginVisible {
+  -fx-border-color: coral;
+}
+.borderLoginInvisible {
+  -fx-border-color: #004f8a;
+  -fx-unfocus-color: #004f8a;
+}
+
+.initialBorderLogin{    
+  -fx-background-color: #004f8a;
+  -fx-border-width: 1px;
+  -fx-border-radius: 3px;
+  -fx-border-insets: 0; 
+
+}
+
+.jfx-button:focused, jfx-button:hover, 
+.jfx-text-field:hover,
+.initialBorderLogin:hover,
+.hyperlink, .hyperlink:focused, .hyperlink:hover
+{
+  -fx-border-color: coral;
+  -fx-background-color: #004f8a; /* azul fondo unico */
+  -fx-border-width: 1px;
+  -fx-border-radius: 3px;
+  -fx-border-insets: 0;
+  -fx-border-style: solid line-join bevel line-cap square;
+}
+
+.labelError, .labelError:hover, .labelError:focused{
+  -fx-border-color: #004f8a;
+  -fx-text-fill: #ff0000;
+}
+
+#labelError, #labelError:hover, #labelError:focused{
+  -fx-border-color: #004f8a;
+  -fx-text-fill: #0f9d58;
+}
+
+#labelError > .input-line {
+  -fx-background-color: #004f8a;
+  -fx-pref-height: 1px;
+  -fx-translate-y: 4;
+}
+
+#labelError > .input-focused-line {
+  -fx-background-color: #004f8a;
+  -fx-pref-height: 0px;
+}
+
+#labelError > #labelError >:focused, #labelError >:hover {
+  -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+  -fx-text-fill: red;
+}
+
+.labelRegistrate{
+  -fx-text-fill: #0f9d58; /* verde */
+}

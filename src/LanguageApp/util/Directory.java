@@ -77,8 +77,7 @@ public class Directory {
             return null;
          }
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message",
-                 e.getMessage(), initial.getLastDirectory() + initial.getLastFile() + "\nDirectory.java / checkIni()", e);
+         message(Alert.AlertType.ERROR, "Error message", initial.getLastDirectory() + initial.getLastFile() + "\nDirectory.java / checkIni()", e.toString(), e);
       }
       return null;
    }
@@ -105,7 +104,7 @@ public class Directory {
          //return !file.createNewFile(); // Creating initial file
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), " " + "\nDirectory.java / checkIni()", e);
+         message(Alert.AlertType.ERROR, "Error message", "Directory.java / checkIni()", e.toString(), e);
       }
 
       return false;
@@ -128,8 +127,7 @@ public class Directory {
          reader.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message",
-                 e.getMessage(), "Directory.java / readIni()", e);
+         message(Alert.AlertType.ERROR, "Error message", "Directory.java / readIni()", e.toString(), e);
       }
    }
 
@@ -156,7 +154,7 @@ public class Directory {
          writer.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "\nDirectory.java / createIni()", e);
+         message(Alert.AlertType.ERROR, "Error message", "\nDirectory.java / createIni()", e.toString(), e);
       }
    }
 
@@ -254,12 +252,11 @@ public class Directory {
          writer.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "\nDirectory.java / updateIni()", e);
+         message(Alert.AlertType.ERROR, "Error message", "\nDirectory.java / updateIni()", e.toString(), e);
       }
    }
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-
    /**
     * show a standard emergent message
     *
@@ -274,12 +271,12 @@ public class Directory {
 
       Alert alert = new Alert(alertType);
       alert.setTitle(title);
-      alert.getDialogPane().setMinWidth(600);
-      alert.getDialogPane().setMinHeight(480);
-      alert.getDialogPane().setPrefWidth(600);
-      alert.getDialogPane().setPrefHeight(480);
+      //lert.getDialogPane().setMinWidth(600);
+      //alert.getDialogPane().setMinHeight(480);
+      //alert.getDialogPane().setPrefWidth(600);
+      //alert.getDialogPane().setPrefHeight(480);
       alert.setResizable(true);
-      alert.setHeaderText(about);
+      alert.getDialogPane().setHeaderText(about);
       alert.getDialogPane().setContentText(contextText);
 
       if (ex != null) {
@@ -289,7 +286,7 @@ public class Directory {
          ex.printStackTrace(pw);
          String exceptionText = sw.toString();
 
-         Label label = new Label("The exception stacktrace was:");
+         Label label = new Label("El seguimiento del error fue:");
 
          TextArea textArea = new TextArea(exceptionText);
          textArea.setEditable(true);
@@ -306,7 +303,6 @@ public class Directory {
          expContent.add(textArea, 0, 1);
          // Set expandable Exception into the dialog pane.
          alert.getDialogPane().setExpandableContent(expContent);
-
       }
 
       alert.getDialogPane().getStylesheets().

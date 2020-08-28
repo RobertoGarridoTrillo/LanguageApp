@@ -384,8 +384,8 @@ public class RegistrationController {
       if (passwordString.isEmpty() || passwordString.length() == 0) {
          showErrorPassword("No puede estar vacío");
       }
-      if (passwordString.length() > 40) {
-         showErrorPassword("No puede tener mas de 40 letras");
+      if (passwordString.length() > 20) {
+         showErrorPassword("No puede tener mas de 20 letras");
       }
    }
 
@@ -458,11 +458,7 @@ public class RegistrationController {
       if (registroUser == true && registroPassword == true &&
               registroPregunta == true && registroRespuesta == true) {
          boolean result =
-                 mainScene.handleRegistro(
-                         usuarioString,
-                         passwordString,
-                         preguntaString,
-                         respuestaString);
+                 mainScene.handleRegistro(usuarioString,passwordString,preguntaString,respuestaString);
          if (result) {
             showErrorUser("El usuario ya existe");
          }

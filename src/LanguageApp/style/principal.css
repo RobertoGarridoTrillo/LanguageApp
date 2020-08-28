@@ -12,13 +12,6 @@
   -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
 }
 
-/* fuentes */
-.dialog-pane{
-  -fx-font-family: 'Fira Code';
-  -fx-font-size: 11pt;
-  -fx-font-weight: bold;
-  -fx-font-style: normal;
-}
 .listViewV{
   -fx-font-family: 'Fira Code';
   -fx-font-size: 10pt;

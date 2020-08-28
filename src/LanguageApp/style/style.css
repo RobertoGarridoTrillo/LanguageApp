@@ -1,0 +1,73 @@
+/* 
+    Created on : 19 may. 2020, 9:16:37
+    Author     : ROBEG
+*/
+
+.root {
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 10pt;
+  -fx-font-weight: normal;
+  -fx-font-style: normal;
+  -fx-background-color: #333333;
+  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
+}
+
+/* fuentes */
+.dialog-pane{
+  -fx-font-family: 'Fira Code';
+  -fx-font-size: 11pt;
+  -fx-font-weight: bold;
+  -fx-font-style: normal;
+  -fx-text-fill: white;
+}
+.dialog-pane .label , 
+.alert.error .dialog-pane, .alert.error .dialog-pane label,
+.text-input-dialog .dialog-pane, .text-input-dialog .dialog-pane label,
+.choice-dialog.dialog-pane, .choice-dialog.dialog-pane label,
+.alert.information.dialog-pane, .alert.information.dialog-pane label,
+.alert.confirmation .dialog-pane, .alert.confirmation .dialog-pane label
+{
+  -fx-text-fill: white;
+}
+.dialog-pane:header .header-panel {
+  -fx-background-color: #004f8a;
+  -fx-text-fill: white;
+}
+.dialog-pane:header .header-panel .label, .expandable-content{
+  -fx-background-color: #004f8a;
+  -fx-text-fill: white;
+}
+.details-button:hover {
+  -fx-underline: false;
+}
+
+
+/* borro el borde por defecto de los botones y de los slider*/
+.button:focused, .button:hover, 
+.slider:focused, .slider:hover, 
+.hyperlink, .hyperlink:focused, .hyperlinkk:hover,
+.details-button{
+  -fx-border-color: coral;
+  -fx-background-color: transparent;
+  -fx-border-width: 3;
+  -fx-border-radius: 3;
+  -fx-border-insets: 0;
+  -fx-border-style: solid line-join bevel line-cap square;
+  -fx-text-fill: white;
+
+}
+
+/* borde transparente inicial para luego cambiarlo de color*/
+.initialBorder, .button .link{  
+  -fx-border-color: transparent;
+  -fx-background-color: transparent;  
+  -fx-border-width: 3;
+  -fx-border-radius: 3;
+  -fx-border-insets: 0;  
+}
+
+.borderVisible{
+  -fx-border-color: coral;
+}
+
+

@@ -7,21 +7,20 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
 <HBox fx:id="loginViewAnchorPane" alignment="CENTER_LEFT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="1225.0" styleClass="roo2" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.LoginController">
    <children>
       <AnchorPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="585.0">
          <children>
-          <VBox alignment="CENTER" styleClass="vboxLogin" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+          <VBox alignment="CENTER" styleClass="vboxLoginLeft" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
               <ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true">
                 <image>
                   <Image url="@../resources/images/languages_128.png" />
                 </image>
               </ImageView>
-              <Label id="titleVboxLogin" styleClass="titleVboxLogin" text="LanguageApp" textFill="WHITE">
+              <Label id="titleVboxLogin" styleClass="titleVboxLoginLeft" text="LanguageApp" textFill="WHITE">
         </Label>
-              <Label styleClass="subTitleVboxlogin" text="Nuevas formas de aprender" textFill="WHITE">
+              <Label styleClass="subTitleVboxloginLeft" text="Nuevas formas de aprender" textFill="WHITE">
         </Label>
             </children>
           </VBox>

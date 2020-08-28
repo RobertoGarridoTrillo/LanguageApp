@@ -1,12 +1,10 @@
 package LanguageApp.util;
 
-import LanguageApp.controller.MainController;
 import LanguageApp.model.Item;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,8 +82,7 @@ public class SaveWordsAsList {
          buffer.close();
          writer.close();
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message",
-                 e.getMessage(), "SaveWordsAsList.java / handleSaveAsList()", e);
+         message(Alert.AlertType.ERROR, "Error message", "SaveWordsAsList.java / handleSaveAsList()", e.toString(), e);
       }
       return ws;
    }
@@ -171,14 +168,12 @@ public class SaveWordsAsList {
             }
          }
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message",
-                 e.getMessage(), "SaveWordsAsList.java / cleanWords()", e);
+         message(Alert.AlertType.ERROR, "Error message", "SaveWordsAsList.java / cleanWords()", e.toString(), e);
       }
       return wordPhrase;
    }
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-
    /**
     * show a standard emergent message
     *
@@ -193,12 +188,12 @@ public class SaveWordsAsList {
 
       Alert alert = new Alert(alertType);
       alert.setTitle(title);
-      alert.getDialogPane().setMinWidth(600);
-      alert.getDialogPane().setMinHeight(480);
-      alert.getDialogPane().setPrefWidth(600);
-      alert.getDialogPane().setPrefHeight(480);
+      //lert.getDialogPane().setMinWidth(600);
+      //alert.getDialogPane().setMinHeight(480);
+      //alert.getDialogPane().setPrefWidth(600);
+      //alert.getDialogPane().setPrefHeight(480);
       alert.setResizable(true);
-      alert.setHeaderText(about);
+      alert.getDialogPane().setHeaderText(about);
       alert.getDialogPane().setContentText(contextText);
 
       if (ex != null) {
@@ -208,7 +203,7 @@ public class SaveWordsAsList {
          ex.printStackTrace(pw);
          String exceptionText = sw.toString();
 
-         Label label = new Label("The exception stacktrace was:");
+         Label label = new Label("El seguimiento del error fue:");
 
          TextArea textArea = new TextArea(exceptionText);
          textArea.setEditable(true);
@@ -225,10 +220,10 @@ public class SaveWordsAsList {
          expContent.add(textArea, 0, 1);
          // Set expandable Exception into the dialog pane.
          alert.getDialogPane().setExpandableContent(expContent);
-
       }
 
-      alert.getDialogPane().getStylesheets().add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
+      alert.getDialogPane().getStylesheets().
+              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
       alert.getDialogPane().getStyleClass().add("style");
 
       Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();

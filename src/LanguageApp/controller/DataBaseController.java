@@ -6,7 +6,6 @@ import LanguageApp.main.MainScene;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Savepoint;
@@ -82,6 +81,7 @@ public class DataBaseController {
 //<editor-fold defaultstate="collapsed" desc="Connect">
    /**
     *
+    * @return 
     */
    public Connection connect ()
    {
@@ -92,14 +92,11 @@ public class DataBaseController {
          // path to the database
          String url = "jdbc:sqlite:" + path + se + "database.db";
          conn = DriverManager.getConnection(url);
-         conn.setAutoCommit(false);
          
          // if doesn't exit it's create the database
          Class.forName("org.sqlite.JDBC");
-      } catch (ClassNotFoundException e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / connect()", e);
-      } catch (SQLException e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / connect()", e);
+      } catch (ClassNotFoundException | SQLException e) {
+         message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
       }
       return conn;
    }
@@ -124,7 +121,7 @@ public class DataBaseController {
          sql += "CREATE TABLE IF NOT EXISTS usuarios (\n" +
                  " usuario_id INTEGER  NOT NULL PRIMARY KEY,\n" +
                  " nombre TEXT NOT NULL CHECK(length(nombre)<=100),\n" +
-                 " password TEXT NOT NULL NOT NULL CHECK(length(nombre)<=40),\n" +
+                 " password TEXT NOT NULL NOT NULL CHECK(length(nombre)<=20),\n" +
                  " activo INTEGER NOT NULL,\n" +
                  " pregunta TEXT NOT NULL CHECK(length(nombre)<=100),\n" +
                  " respuesta TEXT NOT NULL CHECK(length(nombre)<=100)" +
@@ -156,20 +153,20 @@ public class DataBaseController {
          stmt.close();
          conn.close();
 
-      } catch (SQLException e) {
+      } catch (Exception e) {
          try {
-            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / createDatabase()", e);
+            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / createDatabase()", e.toString(), e);
             conn.rollback(sp);
-         } catch (SQLException ex) {
-            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / createDatabase()", e);
+         } catch (Exception ex) {
+            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / createDatabase()", e.toString(), e);
          }
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
-         } catch (SQLException e) {
-            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / createDatabase()", e);
+         } catch (Exception e) {
+            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / createDatabase()", e.toString(), e);
          }
       }
    }
@@ -192,12 +189,12 @@ public class DataBaseController {
 
       Alert alert = new Alert(alertType);
       alert.setTitle(title);
-      alert.getDialogPane().setMinWidth(600);
-      alert.getDialogPane().setMinHeight(480);
-      alert.getDialogPane().setPrefWidth(600);
-      alert.getDialogPane().setPrefHeight(480);
+      //lert.getDialogPane().setMinWidth(600);
+      //alert.getDialogPane().setMinHeight(480);
+      //alert.getDialogPane().setPrefWidth(600);
+      //alert.getDialogPane().setPrefHeight(480);
       alert.setResizable(true);
-      alert.setHeaderText(about);
+      alert.getDialogPane().setHeaderText(about);
       alert.getDialogPane().setContentText(contextText);
 
       if (ex != null) {
@@ -207,7 +204,7 @@ public class DataBaseController {
          ex.printStackTrace(pw);
          String exceptionText = sw.toString();
 
-         Label label = new Label("The exception stacktrace was:");
+         Label label = new Label("El seguimiento del error fue:");
 
          TextArea textArea = new TextArea(exceptionText);
          textArea.setEditable(true);
@@ -224,7 +221,6 @@ public class DataBaseController {
          expContent.add(textArea, 0, 1);
          // Set expandable Exception into the dialog pane.
          alert.getDialogPane().setExpandableContent(expContent);
-
       }
 
       alert.getDialogPane().getStylesheets().

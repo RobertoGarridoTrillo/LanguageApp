@@ -1,11 +1,13 @@
 package LanguageApp.main;
 
 import LanguageApp.controller.DataBaseController;
+import LanguageApp.controller.ForgetController;
 import LanguageApp.controller.FormController;
 import LanguageApp.controller.LoginController;
 import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
 import LanguageApp.controller.RegistrationController;
+import LanguageApp.controller.WelcomeController;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -14,10 +16,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -44,39 +48,52 @@ public class MainScene extends Application {
    private MainController mainController;
    private PrincipalController principalController;
    private LoginController loginController;
+   private WelcomeController welcomeController;
    private FormController formController;
    private RegistrationController registrationController;
+   private ForgetController forgetController;
    private DataBaseController dataBaseController;
    private BorderPane mainView;
    private AnchorPane principalView;
    private HBox loginView;
+   private AnchorPane welcomeView;
    private AnchorPane formView;
-
    private AnchorPane registrationView;
+   private AnchorPane forgetView;
    private AnchorPane dataBaseView;
+
+   // Name of the user
+   private String nombre;
+   private int usuario_id;
+   private int activo;
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
    /**
     * load the initial configuration before all the other things loads
     *
-    * @throws Exception FilerException - if the same pathname has already been opened for writing, if the source module
-    * cannot be determined, or if the target module is not writable, or if an explicit target module is specified and
-    * the location does not support it. IOException - if the file cannot be opened IllegalArgumentException - for an
-    * unsupported location IllegalArgumentException - if moduleAndPkg is ill-formed IllegalArgumentException - if
-    * relativeName is not relative
+    * @throws Exception FilerException - if the same pathname has already been opened for writing, if the source module cannot be determined, or if the target
+    * module is not writable, or if an explicit target module is specified and the location does not support it. IOException - if the file cannot be opened
+    * IllegalArgumentException - for an unsupported location IllegalArgumentException - if moduleAndPkg is ill-formed IllegalArgumentException - if relativeName
+    * is not relative
     */
    @Override
    public void init () throws Exception
    {
       super.init();
-      Font.loadFont(MainScene.class.getResource(
-              "/LanguageApp/resources/fonts/FiraCode_3/FiraCode-Regular.ttf").
+      Font.loadFont(MainScene.class.getResource("/LanguageApp/resources/fonts/FiraCode_3/FiraCode-Regular.ttf").
               toExternalForm(), 10);
+
+
+      // Setting the welcome user
+      nombre = null;
+      usuario_id = 0;
+      activo = 0;
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="start">
+
    /**
     * It setting and showing the stage.
     *
@@ -95,19 +112,51 @@ public class MainScene extends Application {
       this.mainStage.getIcons().add(new Image(getClass()
               .getResourceAsStream("/LanguageApp/resources/images/languages_128.png")));
 
+      //
+      dataBaseView();
       // 
       mainView();
+      //
+      welcomeView();
       formView();
-      loginView();
       registrationView();
-      dataBaseView();
+      forgetView();
+      loginView();
+
       principalView();
+
+      // Checking if there's some active user
+      nombre = handleCheckNombre();
+      welcomeController.handleCheckNombre(nombre);
 
       this.mainStage.setResizable(false);
       this.mainStage.setWidth(1215);
+      this.mainStage.setHeight(640);
       this.mainStage.show();
+
    }
 //</editor-fold>   
+
+//<editor-fold defaultstate="collapsed" desc="DataBaseView">
+   private void dataBaseView ()
+   {
+
+      try {
+         // Create the FXMLLoader
+         FXMLLoader loader = new FXMLLoader();
+         loader.setLocation(MainScene.class
+                 .getResource("/LanguageApp/view/DataBaseView.fxml"));
+         dataBaseView = (AnchorPane) loader.load();
+
+         // Give the mainController access to the main app (It´s like a instance)
+         dataBaseController = loader.getController();
+         dataBaseController.setMainScene(this);
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+//</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="mainView">
 
@@ -158,10 +207,6 @@ public class MainScene extends Application {
          principalController = loader.getController();
          principalController.setMainScene(this);
 
-         // Adding dark style
-         //JMetro jMetro = new JMetro(Style.DARK);
-         //jMetro.setScene(mainScene);         
-
       } catch (IOException e) {
          e.printStackTrace();
       }
@@ -182,10 +227,35 @@ public class MainScene extends Application {
          // Give the mainController access to the main app (It´s like a instance)
          loginController = loader.getController();
          loginController.setMainScene(this);
-         loginController.loginViewAnchorPane.getChildren().add(formView);
+         loginController.loginViewAnchorPane.getChildren().add(welcomeView);
 
          // Create the Scene and put it in the center or the borderLayout
          mainView.setCenter(loginView);
+
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Welcome">
+
+   /**
+    *
+    */
+   private void welcomeView ()
+   {
+
+      try {
+         // Create the FXMLLoader
+         FXMLLoader loader = new FXMLLoader();
+         loader.setLocation(MainScene.class
+                 .getResource("/LanguageApp/view/WelcomeView.fxml"));
+         welcomeView = (AnchorPane) loader.load();
+
+         // Give the mainController access to the main app (It´s like a instance)
+         welcomeController = loader.getController();
+         welcomeController.setMainScene(this);
 
       } catch (IOException e) {
          e.printStackTrace();
@@ -240,24 +310,21 @@ public class MainScene extends Application {
    }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="DataBaseView">
-   private void dataBaseView ()
+//<editor-fold defaultstate="collapsed" desc="RecordarView">
+   private void forgetView ()
    {
 
       try {
          // Create the FXMLLoader
          FXMLLoader loader = new FXMLLoader();
          loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/DataBaseView.fxml"));
-         dataBaseView = (AnchorPane) loader.load();
+                 .getResource("/LanguageApp/view/ForgetView.fxml"));
+
+         forgetView = (AnchorPane) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
-         dataBaseController = loader.getController();
-         dataBaseController.setMainScene(this);
-
-         // Adding dark style
-         //JMetro jMetro = new JMetro(Style.LIGHT);
-         //jMetro.setScene(mainScene);         
+         forgetController = loader.getController();
+         forgetController.setMainScene(this);
 
       } catch (IOException e) {
          e.printStackTrace();
@@ -265,8 +332,335 @@ public class MainScene extends Application {
    }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Menu Buttons">
+//<editor-fold defaultstate="collapsed" desc="Handles">
 
+   /**
+    *
+    * @return
+    */
+   public String handleCheckNombre ()
+   {
+      Connection conn = null;
+      Statement stmt = null;
+      usuario_id = 0;
+      nombre = null;
+
+      // Preparing statement
+      try {
+         String sql = "SELECT usuario_id, nombre FROM usuarios WHERE activo = 1";
+         // Try connection
+         conn = dataBaseController.connect();
+
+         stmt = conn.createStatement();
+         //
+         ResultSet rs = stmt.executeQuery(sql);
+
+         while (rs.next()) {
+            usuario_id = rs.getInt("usuario_id");
+            nombre = rs.getString("nombre");
+         }
+
+         stmt.close();
+
+         if (usuario_id > 0) {
+            return nombre;
+         }
+
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (Exception e) {
+            message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
+         }
+      }
+      return null;
+   }
+
+   /**
+    *
+    * @param activoBoolean
+    */
+   public void handleEntrar (boolean activoBoolean)
+   {
+      Connection conn = null;
+      Statement stmt = null;
+      PreparedStatement pstmt = null;
+
+      // In SQLinte doesn't exit boolean
+      activo = (activoBoolean) ? 1 : 0;
+
+      try {
+         // Try connection
+
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         String sql = "UPDATE usuarios SET activo = 0;";
+         stmt = conn.createStatement();
+         stmt.executeUpdate(sql);
+         conn.commit();
+         stmt.close();
+         // set the value
+         sql = "UPDATE usuarios SET activo = ? WHERE usuario_id = ?";
+         pstmt = conn.prepareStatement(sql);
+         pstmt.setInt(1, activo);
+         pstmt.setInt(2, usuario_id);
+         pstmt.executeUpdate();
+         conn.commit();
+         pstmt.close();
+
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar() - activoBoolean", e.toString(), e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (Exception e) {
+            message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+         }
+      }
+   }
+
+   /**
+    * @param usuarioString
+    * @param passwordString
+    * @param activoBoolean
+    * @return
+    */
+   public boolean handlelogin (String usuarioString, String passwordString, boolean activoBoolean)
+   {
+
+      Connection conn = null;
+      PreparedStatement pstmt = null;
+      Statement stmt = null;
+      // In SQLinte doesn't exit boolean
+      activo = (activoBoolean) ? 1 : 0;
+
+      // Preparing statement
+      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
+      try {
+         // Try connection
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         // preparing statement
+         pstmt = conn.prepareStatement(sql);
+
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, passwordString);
+
+         //
+         ResultSet rs = pstmt.executeQuery();
+
+
+         while (rs.next()) {
+            usuario_id = rs.getInt("usuario_id");
+
+            // put the user activo or not
+
+            sql = "UPDATE usuarios SET activo = 0;";
+            stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
+            conn.commit();
+            stmt.close();
+
+            // set the value
+            sql = "UPDATE usuarios SET activo = ? WHERE usuario_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, activo);
+            pstmt.setInt(2, usuario_id);
+            pstmt.executeUpdate();
+            conn.commit();
+            pstmt.close();
+
+            // if exits the user and password return true
+            conn.close();
+            return true;
+         }
+      } catch (SQLException e) {
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleLogin()", e.toString(), e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (SQLException e) {
+            message(Alert.AlertType.ERROR, "Error message", "MainScene / handleLogin()", e.toString(), e);
+         }
+      }
+      return false;
+   }
+
+   /**
+    * @param usuarioString
+    * @param passwordString
+    * @param preguntaString
+    * @param respuestaString
+    * @param user
+    * @return
+    */
+   public boolean handleRegistro (String usuarioString, String passwordString, String preguntaString, String respuestaString)
+   {
+
+      Connection conn = null;
+      PreparedStatement pstmt = null;
+
+      // Preparing statement
+      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
+      try {
+         // Try connection
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         // preparing statement
+         pstmt = conn.prepareStatement(sql);
+
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, passwordString);
+
+         //
+         ResultSet rs = pstmt.executeQuery();
+
+         int count = 0;
+         while (rs.next()) {
+            count++;
+         }
+
+         if (count > 0) {
+            pstmt.close();
+            conn.close();
+            // if exits the user and password return true
+            return true;
+         }
+
+         sql = "INSERT INTO  usuarios (nombre, password, activo, pregunta, respuesta) " +
+                 "VALUES (?,?,0,?,?)";
+         pstmt = conn.prepareStatement(sql);
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, passwordString);
+         pstmt.setString(3, preguntaString);
+         pstmt.setString(4, respuestaString);
+         pstmt.executeUpdate();
+         conn.commit();
+         pstmt.close();
+
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (Exception e) {
+            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
+         }
+      }
+      return false;
+   }
+
+   public String handleRecordar (String usuarioString, String preguntaString, String respuestaString)
+   {
+
+      Connection conn = null;
+      PreparedStatement pstmt = null;
+      String password = null;
+
+      // Preparing statement
+      String sql = "SELECT password FROM usuarios WHERE nombre = ? and pregunta = ? and respuesta = ?";
+      try {
+         // Try connection
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         // preparing statement
+         pstmt = conn.prepareStatement(sql);
+
+         // set the value
+         pstmt.setString(1, usuarioString);
+         pstmt.setString(2, preguntaString);
+         pstmt.setString(3, respuestaString);
+
+         //
+         ResultSet rs = pstmt.executeQuery();
+         conn.commit();
+
+         while (rs.next()) {
+            password = rs.getString(1);
+            return password;
+         }
+
+         pstmt.close();
+         conn.close();
+
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (Exception e) {
+            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
+         }
+      }
+      return password;
+   }
+
+   /**
+    * Change the scene from formView to registrationView
+    *
+    */
+   public void handleNuevoUsuario ()
+   {
+      // Create the Scene registrationView
+      loginView.getChildren().remove(formView);
+      loginView.getChildren().add(registrationView);
+   }
+
+   /**
+    * Change the scene registrationView form to formView
+    *
+    */
+   public void handleAntiguoUsuario ()
+   {
+      // Create the Scene formView
+      loginView.getChildren().remove(registrationView);
+      loginView.getChildren().add(formView);
+   }
+
+   /**
+    * Change the scene from formView to forgetView
+    *
+    */
+   public void handleForgetUsuario ()
+   {
+      // Create the Scene forgetView
+      loginView.getChildren().remove(formView);
+      loginView.getChildren().add(forgetView);
+   }
+
+   /**
+    * Change the scene from forgetView to formView
+    *
+    */
+   public void handleAntiguoUsuarioForget ()
+   {
+      // Create the Scene formView
+      loginView.getChildren().remove(forgetView);
+      loginView.getChildren().add(formView);
+   }
+
+//</editor-fold>  
+
+//<editor-fold defaultstate="collapsed" desc="Menu Buttons">
    /**
     * Returns the main stage, if you need it, for example to use it with the filechooser in the mainController class
     *
@@ -328,14 +722,10 @@ public class MainScene extends Application {
 
       try {
          // Create the Scene and put it in the center or the borderLayout
-         mainView.getChildren().remove(principalView);
-         loginView.getChildren().remove(formView);
-         loginView.getChildren().remove(registrationView);
-         handleAntiguoUsuario();
+         mainView.getChildren().removeAll(principalView, dataBaseView);
+         loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+         loginView.getChildren().add(formView);
          mainView.setCenter(loginView);
-
-         // return to the originall size
-         principalController.setChangedSizeLogin();
 
          String result = principalController.getMediaStatus();
          if (result.equals("playing")) {
@@ -345,7 +735,72 @@ public class MainScene extends Application {
          }
 
       } catch (Exception e) {
-         e.printStackTrace();
+      }
+   }
+
+   /**
+    * it's called by mainController when i click in the Login menu
+    */
+   public void handleUnloginMenu ()
+   {
+      // if doesn't be user, return
+      if (usuario_id != 0) {
+         if (!message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "Cerrar la sesión?", "", null)){
+            return;
+         }
+      } else {
+         return;
+      }
+
+         try {
+            // Create the Scene and put it in the center or the borderLayout
+            mainView.getChildren().removeAll(principalView, dataBaseView);
+            loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+
+            // Deleting the active in the database
+            handleEntrar(false);
+            // Deleting the global variables
+            usuario_id = 0;
+            nombre = null;
+            activo = 0;
+
+            // Checking if there's some active user
+            nombre = handleCheckNombre();
+            welcomeController.handleCheckNombre(nombre);
+            loginView.getChildren().add(welcomeView);
+            mainView.setCenter(loginView);
+
+
+            String result = principalController.getMediaStatus();
+            if (result.equals("playing")) {
+               principalController.handlePlayButton();
+            } else if (result.equals("playingOriginal")) {
+               principalController.handlePlayButtonItemOriginal();
+            }
+
+         } catch (Exception e) {
+         }
+      }
+      /**
+       * it's called by mainController when i click in the Dashboard menu
+       */
+   public void handleDashBoardMenu ()
+   {
+      // if doesn't be user, return
+      if (usuario_id == 0) {
+         return;
+      }
+      try {
+         mainView.getChildren().remove(loginView);
+         mainView.setCenter(principalView);
+
+         String result = principalController.getMediaStatus();
+         if (result.equals("pause")) {
+            principalController.handlePlayButton();
+         } else if (result.equals("originalPause")) {
+            principalController.handlePlayButtonItemOriginal();
+         }
+      } catch (Exception e) {
       }
    }
 
@@ -354,6 +809,10 @@ public class MainScene extends Application {
     */
    public void handleDatabaseMenu ()
    {
+      // if doesn't be user, return
+      if (usuario_id == 0) {
+         return;
+      }
       try {
          // Create the Scene and put it in the center or the borderLayout
          mainView.getChildren().remove(principalView);
@@ -369,206 +828,6 @@ public class MainScene extends Application {
       }
    }
 
-   /**
-    * it's called by mainController when i click in the Dashboard menu
-    */
-   public void handleDashBoardMenu ()
-   {
-      mainView.getChildren().remove(loginView);
-      mainView.setCenter(principalView);
-
-      // return to the originall size
-      principalController.setChangedSizeDashboard();
-
-
-      String result = principalController.getMediaStatus();
-      if (result.equals("pause")) {
-         principalController.handlePlayButton();
-      } else if (result.equals("originalPause")) {
-         principalController.handlePlayButtonItemOriginal();
-      }
-   }
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="Handles">
-
-   /**
-    * @param usuarioString
-    * @param passwordString
-    * @param user
-    * @return
-    */
-   public boolean handlelogin (String usuarioString, String passwordString, boolean activoBoolean)
-   {
-      // in SQLinte doesn't exit boolean
-      int activoInteger = (activoBoolean) ? 1 : 0;
-
-      Connection conn = null;
-      PreparedStatement pstmt = null;
-      Statement stmt = null;
-      int usuario_id = 0;
-
-      // Preparing statement
-      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
-      try {
-         // Try connection
-         conn = dataBaseController.connect();
-         conn.setAutoCommit(false);
-
-         // preparing statement
-         pstmt = conn.prepareStatement(sql);
-
-         // set the value
-         pstmt.setString(1, usuarioString);
-         pstmt.setString(2, passwordString);
-
-         //
-         ResultSet rs = pstmt.executeQuery();
-
-         int count = 0;
-         while (rs.next()) {
-            count++;
-            usuario_id = rs.getInt("usuario_id");
-         }
-
-         if (count > 0) {
-
-            // put the user activo or not
-            if (activoBoolean) {
-               try {
-
-                  sql = "UPDATE usuarios SET activo = 0;";
-                  stmt = conn.createStatement();
-                  stmt.executeUpdate(sql);
-                  conn.commit();
-                  stmt.close();
-
-                  // set the value
-                  sql = "UPDATE usuarios SET activo = 1 " +
-                          "WHERE usuario_id = ?";
-                  pstmt = conn.prepareStatement(sql);
-                  pstmt.setInt(1, usuario_id);
-                  pstmt.executeUpdate();
-                  conn.commit();
-
-               } catch (SQLException e) {
-                  message(Alert.AlertType.ERROR, "Error message", e.getMessage(),
-                          "MainScene / handleLogin() - activoBoolean", e);
-               }
-            }
-            pstmt.close();
-            conn.close();
-            // if exits the user and password return true
-            return true;
-         }
-      } catch (SQLException e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainScene / handleLogin()", e);
-      } finally {
-         try {
-            if (conn != null) {
-               conn.close();
-            }
-         } catch (SQLException e) {
-            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainScene / handleLogin()", e);
-         }
-      }
-      return false;
-   }
-
-   /**
-    * @param usuarioString
-    * @param passwordString
-    * @param preguntaString
-    * @param respuestaString
-    * @param user
-    * @return
-    */
-   public boolean handleRegistro (String usuarioString, String passwordString, 
-           String preguntaString, String respuestaString)
-   {
-
-      Connection conn = null;
-      PreparedStatement pstmt = null;
-
-      // Preparing statement
-      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
-      try {
-         // Try connection
-         conn = dataBaseController.connect();
-         conn.setAutoCommit(false);
-
-         // preparing statement
-         pstmt = conn.prepareStatement(sql);
-
-         // set the value
-         pstmt.setString(1, usuarioString);
-         pstmt.setString(2, passwordString);
-
-         //
-         ResultSet rs = pstmt.executeQuery();
-
-         int count = 0;
-         while (rs.next()) {
-            count++;           
-         }
-
-         if (count > 0) {
-            pstmt.close();
-            conn.close();
-            // if exits the user and password return true
-            return true;
-         }
-
-         sql = "INSERT INTO  usuarios (nombre, password, activo, pregunta, respuesta) " +
-                 "VALUES (?,?,0,?,?)";
-         pstmt = conn.prepareStatement(sql);
-         // set the value
-         pstmt.setString(1, usuarioString);
-         pstmt.setString(2, passwordString);
-         pstmt.setString(3, preguntaString);
-         pstmt.setString(4, respuestaString);
-         pstmt.executeUpdate();
-         conn.commit();
-         pstmt.close();
-
-      } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "MainScene / handleRegistro()", e);
-      } finally {
-         try {
-            if (conn != null) {
-               conn.close();
-            }
-         } catch (Exception e) {
-            message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "DataBaseController / handleRegistro()", e);
-         }
-      }
-      return false;
-   }
-
-   /**
-    * Change the scene from form to register
-    *
-    * @param n
-    */
-   public void handleNuevoUsuario ()
-   {
-      // Create the Scene Registration and put it in login 
-      loginView.getChildren().remove(formView);
-      loginView.getChildren().add(registrationView);
-   }
-
-   /**
-    * Change the scene from form to register
-    *
-    * @param n
-    */
-   public void handleAntiguoUsuario ()
-   {
-      // Create the Scene Login and put it in login 
-      loginView.getChildren().remove(registrationView);
-      loginView.getChildren().add(formView);
-   }
-
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
@@ -581,17 +840,17 @@ public class MainScene extends Application {
     * @param contextText The showed text
     * @param ex The thrown exception
     */
-   public void message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
+   public boolean message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
    {
 
       Alert alert = new Alert(alertType);
       alert.setTitle(title);
-      alert.getDialogPane().setMinWidth(600);
-      alert.getDialogPane().setMinHeight(480);
-      alert.getDialogPane().setPrefWidth(600);
-      alert.getDialogPane().setPrefHeight(480);
+      //lert.getDialogPane().setMinWidth(600);
+      //alert.getDialogPane().setMinHeight(480);
+      //alert.getDialogPane().setPrefWidth(600);
+      //alert.getDialogPane().setPrefHeight(480);
       alert.setResizable(true);
-      alert.setHeaderText(about);
+      alert.getDialogPane().setHeaderText(about);
       alert.getDialogPane().setContentText(contextText);
 
       if (ex != null) {
@@ -601,7 +860,7 @@ public class MainScene extends Application {
          ex.printStackTrace(pw);
          String exceptionText = sw.toString();
 
-         Label label = new Label("The exception stacktrace was:");
+         Label label = new Label("El seguimiento del error fue:");
 
          TextArea textArea = new TextArea(exceptionText);
          textArea.setEditable(true);
@@ -618,7 +877,6 @@ public class MainScene extends Application {
          expContent.add(textArea, 0, 1);
          // Set expandable Exception into the dialog pane.
          alert.getDialogPane().setExpandableContent(expContent);
-
       }
 
       alert.getDialogPane().getStylesheets().
@@ -630,7 +888,12 @@ public class MainScene extends Application {
       stage.getIcons().add(icon);
 
 
-      alert.showAndWait();
+      Optional<ButtonType> result = alert.showAndWait();
+      if (result.get() == ButtonType.OK) {
+         return true;
+      } else {
+         return false;
+      }
    }
 //</editor-fold>
 }

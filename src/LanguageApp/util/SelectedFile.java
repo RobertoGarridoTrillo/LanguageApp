@@ -1,6 +1,5 @@
 package LanguageApp.util;
 
-import LanguageApp.controller.MainController;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -53,13 +52,12 @@ public class SelectedFile {
       file = fch.showOpenDialog(mainStage);
 
     } catch (Exception e) {
-      message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "\nSelectedFile.java / Filechooser()", e);
+      message(Alert.AlertType.ERROR, "Error message", "\nSelectedFile.java / Filechooser()", e.toString(), e);
     }
     return file;
   }
 
-  //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-
+//<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
    /**
     * show a standard emergent message
     *
@@ -74,12 +72,12 @@ public class SelectedFile {
 
       Alert alert = new Alert(alertType);
       alert.setTitle(title);
-      alert.getDialogPane().setMinWidth(600);
-      alert.getDialogPane().setMinHeight(480);
-      alert.getDialogPane().setPrefWidth(600);
-      alert.getDialogPane().setPrefHeight(480);
+      //lert.getDialogPane().setMinWidth(600);
+      //alert.getDialogPane().setMinHeight(480);
+      //alert.getDialogPane().setPrefWidth(600);
+      //alert.getDialogPane().setPrefHeight(480);
       alert.setResizable(true);
-      alert.setHeaderText(about);
+      alert.getDialogPane().setHeaderText(about);
       alert.getDialogPane().setContentText(contextText);
 
       if (ex != null) {
@@ -89,7 +87,7 @@ public class SelectedFile {
          ex.printStackTrace(pw);
          String exceptionText = sw.toString();
 
-         Label label = new Label("The exception stacktrace was:");
+         Label label = new Label("El seguimiento del error fue:");
 
          TextArea textArea = new TextArea(exceptionText);
          textArea.setEditable(true);
@@ -106,10 +104,10 @@ public class SelectedFile {
          expContent.add(textArea, 0, 1);
          // Set expandable Exception into the dialog pane.
          alert.getDialogPane().setExpandableContent(expContent);
-
       }
 
-      alert.getDialogPane().getStylesheets().add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
+      alert.getDialogPane().getStylesheets().
+              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
       alert.getDialogPane().getStyleClass().add("style");
 
       Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();

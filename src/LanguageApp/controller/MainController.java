@@ -23,6 +23,7 @@ public class MainController {
    @FXML private MenuItem controlesMenu;
    @FXML private MenuItem aboutMenu;
    @FXML private MenuItem loginMenu;
+   @FXML private MenuItem unloginMenu;   
    @FXML private MenuItem databaseMenu;
    @FXML private MenuItem DashBoard;
 
@@ -95,6 +96,14 @@ public class MainController {
    @FXML private void handleLoginMenu ()
    {
       mainScene.handleLoginMenu();
+   }
+      
+   /**
+    * handle of the Unlogin menu
+    */
+   @FXML private void handleUnloginMenu ()
+   {
+      mainScene.handleUnloginMenu();
    }
 
    /**

@@ -38,7 +38,7 @@
           <children>
             <SplitPane dividerPositions="0.5043630017452007" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
-                <AnchorPane fx:id="anchorMedia">
+                <AnchorPane fx:id="anchorMedia" SplitPane.resizableWithParent="false">
                   <children>
                     <MediaView fx:id="mediaView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  
@@ -87,7 +87,7 @@
                 </AnchorPane>
                 <AnchorPane>
                   <children>
-                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                       <tabs>
                         <Tab closable="false" text="Leer">
                           <content>

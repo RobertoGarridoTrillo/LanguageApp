@@ -384,7 +384,7 @@ public class PrincipalController {
 
 
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "\nMainController / initialize()", e);
+         //message(Alert.AlertType.ERROR, "Error message", "\nMainController / initialize()", e.toString(), e);
       }
 
    }
@@ -481,7 +481,7 @@ public class PrincipalController {
          setEndTimefile();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleOpenMenu2()", e);
+         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu2()", e.toString(), e);
       }
 
    }
@@ -526,19 +526,19 @@ public class PrincipalController {
          
          // mediaView.setMediaPlayer(null);
          //anchorMedia.setMaxHeight(0);
-         anchorMedia.setMinHeight(120);
+         //anchorMedia.setMinHeight(120);
          // anchorMedia.setPrefHeight(115);
 
-
+         /*
          int height = 404;
          mainStage.setHeight(height);
          height -= 71;
          listViewV.setMinHeight(height);
          listViewV.setMaxHeight(height);
          listViewV.setPrefHeight(height);
-
+         */
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleMenuClose()", e);
+         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()",  e.toString(),e);
       }
    }
 
@@ -647,7 +647,7 @@ public class PrincipalController {
          stopButtonItemOriginalTranslation.setGraphic(imageViews[32]);
          correctionButtonTranslation.setGraphic(imageViews[33]);
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "\nMainController / setImageButton()", e);
+         message(Alert.AlertType.ERROR, "Error message", "\nMainController / setImageButton()",  e.toString(),e);
       }
 
    }
@@ -740,7 +740,7 @@ public class PrincipalController {
 
 
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", e.getMessage(),     "PrincipalController / handlePlayButton()", e);      
+         //message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButton()", e.toString(), e);      
       }
    }
 
@@ -791,7 +791,7 @@ public class PrincipalController {
             playButtonTranslation.setGraphic(imageViews[23]);
          }
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleStopButton()", e);
+         //message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleStopButton()",  e.toString(), e);
       }
    }
 
@@ -852,7 +852,7 @@ public class PrincipalController {
 
          }
       } catch (Exception e) {
-         // message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handlePlayButtonItemOriginal()", e);
+         // message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButtonItemOriginal()", e.toString(), e);
       }
    }
 
@@ -1197,7 +1197,7 @@ public class PrincipalController {
             indicatorSuccessTranslation.setProgress(success);
          }
       } catch (Exception e) {
-         // message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / handleCorrectionButton()", e);
+         // message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleCorrectionButton()", e.toString(), e);
       }
 
    }
@@ -1298,7 +1298,7 @@ public class PrincipalController {
                mediaPlayer.setBalance((Double) newValue);
             }
          } catch (Exception e) {
-            //message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / setSliderForm()", e);
+            //message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setSliderForm()", e.toString(), e);
          }
       });
    }
@@ -1352,7 +1352,7 @@ public class PrincipalController {
          setEndTimefile();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / setMediaPlayer()", e);
+         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setMediaPlayer()", e.toString(), e);
       }
    }
 
@@ -1462,7 +1462,7 @@ public class PrincipalController {
 
 
       } catch (Exception e) {
-         /* message(Alert.AlertType.ERROR, "Error message", e.getMessage(), "PrincipalController / showListViewH()", e);*/
+         /* message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);*/
 
       }
    }
@@ -1561,8 +1561,7 @@ public class PrincipalController {
 
                showListViewH();
             } catch (Exception e) {
-               message(Alert.AlertType.ERROR, "Error message", e.
-                       getMessage(), "PrincipalController / setEventMarker()", e);
+               message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setEventMarker()", e.toString(), e);
             }
          }
       });
@@ -1766,16 +1765,13 @@ public class PrincipalController {
          });
       } catch (Exception e) {
 
-         new PrincipalController().message(Alert.AlertType.ERROR, "Error message",
-                 e.getMessage(),
-                 "PrincipalController.java / setMediaPlayerChangeListener()", e);
+         new PrincipalController().message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / setMediaPlayerChangeListener()", e.toString(), e);
 
       }
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-
    /**
     * show a standard emergent message
     *
@@ -1790,12 +1786,12 @@ public class PrincipalController {
 
       Alert alert = new Alert(alertType);
       alert.setTitle(title);
-      alert.getDialogPane().setMinWidth(600);
-      alert.getDialogPane().setMinHeight(480);
-      alert.getDialogPane().setPrefWidth(600);
-      alert.getDialogPane().setPrefHeight(480);
+      //lert.getDialogPane().setMinWidth(600);
+      //alert.getDialogPane().setMinHeight(480);
+      //alert.getDialogPane().setPrefWidth(600);
+      //alert.getDialogPane().setPrefHeight(480);
       alert.setResizable(true);
-      alert.setHeaderText(about);
+      alert.getDialogPane().setHeaderText(about);
       alert.getDialogPane().setContentText(contextText);
 
       if (ex != null) {
@@ -1805,7 +1801,7 @@ public class PrincipalController {
          ex.printStackTrace(pw);
          String exceptionText = sw.toString();
 
-         Label label = new Label("The exception stacktrace was:");
+         Label label = new Label("El seguimiento del error fue:");
 
          TextArea textArea = new TextArea(exceptionText);
          textArea.setEditable(true);
@@ -1822,7 +1818,6 @@ public class PrincipalController {
          expContent.add(textArea, 0, 1);
          // Set expandable Exception into the dialog pane.
          alert.getDialogPane().setExpandableContent(expContent);
-
       }
 
       alert.getDialogPane().getStylesheets().
@@ -1955,10 +1950,7 @@ public class PrincipalController {
                         mediaPlayer.seek(finalDuration);
                      }
                   } catch (Exception e) {
-                     new PrincipalController().message(Alert.AlertType.ERROR,
-                             "Error message",
-                             e.getMessage(),
-                             "PrincipalController.java / updateValues()", e);
+                     new PrincipalController().message(Alert.AlertType.ERROR,"Error message", "PrincipalController.java / updateValues()", e.toString(), e);
 
                   }
                }
@@ -1988,39 +1980,12 @@ public class PrincipalController {
             mediaPlayer.play();
             mediaPlayer.stop();
 
-            setChangedSizeDashboard();
-
             anchorMedia.setPrefHeight(media.getHeight());
             anchorMedia.setMinHeight(media.getHeight());
 
             mediaView.setFitHeight(media.getHeight());
          }
       });
-   }
-
-   /**
-    * Change the size of the elements when close the media
-    */
-   public void setChangedSizeDashboard ()
-   {
-      int height = 404;
-      // change the mainStage´s height depending of the media´s height
-      if (media != null) {
-         height = 764 - (480 - media.getHeight());
-      }
-      mainStage.setHeight(height);
-      height -= 71;
-      listViewV.setMinHeight(height);
-      listViewV.setMaxHeight(height);
-      listViewV.setPrefHeight(height);
-   }
-
-   /**
-    * Change the size of the elements when open the login
-    */
-   public void setChangedSizeLogin ()
-   {
-      mainStage.setHeight(640);
    }
 
    /**
