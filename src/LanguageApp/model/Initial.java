@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class Initial {
 
-    private String directory;
+    private String path;
     private String lastDirectory;
     private String lastFile;
 
@@ -20,22 +20,22 @@ public class Initial {
 
     /**
      *
-     * @param directory The root directory
-     * @param lastDirectory The last open directory
+     * @param directory The root path
+     * @param lastDirectory The last open path
      */
     public Initial (String directory, String lastDirectory) {
-        this.directory = directory;
+        this.path = directory;
         this.lastDirectory = lastDirectory;
     }
 
 
-    public String getDirectory () {
-        return directory;
+    public String getPath () {
+        return path;
     }
 
 
-    public void setDirectory (String directory) {
-        this.directory = directory;
+    public void setPath (String path) {
+        this.path = path;
     }
 
 
@@ -61,7 +61,7 @@ public class Initial {
 
     @Override
     public String toString () {
-        return "Initial{" + "directory=" + directory + ", lastDirectory=" +
+        return "Initial{" + "directory=" + path + ", lastDirectory=" +
                 lastDirectory + ", lastFile=" + lastFile + '}';
     }
 
@@ -69,7 +69,7 @@ public class Initial {
     @Override
     public int hashCode () {
         int hash = 3;
-        hash = 89 * hash + Objects.hashCode(this.directory);
+        hash = 89 * hash + Objects.hashCode(this.path);
         hash = 89 * hash + Objects.hashCode(this.lastDirectory);
         hash = 89 * hash + Objects.hashCode(this.lastFile);
         return hash;
@@ -88,7 +88,7 @@ public class Initial {
             return false;
         }
         final Initial other = (Initial) obj;
-        if (!Objects.equals(this.directory, other.directory)) {
+        if (!Objects.equals(this.path, other.path)) {
             return false;
         }
         if (!Objects.equals(this.lastDirectory, other.lastDirectory)) {

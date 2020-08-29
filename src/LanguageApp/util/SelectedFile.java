@@ -19,43 +19,46 @@ import javafx.stage.Stage;
  */
 public class SelectedFile {
 
-  /**
-   * Show a filechooser
-   *
-   * @param mainStage A reference of Main Stage like context, (Inverse control)
-   * @param lastDirectory The las directory (Directory.getLstDirectory)
-   * @return the file selected
-   */
-  public File getSelectedFile (Stage mainStage, String lastDirectory) {
+   /**
+    * Show a filechooser
+    *
+    * @param mainStage A reference of Main Stage like context, (Inverse control)
+    * @param lastDirectory The las directory (Directory.getLstDirectory)
+    * @return the file selected
+    */
+   public File getSelectedFile (Stage mainStage, String lastDirectory)
+   {
 
-    FileChooser fch = new FileChooser();
-    File file = null;
+      FileChooser fch = new FileChooser();
+      File file = null;
 
-    try {
+      try {
 
-      // Set extension filter
-      FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSon files (*.json)", "*.json");
+         // Set extension filter
+         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Mp4 files (*.mp4)", "*.mp4");
 
-      fch.getExtensionFilters().add(extFilter);
-      
-      // Adding title
-      fch.setTitle("Open Resource File"); 
+         fch.getExtensionFilters().add(extFilter);
 
-      // Choosing the inicial directory
-      File fl = new File(lastDirectory);
+         // Adding title
+         fch.setTitle("Open Resource File");
 
-      if (!fl.exists()) {       fl.mkdirs();     }
-      
-      fch.setInitialDirectory(fl);
+         // Choosing the inicial directory
+         File fl = new File(lastDirectory);
 
-      // Opening the FileChooser in the mainStage
-      file = fch.showOpenDialog(mainStage);
+         if (!fl.exists()) {
+            fl.mkdirs();
+         }
 
-    } catch (Exception e) {
-      message(Alert.AlertType.ERROR, "Error message", "\nSelectedFile.java / Filechooser()", e.toString(), e);
-    }
-    return file;
-  }
+         fch.setInitialDirectory(fl);
+
+         // Opening the FileChooser in the mainStage
+         file = fch.showOpenDialog(mainStage);
+
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "\nSelectedFile.java / Filechooser()", e.toString(), e);
+      }
+      return file;
+   }
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
    /**

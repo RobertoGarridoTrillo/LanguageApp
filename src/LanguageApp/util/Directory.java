@@ -39,18 +39,12 @@ public class Directory {
    public Directory ()
    {
 
-
       // The path is an absolute path (retarive to the initial instalation)    
       path = System.getProperty("user.dir");
       path = path.replace("\\", "/");
 
       // The last directory is an absolute rute    
       lastDirectory = path + se + "media" + se;
-      //lastDirectory = path;
-
-
-      // The initial file is an absolute rute + the file "LanguageApp.jaso"
-      // initialFile = path + se + "LanguageApp.json";
       initialFile = "LanguageApp.json";
 
 
@@ -142,7 +136,7 @@ public class Directory {
          Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
          // creating initial objet
-         initial.setDirectory(path);
+         initial.setPath(path);
          initial.setLastDirectory(lastDirectory);
          initial.setLastFile(initialFile);
          // Java objects to String
@@ -166,7 +160,7 @@ public class Directory {
     */
    public String getDirectory ()
    {
-      return initial.getDirectory();
+      return initial.getPath();
    }
 
 

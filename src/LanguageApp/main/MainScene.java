@@ -62,10 +62,14 @@ public class MainScene extends Application {
    private AnchorPane forgetView;
    private AnchorPane dataBaseView;
 
-   // Name of the user
-   private String nombre;
-   private int usuario_id;
-   private int activo;
+   // Setting the global varibles
+   private String usuario_nombre;
+   private int usuario_activo;
+   // The real usuario_id
+   private static int usuario_id;
+   // When I'm in the welcome screen
+   boolean welcomeScreen;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
@@ -86,9 +90,10 @@ public class MainScene extends Application {
 
 
       // Setting the welcome user
-      nombre = null;
+      usuario_nombre = null;
       usuario_id = 0;
-      activo = 0;
+      usuario_activo = 0;
+      welcomeScreen = true;
    }
 //</editor-fold>
 
@@ -123,11 +128,9 @@ public class MainScene extends Application {
       forgetView();
       loginView();
 
-      principalView();
-
       // Checking if there's some active user
-      nombre = handleCheckNombre();
-      welcomeController.handleCheckNombre(nombre);
+      usuario_nombre = handleCheckNombre();
+      welcomeController.handleCheckNombre(usuario_nombre);
 
       this.mainStage.setResizable(false);
       this.mainStage.setWidth(1215);
@@ -343,11 +346,11 @@ public class MainScene extends Application {
       Connection conn = null;
       Statement stmt = null;
       usuario_id = 0;
-      nombre = null;
+      usuario_nombre = null;
 
       // Preparing statement
       try {
-         String sql = "SELECT usuario_id, nombre FROM usuarios WHERE activo = 1";
+         String sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_activo = 1";
          // Try connection
          conn = dataBaseController.connect();
 
@@ -357,13 +360,15 @@ public class MainScene extends Application {
 
          while (rs.next()) {
             usuario_id = rs.getInt("usuario_id");
-            nombre = rs.getString("nombre");
+            usuario_nombre = rs.getString("usuario_nombre");
          }
 
          stmt.close();
 
          if (usuario_id > 0) {
-            return nombre;
+            conn.close();
+            //setting the Actul Static user
+            return usuario_nombre;
          }
 
       } catch (Exception e) {
@@ -391,30 +396,34 @@ public class MainScene extends Application {
       PreparedStatement pstmt = null;
 
       // In SQLinte doesn't exit boolean
-      activo = (activoBoolean) ? 1 : 0;
+      usuario_activo = (activoBoolean) ? 1 : 0;
 
       try {
          // Try connection
-
          conn = dataBaseController.connect();
          conn.setAutoCommit(false);
 
-         String sql = "UPDATE usuarios SET activo = 0;";
+         String sql = "UPDATE usuarios SET usuario_activo = 0;";
          stmt = conn.createStatement();
          stmt.executeUpdate(sql);
          conn.commit();
          stmt.close();
          // set the value
-         sql = "UPDATE usuarios SET activo = ? WHERE usuario_id = ?";
+         sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
          pstmt = conn.prepareStatement(sql);
-         pstmt.setInt(1, activo);
+         pstmt.setInt(1, usuario_activo);
          pstmt.setInt(2, usuario_id);
          pstmt.executeUpdate();
          conn.commit();
          pstmt.close();
+         conn.close();
+
+         welcomeScreen = false;
+         principalView();
+         handleDashBoardMenu();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar() - activoBoolean", e.toString(), e);
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
@@ -439,10 +448,10 @@ public class MainScene extends Application {
       PreparedStatement pstmt = null;
       Statement stmt = null;
       // In SQLinte doesn't exit boolean
-      activo = (activoBoolean) ? 1 : 0;
+      usuario_activo = (activoBoolean) ? 1 : 0;
 
       // Preparing statement
-      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
+      String sql = "SELECT usuario_id FROM usuarios WHERE usuario_nombre = ? and password = ?";
       try {
          // Try connection
          conn = dataBaseController.connect();
@@ -459,31 +468,37 @@ public class MainScene extends Application {
          ResultSet rs = pstmt.executeQuery();
 
 
-         while (rs.next()) {
+         if (rs.next()) {
             usuario_id = rs.getInt("usuario_id");
 
-            // put the user activo or not
+            // put the user usuario_activo or not
 
-            sql = "UPDATE usuarios SET activo = 0;";
+            sql = "UPDATE usuarios SET usuario_activo = 0;";
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
+            
             conn.commit();
-            stmt.close();
 
             // set the value
-            sql = "UPDATE usuarios SET activo = ? WHERE usuario_id = ?";
+            sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, activo);
+            pstmt.setInt(1, usuario_activo);
             pstmt.setInt(2, usuario_id);
             pstmt.executeUpdate();
             conn.commit();
-            pstmt.close();
+            stmt.close();
 
-            // if exits the user and password return true
-            conn.close();
-            return true;
+            // Start the dashborad
+            welcomeScreen = false;
+            principalView();
+            handleDashBoardMenu();
          }
-      } catch (SQLException e) {
+
+         // if exits the user and password return true
+         pstmt.close();
+         conn.close();
+
+      } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "MainScene / handleLogin()", e.toString(), e);
       } finally {
          try {
@@ -512,7 +527,7 @@ public class MainScene extends Application {
       PreparedStatement pstmt = null;
 
       // Preparing statement
-      String sql = "SELECT usuario_id FROM usuarios WHERE nombre = ? and password = ?";
+      String sql = "SELECT usuario_id FROM usuarios WHERE usuario_nombre = ? and password = ?";
       try {
          // Try connection
          conn = dataBaseController.connect();
@@ -540,7 +555,7 @@ public class MainScene extends Application {
             return true;
          }
 
-         sql = "INSERT INTO  usuarios (nombre, password, activo, pregunta, respuesta) " +
+         sql = "INSERT INTO  usuarios (usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
                  "VALUES (?,?,0,?,?)";
          pstmt = conn.prepareStatement(sql);
          // set the value
@@ -574,7 +589,7 @@ public class MainScene extends Application {
       String password = null;
 
       // Preparing statement
-      String sql = "SELECT password FROM usuarios WHERE nombre = ? and pregunta = ? and respuesta = ?";
+      String sql = "SELECT password FROM usuarios WHERE usuario_nombre = ? and pregunta = ? and respuesta = ?";
       try {
          // Try connection
          conn = dataBaseController.connect();
@@ -615,17 +630,6 @@ public class MainScene extends Application {
    }
 
    /**
-    * Change the scene from formView to registrationView
-    *
-    */
-   public void handleNuevoUsuario ()
-   {
-      // Create the Scene registrationView
-      loginView.getChildren().remove(formView);
-      loginView.getChildren().add(registrationView);
-   }
-
-   /**
     * Change the scene registrationView form to formView
     *
     */
@@ -658,7 +662,41 @@ public class MainScene extends Application {
       loginView.getChildren().add(formView);
    }
 
-//</editor-fold>  
+//</editor-fold> 
+
+//<editor-fold defaultstate="collapsed" desc="Setters and Getters">
+   /**
+    *
+    * @param usuario_id
+    *
+    */
+   public static void gg (int usuario_id)
+   {
+      MainScene.usuario_id = usuario_id;
+   }
+
+   /**
+    *
+    * @param usuario_id
+    * @return
+    *
+    */
+   public static int getUsuario_id ()
+   {
+      return usuario_id;
+   }
+
+   /**
+    * Change the scene from formView to registrationView
+    *
+    */
+   public void handleNuevoUsuario ()
+   {
+      // Create the Scene registrationView
+      loginView.getChildren().remove(formView);
+      loginView.getChildren().add(registrationView);
+   }
+//</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Menu Buttons">
    /**
@@ -672,22 +710,18 @@ public class MainScene extends Application {
    }
 
    /**
-    * public static void main
-    *
-    * @param args
-    */
-   public static void main (String[] args)
-   {
-      launch(args);
-
-   }
-
-   /**
     * it's called by mainController when i click in the open menu
     */
    public void handleOpenMenu ()
    {
-      principalController.handleOpenMenu();
+      try {
+         // if doesn't be user, return
+         if (welcomeScreen) {
+            return;
+         }
+         principalController.handleOpenMenu();
+      } catch (Exception e) {
+      }
    }
 
    /**
@@ -695,7 +729,14 @@ public class MainScene extends Application {
     */
    public void handleCloseMenu ()
    {
-      principalController.handleCloseMenu();
+      try {
+         // if doesn't be user, return
+         if (welcomeScreen) {
+            return;
+         }
+         principalController.handleCloseMenu();
+      } catch (Exception e) {
+      }
    }
 
    /**
@@ -703,7 +744,17 @@ public class MainScene extends Application {
     */
    public void handleControlesMenu ()
    {
-      principalController.handleControlesMenu();
+      //principalController.handleControlesMenu();
+      message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
+              "Controles: \n\n" +
+              "Cursores:  para desplazarte por los diferentes " +
+              "elementos.\n\n" +
+              "Barra espaciadora / Enter:  para activar los " +
+              "elementos.\n\n" +
+              "Control + Derecha / Izquierda: para mover los slider de volumen" +
+              ", Balance, velocidad y control de la película.\n\n" +
+              "Control o Shift: para seleccionar mas de una palabra al " +
+              "reproducirla.\n\n", null);
    }
 
    /**
@@ -711,7 +762,9 @@ public class MainScene extends Application {
     */
    public void handleAboutMenu ()
    {
-      principalController.handleAboutMenu();
+      //principalController.handleAboutMenu();
+      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
+              null);
    }
 
    /**
@@ -726,6 +779,7 @@ public class MainScene extends Application {
          loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
          loginView.getChildren().add(formView);
          mainView.setCenter(loginView);
+         welcomeScreen = true;
 
          String result = principalController.getMediaStatus();
          if (result.equals("playing")) {
@@ -744,46 +798,48 @@ public class MainScene extends Application {
    public void handleUnloginMenu ()
    {
       // if doesn't be user, return
-      if (usuario_id != 0) {
-         if (!message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "Cerrar la sesión?", "", null)){
-            return;
-         }
-      } else {
+      if (welcomeScreen && usuario_id == 0) {
+         return;
+      }
+      boolean salida = message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "Cerrar la sesión?", "", null);
+      if (!salida) {
          return;
       }
 
-         try {
-            // Create the Scene and put it in the center or the borderLayout
-            mainView.getChildren().removeAll(principalView, dataBaseView);
-            loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+      try {
+         // Create the Scene and put it in the center or the borderLayout
+         mainView.getChildren().removeAll(principalView, dataBaseView);
+         loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
 
-            // Deleting the active in the database
-            handleEntrar(false);
-            // Deleting the global variables
-            usuario_id = 0;
-            nombre = null;
-            activo = 0;
+         // Deleting the active in the database
+         handleEntrar(false);
+         // Deleting the global variables
+         usuario_id = 0;
+         usuario_nombre = null;
+         usuario_activo = 0;
+         welcomeScreen = true;
 
-            // Checking if there's some active user
-            nombre = handleCheckNombre();
-            welcomeController.handleCheckNombre(nombre);
-            loginView.getChildren().add(welcomeView);
-            mainView.setCenter(loginView);
+         // Checking if there's some active user
+         usuario_nombre = handleCheckNombre();
+         welcomeController.handleCheckNombre(usuario_nombre);
+         loginView.getChildren().add(welcomeView);
+         mainView.setCenter(loginView);
 
 
-            String result = principalController.getMediaStatus();
-            if (result.equals("playing")) {
-               principalController.handlePlayButton();
-            } else if (result.equals("playingOriginal")) {
-               principalController.handlePlayButtonItemOriginal();
-            }
-
-         } catch (Exception e) {
+         String result = principalController.getMediaStatus();
+         if (result.equals("playing")) {
+            principalController.handlePlayButton();
+         } else if (result.equals("playingOriginal")) {
+            principalController.handlePlayButtonItemOriginal();
          }
+
+      } catch (Exception e) {
       }
-      /**
-       * it's called by mainController when i click in the Dashboard menu
-       */
+   }
+
+   /**
+    * it's called by mainController when i click in the Dashboard menu
+    */
    public void handleDashBoardMenu ()
    {
       // if doesn't be user, return
@@ -791,7 +847,7 @@ public class MainScene extends Application {
          return;
       }
       try {
-         mainView.getChildren().remove(loginView);
+         mainView.getChildren().removeAll(principalView, dataBaseView, loginView);
          mainView.setCenter(principalView);
 
          String result = principalController.getMediaStatus();
@@ -815,7 +871,7 @@ public class MainScene extends Application {
       }
       try {
          // Create the Scene and put it in the center or the borderLayout
-         mainView.getChildren().remove(principalView);
+         mainView.getChildren().removeAll(principalView, dataBaseView, loginView);
          mainView.setCenter(dataBaseView);
 
          String result = principalController.getMediaStatus();
@@ -887,13 +943,26 @@ public class MainScene extends Application {
       Image icon = new Image(getClass().getResourceAsStream("/LanguageApp/resources/images/languages_128.png"));
       stage.getIcons().add(icon);
 
-
-      Optional<ButtonType> result = alert.showAndWait();
-      if (result.get() == ButtonType.OK) {
-         return true;
-      } else {
-         return false;
+      try {
+   Optional<ButtonType> result = alert.showAndWait();
+         if (result.get() == ButtonType.OK) {
+            return true;
+         }
+      } catch (Exception e) {
       }
+      return false;
    }
+
 //</editor-fold>
+
+
+   /**
+    * public static void main
+    *
+    * @param args
+    */
+   public static void main (String[] args)
+   {
+      launch(args);
+   }
 }

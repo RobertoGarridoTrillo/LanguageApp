@@ -113,7 +113,7 @@
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
   -fx-prompt-text-fill: #0f9d58; /* #4D4D4D; */
   -fx-text-fill: white;
-  -fx-highlight-fill: #004f8a;
+  -fx-highlight-fill: #000000;
 
 }
 

@@ -424,7 +424,7 @@ public class RegistrationController {
       } else {
          preguntaString = preguntaObject.toString();
       }
-      
+
       if (respuestaString.isEmpty() || respuestaString.length() == 0) {
          showErrorRespuesta("No puede estar vacío");
       }
@@ -457,8 +457,7 @@ public class RegistrationController {
       //boolean activoBoolean = activoCheckBox.isSelected();
       if (registroUser == true && registroPassword == true &&
               registroPregunta == true && registroRespuesta == true) {
-         boolean result =
-                 mainScene.handleRegistro(usuarioString,passwordString,preguntaString,respuestaString);
+         boolean result = mainScene.handleRegistro(usuarioString, passwordString, preguntaString, respuestaString);
          if (result) {
             showErrorUser("El usuario ya existe");
          }

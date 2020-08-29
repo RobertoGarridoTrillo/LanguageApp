@@ -415,11 +415,10 @@ public class FormController {
       String passwordString = handleValidationPassword();
       boolean activoBoolean = activoCheckBox.isSelected();
       if (loginUser == true && loginPassword == true) {
-         boolean result =
-                 mainScene.handlelogin(usuarioString, passwordString, activoBoolean);
+         boolean result = mainScene.handlelogin(usuarioString, passwordString, activoBoolean);
          if (!result) {
-            showErrorUser("El usuario no existe");
-         }
+            showErrorUser("El usuario no existe");            
+         } 
       }
    }
 //</editor-fold>

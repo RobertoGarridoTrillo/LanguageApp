@@ -1,4 +1,3 @@
-
 package LanguageApp.controller;
 
 //<editor-fold defaultstate="collapsed" desc="Import">
@@ -6,6 +5,7 @@ package LanguageApp.controller;
 import LanguageApp.main.MainScene;
 import LanguageApp.model.Item;
 import LanguageApp.util.AudioClips;
+import LanguageApp.util.Directorio;
 import LanguageApp.util.Directory;
 import LanguageApp.util.FillListView;
 import LanguageApp.util.FormatTime;
@@ -197,12 +197,6 @@ public class PrincipalController {
    // Reference to the main Scene
    private MainScene mainScene;
 
-   public void setMainScene (MainScene aThis)
-   {
-      mainScene = aThis;
-   }
-
-
    // Json
    private Item[] itemsOriginal;
    private Item[] itemsTranslation;
@@ -240,9 +234,6 @@ public class PrincipalController {
    // Actual getDirectory
    // private String path;
 
-   // initial file if exits
-   private String initFileIfExits;
-
    // slider media, to control if the moviment of the media comes 
    // from the slider or the media
    private String mediaPlayerSlider;
@@ -275,8 +266,22 @@ public class PrincipalController {
    private AudioClips ac;
    private SaveWordsAsList swal;
    private FormatTime ft;
+   private Directorio dire;
+
+   // Active user
+   private int usuario_id;
 
 //</editor-fold>
+
+   /**
+    *
+    * @param aThis
+    */
+   public void setMainScene (MainScene aThis)
+   {
+      mainScene = aThis;
+   }
+
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
    /**
@@ -290,7 +295,7 @@ public class PrincipalController {
          sf = new SelectedFile();
          gj = new GetJson();
          flw = new FillListView();
-         dir = new Directory();
+         dire = new Directorio();
          ac = new AudioClips();
          swal = new SaveWordsAsList();
          ft = new FormatTime();
@@ -372,19 +377,17 @@ public class PrincipalController {
          // The index of the listviewV when click in the pause Button
          currentPauseItem = 0;
 
+         // Setting initial user
+         usuario_id = 0;
+
          // Check if there´s an initial file
-         initFileIfExits = dir.init();
-         if (initFileIfExits != null && initFileIfExits.contains("mp4")) {
-
-            initFileIfExits = initFileIfExits.replace("mp4", "json");
-            File file = new File(initFileIfExits);
-            handleOpenMenu2(file);
-
+         usuario_id = mainScene.getUsuario_id();
+         if (dire.checkIni(usuario_id)) {            
+            handleOpenMenu2();
          }
 
-
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", "\nMainController / initialize()", e.toString(), e);
+         message(Alert.AlertType.ERROR, "Error message", "MainController / initialize()", e.toString(), e);
       }
 
    }
@@ -397,43 +400,48 @@ public class PrincipalController {
     */
    public void handleOpenMenu ()
    {
-
       // Open a new fileChooser, set the stage where it´s shows,return un File
-      dir.readIni();
-      File file = sf.getSelectedFile(mainStage, dir.getLastDirectory());
-      if (file!=null) handleOpenMenu2(file);
+      usuario_id = mainScene.getUsuario_id();
+      //if (!dire.checkIni(usuario_id)) {
+         try {
+            File file = sf.getSelectedFile(mainStage, dire.getLastDirectory());
 
+            // Setting the globlal directory
+            String lastDirectory = file.getParent();//el que acabo de abrir con el filechooser
+            String name = file.getName();
+            // Checking if exists some equal
+            dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
+
+            handleOpenMenu2();
+         } catch (Exception e) {
+         }
+      //}
    }
 
    /**
     * Open a SelectFile and seek a json to load the phrases (Part2)
-    *
-    * @param file A File, readed by a filechooser or the initial file
     */
-   private void handleOpenMenu2 (File file)
+   private void handleOpenMenu2 ()
    {
-      try {
-
+      try {         
          handleCloseMenu();
 
          // Read a json in English, send a File JSON, return an array of Item class objects
-         itemsOriginal = gj.getJsonOriginal(file);
+         File file = new File(dire.getLastDirectory() + se + "English.json");
+         itemsOriginal = gj.getJson(file);
 
-         // Read a json in Spanish, send a File JSON, return an array of 
-         //Item class objects
-         itemsTranslation = gj.getJsonTranslation(file);
+         // Read a json in Spanish, send a File JSON, return an array of Item class objects
+         file = new File(dire.getLastDirectory() + se + "Spanish.json");
+         itemsTranslation = gj.getJson(file);
 
          // fill a ListView with the phrases of the Items array
          String titleMp4 = flw.setListView(listViewV, itemsOriginal);
 
-         // Setting the last directory
-         dir.setLastDirectory(file.getParent());
-
          // Setting the last File
-         dir.setLastFile(titleMp4);
+         dire.setLastFile(titleMp4);
 
          // Creating the path to the media
-         mediaStringUrl = new File(dir.getLastDirectory() + "/" + dir.getLastFile()).toURI();
+         mediaStringUrl = new File(dire.getLastDirectory() + "/" + dire.getLastFile()).toURI();
 
          // Creating a list of words of the media
          wordSet = swal.saveWordsAsList(itemsOriginal, titleMp4, file.getParent() + "/");
@@ -442,7 +450,7 @@ public class PrincipalController {
          setMediaPlayer();
 
          // Setting audiclips
-         audioClips = ac.setAudioClip(wordSet, dir.getLastFile());
+         audioClips = ac.setAudioClip(wordSet, dire.getLastFile());
          ac.setAudioClipRateSlider(rateSliderReading);
          ac.setAudioClipBalanceSlider(balanceSliderReading);
          ac.setAudioClipVolumeSlider(volumeSliderReading);
@@ -514,31 +522,11 @@ public class PrincipalController {
          handleStopButton();
 
          // Delete and create and empty initial file
-         dir.createIni();
+         usuario_id = mainScene.getUsuario_id();
+         dire.createIni(usuario_id);
 
-         // change the mainStage´s height depending of the media´s height
-         // Setting the initial size
-
-         // media = null;
-         // mediaPlayer = null;
-         // mediaView = null;
-         // mediaView.setFitHeight(0);
-         
-         // mediaView.setMediaPlayer(null);
-         //anchorMedia.setMaxHeight(0);
-         //anchorMedia.setMinHeight(120);
-         // anchorMedia.setPrefHeight(115);
-
-         /*
-         int height = 404;
-         mainStage.setHeight(height);
-         height -= 71;
-         listViewV.setMinHeight(height);
-         listViewV.setMaxHeight(height);
-         listViewV.setPrefHeight(height);
-         */
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()",  e.toString(),e);
+         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
       }
    }
 
@@ -647,7 +635,7 @@ public class PrincipalController {
          stopButtonItemOriginalTranslation.setGraphic(imageViews[32]);
          correctionButtonTranslation.setGraphic(imageViews[33]);
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "\nMainController / setImageButton()",  e.toString(),e);
+         message(Alert.AlertType.ERROR, "Error message", "\nMainController / setImageButton()", e.toString(), e);
       }
 
    }
@@ -1950,7 +1938,7 @@ public class PrincipalController {
                         mediaPlayer.seek(finalDuration);
                      }
                   } catch (Exception e) {
-                     new PrincipalController().message(Alert.AlertType.ERROR,"Error message", "PrincipalController.java / updateValues()", e.toString(), e);
+                     new PrincipalController().message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / updateValues()", e.toString(), e);
 
                   }
                }
