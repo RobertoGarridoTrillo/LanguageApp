@@ -734,7 +734,7 @@ public class MainScene extends Application {
          if (welcomeScreen) {
             return;
          }
-         principalController.handleCloseMenu();
+         principalController.handleCloseMenu("handleCloseMenu");
       } catch (Exception e) {
       }
    }
@@ -744,7 +744,6 @@ public class MainScene extends Application {
     */
    public void handleControlesMenu ()
    {
-      //principalController.handleControlesMenu();
       message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
               "Controles: \n\n" +
               "Cursores:  para desplazarte por los diferentes " +
@@ -762,8 +761,7 @@ public class MainScene extends Application {
     */
    public void handleAboutMenu ()
    {
-      //principalController.handleAboutMenu();
-      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
+     message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
               null);
    }
 

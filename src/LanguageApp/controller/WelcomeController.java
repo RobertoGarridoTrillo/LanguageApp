@@ -25,10 +25,12 @@ public class WelcomeController {
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
    @FXML public AnchorPane anchorRight;
+   @FXML private JFXButton inicioButton;
    @FXML private JFXButton loginButton;
    @FXML private Label nameUserLabel;
    @FXML private JFXCheckBox activoCheckBox;
 
+   @FXML private HBox HBoxInicio;
    @FXML private HBox HBoxLogin;
    @FXML private HBox HBoxRecordar;
 
@@ -72,20 +74,21 @@ public class WelcomeController {
       mainStage = MainScene.getMainStage();
 
       node = new Node[]{
+         inicioButton,
          loginButton,
          activoCheckBox
       };
 
       // Setting the current node
-      currentNode = loginButton;
-      oldNode = loginButton;
-      loginButton.requestFocus();
+      currentNode = inicioButton;
+      oldNode = inicioButton;
+      inicioButton.requestFocus();
 
       // Setting the jfxtextfield name
       setJFXTextField();
 
       // Settiong the intial border
-      setBorder(loginButton);
+      setBorder(inicioButton);
 
       // Settiong a active user
       nombre = null;
@@ -99,8 +102,9 @@ public class WelcomeController {
     */
    private void setJFXTextField ()
    {
-      eventButton(loginButton, 1, 1);
-      eventButton(activoCheckBox, 0, 0);
+      eventButton(inicioButton, 2, 1);
+      eventButton(loginButton, 0, 2);
+      eventButton(activoCheckBox, 1, 0);
    }
 //</editor-fold>
 
@@ -142,11 +146,15 @@ public class WelcomeController {
             }
             if (ke.getCode().equals(KeyCode.ENTER)) {
                switch (n.getId()) {
-                  case "loginButton":
+                  case "inicioButton":
                      handleEntrar();
+                     break;
+                  case "loginButton":
+                     handleLogin();
                      break;
                   case "activoCheckBox":
                      activoCheckBox.setSelected(!activoCheckBox.isSelected());
+                     
                      break;
                   default:
                      break;
@@ -154,8 +162,11 @@ public class WelcomeController {
             }
             if (ke.getCode().equals(KeyCode.SPACE)) {
                switch (n.getId()) {
-                  case "loginButton":
+                  case "inicioButton":
                      handleEntrar();
+                     break;
+                  case "loginButton":
+                     handleLogin();
                      break;
                   default:
                      break;
@@ -179,8 +190,11 @@ public class WelcomeController {
          oldNode = n;
          MouseEvent.consume();
          switch (n.getId()) {
-            case "loginButton":
+            case "inicioButton":
                handleEntrar();
+               break;
+            case "loginButton":
+               handleLogin();
                break;
             case "activoCheckBox":
                activoCheckBox.setSelected(activoCheckBox.isSelected());
@@ -200,6 +214,14 @@ public class WelcomeController {
     */
    private void setBorder (Node n)
    {
+
+      if (n.equals(inicioButton)) {
+         eraserBorder();
+         HBoxInicio.getStyleClass().add("borderLoginVisible");
+         oldNode = currentNode;
+         currentNode = n;
+         return;
+      }
 
       if (n.equals(loginButton)) {
          eraserBorder();
@@ -229,6 +251,8 @@ public class WelcomeController {
    private void eraserBorder ()
    {
       currentNode.getStyleClass()
+              .removeAll("borderLoginVisible", "borderLoginInvisible");
+      HBoxInicio.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
       HBoxLogin.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
@@ -272,6 +296,14 @@ public class WelcomeController {
       } else {
          mainScene.handleLoginMenu();
       }
+   }
+
+   /**
+    *
+    */
+   private void handleLogin ()
+   {
+      mainScene.handleLoginMenu();
    }
 //</editor-fold>
 

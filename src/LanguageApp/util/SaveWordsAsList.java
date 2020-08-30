@@ -1,8 +1,6 @@
 package LanguageApp.util;
 
 import LanguageApp.model.Item;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -37,8 +35,7 @@ public class SaveWordsAsList {
     * @param lastDirectory the last open directory
     * @return
     */
-   public Set<String> saveWordsAsList (Item[] items, String titleMP4,
-           String lastDirectory)
+   public Set<String> saveWordsAsList (Item[] items)
    {
 
       // Array with the words of one phrase
@@ -69,18 +66,6 @@ public class SaveWordsAsList {
             wString = wString.concat(iterator.next()).concat("\n");
 
          }
-         // create the path
-         titleMP4 = titleMP4.replace(".mp4", ".txt");
-
-         String pathWriter = lastDirectory + titleMP4;
-
-         // To file
-         FileWriter writer = new FileWriter(pathWriter);
-         BufferedWriter buffer = new BufferedWriter(writer);
-         buffer.write(wString);
-         buffer.flush();
-         buffer.close();
-         writer.close();
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "SaveWordsAsList.java / handleSaveAsList()", e.toString(), e);
       }

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="10"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="11"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="Desarrollo de interfaces">
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/WelcomeController.java</file>
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/LanguageApp.json</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/Directorio.java</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/Directory.java</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/main/MainScene.java</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/PrincipalController.java</file>
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/DataBaseController.java</file>
         </group>
     </open-files>
 </project-private>

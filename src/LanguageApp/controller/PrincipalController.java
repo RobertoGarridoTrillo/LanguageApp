@@ -283,6 +283,7 @@ public class PrincipalController {
    }
 
 
+
 //<editor-fold defaultstate="collapsed" desc="Initialize">
    /**
     * When the method is initialize
@@ -301,8 +302,8 @@ public class PrincipalController {
          ft = new FormatTime();
 
          path = System.getProperty("user.dir");
-         //se = System.getProperty("file.separator");
-         se = "/";
+         se = System.getProperty("file.separator");
+         //se = "/";
 
          // References to mainScene
          mainStage = MainScene.getMainStage();
@@ -382,7 +383,7 @@ public class PrincipalController {
 
          // Check if there´s an initial file
          usuario_id = mainScene.getUsuario_id();
-         if (dire.checkIni(usuario_id)) {            
+         if (dire.checkIni(usuario_id)) {
             handleOpenMenu2();
          }
 
@@ -402,20 +403,19 @@ public class PrincipalController {
    {
       // Open a new fileChooser, set the stage where it´s shows,return un File
       usuario_id = mainScene.getUsuario_id();
-      //if (!dire.checkIni(usuario_id)) {
-         try {
-            File file = sf.getSelectedFile(mainStage, dire.getLastDirectory());
+      try {
+         File file = sf.getSelectedFile(mainStage, dire.getLastDirectory());
 
-            // Setting the globlal directory
-            String lastDirectory = file.getParent();//el que acabo de abrir con el filechooser
-            String name = file.getName();
-            // Checking if exists some equal
-            dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
+         // Setting the globlal directory
+         String lastDirectory = file.getParent() + se;//el que acabo de abrir con el filechooser
+         String name = file.getName();
+         // Checking if exists some equal
+         dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
 
-            handleOpenMenu2();
-         } catch (Exception e) {
-         }
-      //}
+         handleOpenMenu2();
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", e.toString(), e);
+      }
    }
 
    /**
@@ -423,15 +423,15 @@ public class PrincipalController {
     */
    private void handleOpenMenu2 ()
    {
-      try {         
-         handleCloseMenu();
+      try {
+         handleCloseMenu("handleOpenMenu2");
 
          // Read a json in English, send a File JSON, return an array of Item class objects
-         File file = new File(dire.getLastDirectory() + se + "English.json");
+         File file = new File(dire.getLastDirectory() + "English.json");
          itemsOriginal = gj.getJson(file);
 
          // Read a json in Spanish, send a File JSON, return an array of Item class objects
-         file = new File(dire.getLastDirectory() + se + "Spanish.json");
+         file = new File(dire.getLastDirectory() + "Spanish.json");
          itemsTranslation = gj.getJson(file);
 
          // fill a ListView with the phrases of the Items array
@@ -441,10 +441,10 @@ public class PrincipalController {
          dire.setLastFile(titleMp4);
 
          // Creating the path to the media
-         mediaStringUrl = new File(dire.getLastDirectory() + "/" + dire.getLastFile()).toURI();
+         mediaStringUrl = new File(dire.getLastDirectory() + dire.getLastFile()).toURI();
 
          // Creating a list of words of the media
-         wordSet = swal.saveWordsAsList(itemsOriginal, titleMp4, file.getParent() + "/");
+         wordSet = swal.saveWordsAsList(itemsOriginal);
 
          // Set the MediaPlayer
          setMediaPlayer();
@@ -496,8 +496,10 @@ public class PrincipalController {
 
    /**
     * When click on the close menu
+    * @param origen Only when the origen is handleOpenMenu2 I create an empty inicial file
+    * is not, only close all.
     */
-   public void handleCloseMenu ()
+   public void handleCloseMenu (String origen)
    {
       try {
          if (mediaPlayer == null) {
@@ -523,44 +525,18 @@ public class PrincipalController {
 
          // Delete and create and empty initial file
          usuario_id = mainScene.getUsuario_id();
-         dire.createIni(usuario_id);
+         if (!origen.equals("handleOpenMenu2")){
+            dire.createIni(usuario_id);
+         }
 
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
       }
    }
 
-
-   /**
-    * handle of the "About message"
-    */
-   public void handleAboutMenu ()
-   {
-      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
-              null);
-   }
-
-
-   /**
-    * handle of the "About message"
-    */
-   public void handleControlesMenu ()
-   {
-      message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
-              "Controles: \n\n" +
-              "Cursores:  para desplazarte por los diferentes " +
-              "elementos.\n\n" +
-              "Barra espaciadora / Enter:  para activar los " +
-              "elementos.\n\n" +
-              "Control + Derecha / Izquierda: para mover los slider de volumen" +
-              ", Balance, velocidad y control de la película.\n\n" +
-              "Control o Shift: para seleccionar mas de una palabra al " +
-              "reproducirla.\n\n", null);
-   }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Play, stop, pause Button...">
-
    /**
     * Setting the image int the buttons
     */
@@ -635,7 +611,7 @@ public class PrincipalController {
          stopButtonItemOriginalTranslation.setGraphic(imageViews[32]);
          correctionButtonTranslation.setGraphic(imageViews[33]);
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "\nMainController / setImageButton()", e.toString(), e);
+         message(Alert.AlertType.ERROR, "Error message", "MainController / setImageButton()", e.toString(), e);
       }
 
    }

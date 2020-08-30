@@ -28,7 +28,8 @@ public class Directorio {
    private String lastDirectory;
    private String lastFile;
 
-   String se = "/";
+   //String se = "/";
+   String se = System.getProperty("file.separator");
    String initialFile;
 
    // Instancias
@@ -57,7 +58,11 @@ public class Directorio {
 
       // The path is an absolute path (retarive to the initial instalation)    
       path = System.getProperty("user.dir");
-      path = path.replace("\\", "/");
+      path = path.replace("/", se);
+      path = path.replace("//", se);
+      path = path.replace("\\", se);
+
+      //path = path.replace("//", se);
 
       // The last directory is an absolute rute    
       lastDirectory = path + se + "media" + se;
@@ -93,8 +98,8 @@ public class Directorio {
          INNER JOIN datos d on  i.idioma_id = d.fk_idioma_id
          WHERE u.usuario_activo = 1 and m.materia_activo = 1
           */
-         sql = "SELECT m.directorio, m.materia_nombre FROM materias m\n" +
-                 "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id\n" +
+         sql = "SELECT m.directorio, m.materia_nombre FROM materias m " +
+                 "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
                  "WHERE u.usuario_id = ? and m.materia_activo = 1;";
 
          // Try connection
@@ -143,6 +148,8 @@ public class Directorio {
 
    /**
     * pone todos materias activos a cero del usuario que este activo
+    *
+    * @param usuario_id
     */
    public void createIni (int usuario_id)
    {
@@ -157,10 +164,10 @@ public class Directorio {
          conn.setAutoCommit(false);
 
 
-         sql = "UPDATE materias set materia_activo = 0 \n" +
-                 "WHERE materia_id IN (\n" +
-                 "SELECT m.materia_id FROM materias m\n" +
-                 "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id\n" +
+         sql = "UPDATE materias set materia_activo = 0 " +
+                 "WHERE materia_id IN ( " +
+                 "SELECT m.materia_id FROM materias m " +
+                 "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
                  "WHERE u.usuario_id = ?)";
 
          pstmt = conn.prepareStatement(sql);
@@ -192,58 +199,75 @@ public class Directorio {
     */
    public void checkAndSetLastDirectory (String name, String lastDirectory, int usuario_id)
    {
+      this.usuario_id = usuario_id;
       conn = null;
-      stmt = null;
       pstmt = null;
       materia_id = 0;
+      boolean salida = false; // flase create a new registre
 
-      usuario_id = 0;
       // Preparing statement
       try {
-         // I check if there is any equal record
-         sql = "SELECT m.materia_id FROM materias m\n" +
-                 "INNER JOIN usuarios u\n" +
-                 "on u.usuario_id = m.fk_usuario_id\n" +
-                 "where u.usuario_activo = 1;";
          // Try connection
          conn = connect();
+         conn.setAutoCommit(false);
 
-         stmt = conn.createStatement();
-         //
-         ResultSet rs = stmt.executeQuery(sql);
+
+         // I check if there is any equal record
+         sql = "SELECT m.materia_id, m.materia_nombre FROM materias m " +
+                 "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
+                 "WHERE u.usuario_id = ?";
+
+         pstmt = conn.prepareStatement(sql);
+         pstmt.setInt(1, usuario_id);
+         //pstmt.setString(2, name);
+
+         ResultSet rs = pstmt.executeQuery();
+         conn.commit();
+         //rs.first();
          // if there is any 
-         if (rs.next()) {
+         while (rs.next() && salida == false) {
+            // si hay un registro igual al pedido por el filechoose
+            if (rs.getString(2).equals(name)) {
 
-            materia_id = rs.getInt("materia_id");
+               materia_id = rs.getInt("materia_id");
 
-            sql = "UPDATE materias set materia_activo = 0 \n" +
-                    "where materia_id = (\n" +
-                    "SELECT m.materia_id FROM materias m\n" +
-                    "INNER JOIN usuarios u\n" +
-                    "ON u.usuario_id = m.materia_id\n" +
-                    "where u.usuario_activo = 1 )";
+               sql = "UPDATE materias set materia_activo = 0 " +
+                       "WHERE materia_id IN ( " +
+                       "SELECT m.materia_id FROM materias m " +
+                       "INNER JOIN usuarios u " +
+                       "ON u.usuario_id = m.fk_usuario_id " +
+                       "WHERE u.usuario_id = ?)";
 
-            stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-            conn.commit();
-            stmt.close();
-            // set the value
-            sql = "UPDATE materias set materia_activo = 1 \n" +
-                    "where materia_id = (\n" +
-                    "SELECT m.materia_id FROM materias m\n" +
-                    "INNER JOIN usuarios u\n" +
-                    "ON u.usuario_id = m.materia_id\n" +
-                    "where u.usuario_activo = 1 and m.materia_id = ? )";
+               pstmt = conn.prepareStatement(sql);
+               pstmt.setInt(1, usuario_id);
+               pstmt.executeUpdate();
+               conn.commit();
+               
+               // set the value on active
+               sql = "UPDATE materias set materia_activo = 1 " +
+                       "WHERE materia_id IN ( " +
+                       "SELECT m.materia_id FROM materias m " +
+                       "INNER JOIN usuarios u " +
+                       "ON u.usuario_id = m.fk_usuario_id " +
+                       "WHERE u.usuario_id = ? and m.materia_id = ? )";
+               pstmt = null;
+               pstmt = conn.prepareStatement(sql);
+               pstmt.setInt(1, usuario_id);
+               pstmt.setInt(2, materia_id);
+               pstmt.executeUpdate();
+               conn.commit();
 
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, materia_id);
-            pstmt.executeUpdate();
-            conn.commit();
-            pstmt.close();
+               // save in the model the global directory
+               setPath(path);
+               setLastDirectory(lastDirectory);
+               setLastFile(lastFile);
 
-            stmt.close();
-            conn.close();
-         } else {
+               salida = true;
+            }
+         }
+
+         // si no hay un registro igual al pedido por el filechoose
+         if (salida == false) {
 
             sql = "INSERT INTO materias (fk_usuario_id, materia_nombre, directorio, materia_activo) " +
                     "VALUES (?,?,?,?)";
@@ -256,8 +280,12 @@ public class Directorio {
             pstmt.executeUpdate();
             conn.commit();
             pstmt.close();
-            stmt.close();
             conn.close();
+
+            // save in the model the global directory
+            setPath(path);
+            setLastDirectory(lastDirectory);
+            setLastFile(lastFile);
          }
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);

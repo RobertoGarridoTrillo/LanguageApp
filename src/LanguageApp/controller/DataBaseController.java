@@ -82,7 +82,7 @@ public class DataBaseController {
 
       // checking the initial database
       createDatabase(connect());
-      // insertData(connect()); // Only for testing purpose
+      insertData(connect()); // Only for testing purpose
    }
 
 //<editor-fold defaultstate="collapsed" desc="Connect">
@@ -122,47 +122,47 @@ public class DataBaseController {
 
          conn.setAutoCommit(false);
          sp = conn.setSavepoint("crera_database");
-         
+
          String sql = "PRAGMA foreign_keys = ON;";
 
-         sql += "CREATE TABLE IF NOT EXISTS usuarios (\n" +
-                 " usuario_id INTEGER  NOT NULL,\n" +
-                 " usuario_nombre TEXT NOT NULL CHECK(length(usuario_nombre)<=100),\n" +
-                 " password TEXT NOT NULL CHECK(length(password)<=20),\n" +
-                 " usuario_activo INTEGER NOT NULL,\n" +
-                 " pregunta TEXT NOT NULL CHECK(length(pregunta)<=100),\n" +
-                 " respuesta TEXT NOT NULL CHECK(length(respuesta)<=100),\n" +
-                 " PRIMARY KEY(usuario_id)" +
+         sql += "CREATE TABLE IF NOT EXISTS usuarios ( " +
+                 "usuario_id INTEGER  NOT NULL, " +
+                 "usuario_nombre TEXT NOT NULL CHECK(length(usuario_nombre)<=100), " +
+                 "password TEXT NOT NULL CHECK(length(password)<=20), " +
+                 "usuario_activo INTEGER NOT NULL, " +
+                 "pregunta TEXT NOT NULL CHECK(length(pregunta)<=100), " +
+                 "respuesta TEXT NOT NULL CHECK(length(respuesta)<=100), " +
+                 "PRIMARY KEY(usuario_id)" +
                  ");";
 
-         sql += "CREATE TABLE IF NOT EXISTS materias (\n" +
-                 " materia_id INTEGER NOT NULL,\n" +
-                 " fk_usuario_id INTEGER NOT NULL,\n" +
-                 " materia_nombre TEXT NOT NULL,\n" +
-                 " directorio TEXT NOT NULL,\n" +
-                 " materia_activo INTEGER NOT NULL,\n" +
-                 " PRIMARY KEY(materia_id),\n" +
-                 " FOREIGN KEY (fk_usuario_id) REFERENCES usuarios(usuario_id)\n" +
-                 " ON DELETE CASCADE ON UPDATE CASCADE" +
-                 " );";
+         sql += "CREATE TABLE IF NOT EXISTS materias ( " +
+                 "materia_id INTEGER NOT NULL, " +
+                 "fk_usuario_id INTEGER NOT NULL, " +
+                 "materia_nombre TEXT NOT NULL, " +
+                 "directorio TEXT NOT NULL, " +
+                 "materia_activo INTEGER NOT NULL, " +
+                 "PRIMARY KEY(materia_id), " +
+                 "FOREIGN KEY (fk_usuario_id) REFERENCES usuarios(usuario_id) " +
+                 "ON DELETE CASCADE ON UPDATE CASCADE" +
+                 ");";
 
-         sql += "CREATE TABLE IF NOT EXISTS idiomas (\n" +
-                 " idioma_id INTEGER NOT NULL,\n" +
-                 " fk_materia_id INTEGER NOT NULL,\n" +
-                 " idioma_nombre TEXT NOT NULL,\n" +
-                 " PRIMARY KEY(idioma_id),\n" +
-                 " FOREIGN KEY (fk_materia_id) REFERENCES materias(materia_id)\n" +
-                 " );";
+         sql += "CREATE TABLE IF NOT EXISTS idiomas ( " +
+                 "idioma_id INTEGER NOT NULL, " +
+                 "fk_materia_id INTEGER NOT NULL, " +
+                 "idioma_nombre TEXT NOT NULL, " +
+                 "PRIMARY KEY(idioma_id), " +
+                 "FOREIGN KEY (fk_materia_id) REFERENCES materias(materia_id) " +
+                 ");";
 
-         sql += "CREATE TABLE IF NOT EXISTS datos (\n" +
-                 " datos_id INTEGER NOT NULL,\n" +
-                 " fk_idioma_id INTEGER NOT NULL,\n" +
-                 " escribir INTEGER NOT NULL,\n" +
-                 " traducir INTEGER NOT NULL,\n" +
-                 " PRIMARY KEY(datos_id),\n" +
-                 " FOREIGN KEY (fk_idioma_id) REFERENCES idiomas(idioma_id)\n" +
-                 " ON DELETE CASCADE ON UPDATE CASCADE" +
-                 " );";
+         sql += "CREATE TABLE IF NOT EXISTS datos ( " +
+                 "datos_id INTEGER NOT NULL, " +
+                 "fk_idioma_id INTEGER NOT NULL, " +
+                 "escribir INTEGER NOT NULL, " +
+                 "traducir INTEGER NOT NULL, " +
+                 "PRIMARY KEY(datos_id), " +
+                 "FOREIGN KEY (fk_idioma_id) REFERENCES idiomas(idioma_id) " +
+                 "ON DELETE CASCADE ON UPDATE CASCADE" +
+                 ");";
 
          stmt = conn.createStatement();
          stmt.executeUpdate(sql);
@@ -189,7 +189,7 @@ public class DataBaseController {
       }
    }
 //</editor-fold>
-   
+
 //<editor-fold defaultstate="collapsed" desc="insertData">
    /**
     * Create a new database if doesn't exit
@@ -203,253 +203,253 @@ public class DataBaseController {
 
          conn.setAutoCommit(false);
          sp = conn.setSavepoint("insertar_tablas");
-         
-         String sql = "INSERT INTO main.usuarios\n" +
-                 " (usuario_nombre, password, usuario_activo, pregunta, respuesta)\n" +
-                 " VALUES ('roberto', '1111', '1', '¿Cuál es tu comida favorita?', '1111');";
-         sql += "INSERT INTO main.usuarios\n" +
-                 " (usuario_nombre, password, usuario_activo, pregunta, respuesta)\n" +
-                 " VALUES ('garrido', '2222', '0', '¿Cuál es tu comida favorita?', '2222');";
-         sql += "INSERT INTO main.usuarios\n" +
-                 " (usuario_nombre, password, usuario_activo, pregunta, respuesta)\n" +
-                 " VALUES ('trillo', '3333', '0', '¿Cuál es tu comida favorita?', '3333');";
 
-         sql += "INSERT INTO main.materias\n" +
-                 " (fk_usuario_id, materia_nombre, directorio, materia_activo)\n" +
-                 " VALUES ('1', 'Los_Vengadores_1.mp4',\n" +
-                 "'D://wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/media/Los_Vengadores_1',\n" +
-                 " '1');";
-         sql += "INSERT INTO main.materias\n" +
-                 " (fk_usuario_id, materia_nombre, directorio, materia_activo)\n" +
-                 " VALUES ('1', 'Numb-Linkin_Park.mp4',\n" +
-                 "'D://wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/media/Numb-Linkin_Park',\n" +
-                 " '0');";
-         sql += "INSERT INTO main.materias\n" +
-                 " (fk_usuario_id, materia_nombre, directorio, materia_activo)\n" +
-                 " VALUES ('2', 'Los_Vengadores_1.mp4',\n" +
-                 "'D://wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/media/Los_Vengadores_1',\n" +
-                 " '1');";
-         sql += "INSERT INTO main.materias\n" +
-                 " (fk_usuario_id, materia_nombre, directorio, materia_activo)\n" +
-                 " VALUES ('2', 'Numb-Linkin_Park.mp4',\n" +
-                 "'D://wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/media/Numb-Linkin_Park',\n" +
-                 " '0');";
-         sql += "INSERT INTO main.materias\n" +
-                 " (fk_usuario_id, materia_nombre, directorio, materia_activo)\n" +
-                 " VALUES ('3', 'Los_Vengadores_1.mp4',\n" +
-                 "'D://wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/media/Los_Vengadores_1',\n" +
-                 " '1');";
-         sql += "INSERT INTO main.materias\n" +
-                 " (fk_usuario_id, materia_nombre, directorio, materia_activo)\n" +
-                 " VALUES ('3', 'Numb-Linkin_Park.mp4',\n" +
-                 "'D://wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/media/Numb-Linkin_Park',\n" +
-                 " '0');";
+         String sql = "INSERT INTO main.usuarios " +
+                 "(usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
+                 "VALUES ('roberto', '1111', '1', '¿Cuál es tu comida favorita?', '1111');";
+         sql += "INSERT INTO main.usuarios " +
+                 "(usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
+                 "VALUES ('garrido', '2222', '0', '¿Cuál es tu comida favorita?', '2222');";
+         sql += "INSERT INTO main.usuarios " +
+                 "(usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
+                 "VALUES ('trillo', '3333', '0', '¿Cuál es tu comida favorita?', '3333');";
 
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.materias " +
+                 "(fk_usuario_id, materia_nombre, directorio, materia_activo) " +
+                 "VALUES ('1', 'Los_Vengadores_1.mp4', " +
+                 "'D:\\wamp64\\www\\dreamweaver\\NetBeansProjects\\LanguageApp\\media\\Los_Vengadores_1\\', " +
+                 "'1');";
+         sql += "INSERT INTO main.materias " +
+                 "(fk_usuario_id, materia_nombre, directorio, materia_activo) " +
+                 "VALUES ('1', 'Numb_Linkin_Park.mp4', " +
+                 "'D:\\wamp64\\www\\dreamweaver\\NetBeansProjects\\LanguageApp\\media\\Numb_Linkin_Park\\', " +
+                 "'0');";
+         sql += "INSERT INTO main.materias " +
+                 "(fk_usuario_id, materia_nombre, directorio, materia_activo) " +
+                 "VALUES ('2', 'Los_Vengadores_1.mp4', " +
+                 "'D:\\wamp64\\www\\dreamweaver\\NetBeansProjects\\LanguageApp\\media\\Los_Vengadores_1\\', " +
+                 "'1');";
+         sql += "INSERT INTO main.materias " +
+                 "(fk_usuario_id, materia_nombre, directorio, materia_activo) " +
+                 "VALUES ('2', 'Numb_Linkin_Park.mp4', " +
+                 "'D:\\wamp64\\www\\dreamweaver\\NetBeansProjects\\LanguageApp\\media\\Numb_Linkin_Park\\', " +
+                 "'0');";
+         sql += "INSERT INTO main.materias " +
+                 "(fk_usuario_id, materia_nombre, directorio, materia_activo) " +
+                 "VALUES ('3', 'Los_Vengadores_1.mp4', " +
+                 "'D:\\wamp64\\www\\dreamweaver\\NetBeansProjects\\LanguageApp\\media\\Los_Vengadores_1\\', " +
+                 "'1');";
+         sql += "INSERT INTO main.materias " +
+                 "(fk_usuario_id, materia_nombre, directorio, materia_activo) " +
+                 "VALUES ('3', 'Numb_Linkin_Park.mp4', " +
+                 "'D:\\wamp64\\www\\dreamweaver\\NetBeansProjects\\LanguageApp\\media\\Numb_Linkin_Park\\', " +
+                 "'0');";
+
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('1', 'English.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('1', 'Spanish.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('1', 'Japanese.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('1', 'Italian.jason');";
 
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('2', 'English.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('2', 'Spanish.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('2', 'Japanese.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('2', 'Italian.jason');";
 
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('3', 'English.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('3', 'Spanish.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('3', 'Japanese.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('3', 'Italian.jason');";
 
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('4', 'English.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('4', 'Spanish.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('4', 'Japanese.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('4', 'Italian.jason');";
 
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('5', 'English.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('5', 'Spanish.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('5', 'Japanese.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('5', 'Italian.jason');";
 
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('6', 'English.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('6', 'Spanish.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('6', 'Japanese.jason');";
-         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre)\n" +
+         sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
                  "VALUES ('6', 'Italian.jason');";
 
-         
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('1', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('1', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('1', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('2', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('2', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('2', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('3', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('3', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('3', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('4', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('4', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('4', '55', '66');";
 
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('5', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('5', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('5', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('6', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('6', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('6', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('7', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('7', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('7', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('8', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('8', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('8', '55', '66');";         
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('1', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('1', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('1', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('2', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('2', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('2', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('3', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('3', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('3', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('4', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('4', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('4', '55', '66');";
 
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('9', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('9', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('9', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('10', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('10', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('10', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('11', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('11', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('11', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('12', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('12', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('12', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('5', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('5', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('5', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('6', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('6', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('6', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('7', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('7', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('7', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('8', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('8', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('8', '55', '66');";
 
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('13', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('13', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('13', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('14', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('14', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('14', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('15', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('15', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('15', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('16', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('16', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('16', '55', '66');";  
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('9', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('9', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('9', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('10', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('10', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('10', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('11', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('11', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('11', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('12', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('12', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('12', '55', '66');";
 
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('17', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('17', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('17', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('18', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('18', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('18', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('19', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('19', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('19', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('20', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('20', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('20', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('13', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('13', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('13', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('14', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('14', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('14', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('15', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('15', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('15', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('16', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('16', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('16', '55', '66');";
 
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('21', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('21', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('21', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('22', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('22', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('22', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('23', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('23', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('23', '55', '66');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('24', '11', '22');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('24', '33', '44');";
-         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir)\n" +
-                 " VALUES ('24', '55', '66');";          
-         
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('17', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('17', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('17', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('18', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('18', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('18', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('19', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('19', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('19', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('20', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('20', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('20', '55', '66');";
+
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('21', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('21', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('21', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('22', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('22', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('22', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('23', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('23', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('23', '55', '66');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('24', '11', '22');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('24', '33', '44');";
+         sql += "INSERT INTO main.datos (fk_idioma_id, escribir, traducir) " +
+                 "VALUES ('24', '55', '66');";
+
          sp = conn.setSavepoint("insertar_tablas");
          stmt = conn.createStatement();
          stmt.executeUpdate(sql);
