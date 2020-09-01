@@ -85,8 +85,7 @@ public class MainScene extends Application {
    public void init () throws Exception
    {
       super.init();
-      Font.loadFont(MainScene.class.getResource("/LanguageApp/resources/fonts/FiraCode_3/FiraCode-Regular.ttf").
-              toExternalForm(), 10);
+      Font.loadFont(MainScene.class.getResource("/LanguageApp/resources/fonts/freefont/FreeSans.ttf").toExternalForm(), 10);
 
 
       // Setting the welcome user

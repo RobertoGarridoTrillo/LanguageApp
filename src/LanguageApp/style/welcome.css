@@ -4,8 +4,8 @@
 */
 
 .root2 {
-  -fx-font-family: 'Fira Code';
-  -fx-font-size: 10pt;
+  -fx-font-family: 'FiraCode-Regular';
+  -fx-font-size: 12pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
   -fx-background-color: #004f8a;
@@ -31,7 +31,7 @@
 .jfx-text-field {
   -jfx-focus-color: coral; /*#4059A9; */
   -jfx-unfocus-color: #004f8a;
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt;
   -fx-border-color: #004f8a;
 }
@@ -59,7 +59,7 @@
 /*        Genericos */
 .textFieldLogin, textFieldLogin:active, textFieldLogin:hover, textFieldLogin:focus {
   -fx-text-fill: white;
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt; 
   -fx-font-weight: bold;
 }

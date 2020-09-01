@@ -282,8 +282,6 @@ public class PrincipalController {
       mainScene = aThis;
    }
 
-
-
 //<editor-fold defaultstate="collapsed" desc="Initialize">
    /**
     * When the method is initialize
@@ -1363,7 +1361,7 @@ public class PrincipalController {
          listViewV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
          //For vertical ListView this is the height, for a horizontal ListView this is the width.  
-         listViewV.setFixedCellSize(34);
+         listViewV.setFixedCellSize(40);
 
          // Enable the listeners
          listViewV.setOnMouseClicked(new EventHandler<MouseEvent>() {

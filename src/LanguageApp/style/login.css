@@ -4,7 +4,7 @@
 */
 
 .root2 {
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 10pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
@@ -52,7 +52,7 @@
 .jfx-password-field {
   -jfx-focus-color: coral; /* #4059A9; */
   -jfx-unfocus-color: #4d4d4d;
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt;
   -fx-border-color: #004f8a; /*#333333;*/
 }
@@ -93,7 +93,7 @@
 .jfx-text-field {
   -jfx-focus-color: coral; /*#4059A9; */
   -jfx-unfocus-color: #004f8a; /* #333333;*/
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt;
   -fx-border-color: #004f8a; /*#333333;*/
 }
@@ -137,7 +137,7 @@
   -jfx-focus-color: coral; /*#4059A9; */
   -jfx-unfocus-color: #4d4d4d;
   -fx-prompt-text-fill: #4d4d4d;
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt;
   -fx-border-color: #004f8a; /*#333333;*/
 }
@@ -197,7 +197,7 @@
 /*        Genericos */
 .textFieldLogin, textFieldLogin:active, textFieldLogin:hover, textFieldLogin:focus {
   -fx-text-fill: white;
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt; 
   -fx-font-weight: bold;
 }

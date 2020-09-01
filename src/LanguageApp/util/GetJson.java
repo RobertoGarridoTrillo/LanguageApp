@@ -32,6 +32,7 @@ public class GetJson {
     public Item[] getJson (File fl) {
 
         Item[] is = null;
+        
         Gson gson = new Gson();
 
         try {

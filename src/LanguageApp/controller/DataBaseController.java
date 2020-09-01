@@ -74,7 +74,7 @@ public class DataBaseController {
       // creating the path
       // The path is an absolute path (relarive to the initial instalation)    
       path = System.getProperty("user.dir");
-      path = path.replace("\\", "/");
+      //path = path.replace("\\", "/");
 
       //Global varibles
       conn = null;
@@ -82,7 +82,7 @@ public class DataBaseController {
 
       // checking the initial database
       createDatabase(connect());
-      insertData(connect()); // Only for testing purpose
+      //insertData(connect()); // Only for testing purpose
    }
 
 //<editor-fold defaultstate="collapsed" desc="Connect">

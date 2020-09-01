@@ -4,7 +4,7 @@
 */
 
 .root {
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 10pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
@@ -14,7 +14,7 @@
 
 /* fuentes */
 .dialog-pane{
-  -fx-font-family: 'Fira Code';
+  -fx-font-family: 'FreeSans';
   -fx-font-size: 11pt;
   -fx-font-weight: bold;
   -fx-font-style: normal;
