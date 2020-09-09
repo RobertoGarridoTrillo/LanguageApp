@@ -44,8 +44,8 @@ public class GetJson {
             // Put the id handly
             for (int i = 0; i < is.length; i++) {
                 is[i].setId(i);
-                is[i].setStart(is[i].getStart() - 0.2);
-                is[i].setEnd(is[i].getEnd() + 0.2);
+                is[i].setStart(is[i].getStart());
+                is[i].setEnd(is[i].getEnd());
                 is[i].setText(is[i].getText());
             }
 

@@ -31,8 +31,7 @@ public class FillListView {
 
         try {
             // Creating the Observable list
-            ObservableList<String> listItem = FXCollections.
-                    observableArrayList();
+            ObservableList<String> listItem = FXCollections.observableArrayList();
 
             // Filling the list
             for (int i = 0; i < it.length - 1; i++) {

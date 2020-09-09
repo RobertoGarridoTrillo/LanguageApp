@@ -1,6 +1,5 @@
 package LanguageApp.util;
 
-import LanguageApp.controller.MainController;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,73 +35,46 @@ public class AudioClips {
     * Setting the audioclips
     *
     * @param wordSet a Set of String, result of creating a list of words of the media
+    * @param lastdirectory
+    * @param lastFile
     * @return A map with the name and the Audioclip
     */
-   public Map<String, AudioClip> setAudioClip (Set<String> wordSet, String lastFile) {
-
+   public Map<String, AudioClip> setAudioClip (Set<String> wordSet, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
+   {
       // instance of the Map
       audioClips = new HashMap<>();
-      this.wordSet = wordSet;
+      //this.wordSet = wordSet;
       String audioError = null;
-      // The path is an absolute path (retarive to the initial instalation)    
-      path = System.getProperty("user.dir");
-      path = path.replace("\\", "/");
+
+      String se = System.getProperty("file.separator");
 
       try {
          for (String ws : wordSet) {
 
+            // This is to fix the forbbiden name con. in windows
+            if (ws.equals("con")) {
+               ws = "connn";
+            }
             audioError = ws; // if this audid doesn´t exist I show it in an message.
 
-            String s = path + "/media/"+ lastFile.replace(".mp4", "")+"/dictionary/" + ws + ".mp3";
+            String s = lastdirectory + se + ws + ".mp3";
 
-           URI resource = new File(s).toURI();
-           
+            URI resource = new File(s).toURI();
 
             ac = new AudioClip(resource.toString());
 
             audioClips.put(ws, ac);
+
+            audioClips.get(ws).rateProperty().bind(rateSlider.valueProperty());
+            audioClips.get(ws).balanceProperty().bind(balanceSlider.valueProperty());
+            audioClips.get(ws).volumeProperty().bind(volumeSlider.valueProperty());
          }
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" + audioError + "\"","AudioClips.java / setAudioClip()", e);
+         message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" + audioError + "\"", "AudioClips.java / setAudioClip()", e);
       }
       return audioClips;
    }
 
-
-   /**
-    * Blinding the slider with the audioClips
-    *
-    * @param rateSlider The slider that control the Rate
-    */
-   public void setAudioClipRateSlider (Slider rateSlider) {
-      wordSet.forEach((ws) -> {
-         audioClips.get(ws).rateProperty().bind(rateSlider.valueProperty());
-      });
-   }
-
-
-   /**
-    * Blinding the slider with the audioClips
-    *
-    * @param balanceSlider The slider that control the balance
-    */
-   public void setAudioClipBalanceSlider (Slider balanceSlider) {
-      wordSet.forEach((ws) -> {
-         audioClips.get(ws).balanceProperty().bind(balanceSlider.valueProperty());
-      });
-   }
-
-
-   /**
-    * Blinding the slider with the audioClips
-    *
-    * @param volumeSlider The slider that control the volume
-    */
-   public void setAudioClipVolumeSlider (Slider volumeSlider) {
-      wordSet.forEach((ws) -> {
-         audioClips.get(ws).volumeProperty().bind(volumeSlider.valueProperty());
-      });
-   }
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
    /**

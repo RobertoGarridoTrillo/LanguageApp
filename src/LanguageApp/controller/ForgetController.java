@@ -28,23 +28,30 @@ public class ForgetController {
 
    @FXML public AnchorPane anchorRight;
 
-   @FXML private JFXTextField usuarioTextField;
-   @FXML private Label errorUserLabel;
-   @FXML private JFXComboBox preguntaComboBox;
-   @FXML private JFXTextField respuestaTextField;
-   @FXML private Label errorRespuestaLabel;
-   @FXML private JFXButton enviarButton;
-   @FXML private Label oldUserLabel;
-   @FXML private JFXTextField errorPasswordLabel;
-   @FXML private Pane errorPasswordPane;
-
-   @FXML private HBox HBoxUsuario;
+   @FXML private HBox HBoxUsuarioForget;
+   @FXML private JFXTextField usuarioTextFieldForget;
+   
    @FXML private HBox HBoxErrorUser;
-   @FXML private HBox HBoxPregunta;
-   @FXML private HBox HBoxRespuesta;
+   @FXML private Label errorUserLabel;
+   
+   @FXML private HBox HBoxPreguntaForget;
+   @FXML private JFXComboBox preguntaComboBoxForget;
+   
+   @FXML private HBox HBoxRespuestaForget;
+   @FXML private JFXTextField respuestaTextFieldForget;
+   
    @FXML private HBox HBoxErrorRespuesta;
-   @FXML private HBox HBoxEnviar;
-   @FXML private HBox HBoxAntiguoUsuario;
+   @FXML private Label errorRespuestaLabel;
+   
+   @FXML private HBox HBoxRecuperarForget;
+   @FXML private JFXButton recuperarButtonForget;
+   
+   @FXML private HBox HBoxErrorPassword;
+   @FXML private JFXTextField errorPasswordLabel;
+   
+   @FXML private HBox HBoxAntiguoUsuarioForget;
+   @FXML private JFXButton oldUserButtonForget;
+
 
    // The nodes of the view
    private Node[] node;
@@ -85,33 +92,33 @@ public class ForgetController {
       mainStage = MainScene.getMainStage();
 
       node = new Node[]{
-         usuarioTextField,
-         preguntaComboBox,
-         respuestaTextField,
-         enviarButton,
-         oldUserLabel
+         usuarioTextFieldForget,
+         preguntaComboBoxForget,
+         respuestaTextFieldForget,
+         recuperarButtonForget,
+         oldUserButtonForget
       };
 
       // Setting the current node
-      currentNode = usuarioTextField;
-      oldNode = usuarioTextField;
-      usuarioTextField.requestFocus();
+      currentNode = usuarioTextFieldForget;
+      oldNode = usuarioTextFieldForget;
+      usuarioTextFieldForget.requestFocus();
 
       // Setting the jfxtextfield name
       setJFXTextField();
 
       // Settiong the intial border
-      setBorder(usuarioTextField);
+      setBorder(usuarioTextFieldForget);
 
       // Setting the ConboBox options
-      preguntaComboBox.getItems().removeAll(preguntaComboBox.getItems());
-      preguntaComboBox.getItems().addAll(
+      preguntaComboBoxForget.getItems().removeAll(preguntaComboBoxForget.getItems());
+      preguntaComboBoxForget.getItems().addAll(
               "¿Cuál es tu comida favorita?",
-              "¿Cuál es tu color favorita?",
+              "¿Cuál es tu color favorito?",
               "¿Cuál es tu ciudad favorita",
               "¿Cuál es tu ropa favorita?",
               "¿Cuál es tu bebida favorita?");
-      // preguntaComboBox.getSelectionModel().select("Option B");
+      // preguntaComboBoxForget.getSelectionModel().select("Option B");
 
       // HBoxError disabled
       errorUserLabel.setManaged(false);
@@ -126,11 +133,11 @@ public class ForgetController {
     */
    private void setJFXTextField ()
    {
-      eventButton(usuarioTextField, 4, 1);
-      eventButton(preguntaComboBox, 0, 2);
-      eventButton(respuestaTextField, 1, 3);
-      eventButton(enviarButton, 2, 4);
-      eventButton(HBoxAntiguoUsuario, 3, 0);
+      eventButton(usuarioTextFieldForget, 4, 1);
+      eventButton(preguntaComboBoxForget, 0, 2);
+      eventButton(respuestaTextFieldForget, 1, 3);
+      eventButton(recuperarButtonForget, 2, 4);
+      eventButton(HBoxAntiguoUsuarioForget, 3, 0);
 
    }
 //</editor-fold>
@@ -154,8 +161,8 @@ public class ForgetController {
       {
          if (newVal) {
             errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
             errorRespuestaLabel.setManaged(false);
-            errorPasswordLabel.setManaged(false);     
             setBorder(n);
          }
       });
@@ -167,8 +174,8 @@ public class ForgetController {
          public void handle (KeyEvent ke)
          {
             errorUserLabel.setManaged(false);
-            errorRespuestaLabel.setManaged(false);
             errorPasswordLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
             int i = -1;
 
             if (ke.getCode().equals(KeyCode.UP)) {
@@ -179,19 +186,19 @@ public class ForgetController {
             }
             if (ke.getCode().equals(KeyCode.ENTER)) {
                switch (n.getId()) {
-                  case "usuarioTextField":
+                  case "usuarioTextFieldForget":
                      handleValidationUser();
                      break;
                   case "preguntaComboBox":
                      handlePregunta();
                      break;
-                  case "respuestaTextField":
+                  case "respuestaTextFieldForget":
                      handleValidationRespuesta();
                      break;
-                  case "enviarButton":
+                  case "recuperarButtonForget":
                      handleEnviar();
                      break;
-                  case "HBoxAntiguoUsuario":
+                  case "HBoxAntiguoUsuarioForget":
                      handleAntiguoUsuario();
                      break;
                   default:
@@ -200,13 +207,13 @@ public class ForgetController {
             }
             if (ke.getCode().equals(KeyCode.SPACE)) {
                switch (n.getId()) {
-                  case "preguntaComboBox":
+                  case "preguntaComboBoxForget":
                      handlePregunta();
                      break;
-                  case "enviarButton":
+                  case "recuperarButtonForget":
                      handleEnviar();
                      break;
-                  case "HBoxAntiguoUsuario":
+                  case "HBoxAntiguoUsuarioForget":
                      handleAntiguoUsuario();
                      break;
                   default:
@@ -227,9 +234,9 @@ public class ForgetController {
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
          // HBoxError disabled
-         errorUserLabel.setManaged(false);
-         errorRespuestaLabel.setManaged(false);
-         errorPasswordLabel.setManaged(false);
+            errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
 
          n.requestFocus();
          setBorder(n);
@@ -237,10 +244,10 @@ public class ForgetController {
          MouseEvent.consume();
 
          switch (n.getId()) {
-            case "enviarButton":
+            case "recuperarButtonForget":
                handleEnviar();
                break;
-            case "HBoxAntiguoUsuario":
+            case "HBoxAntiguoUsuarioForget":
                handleAntiguoUsuario();
                break;
             default:
@@ -259,41 +266,41 @@ public class ForgetController {
     */
    private void setBorder (Node n)
    {
-      if (n.equals(usuarioTextField)) {
+      if (n.equals(usuarioTextFieldForget)) {
          eraserBorder();
-         HBoxUsuario.getStyleClass().add("borderLoginVisible");
+         HBoxUsuarioForget.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
       
-      if (n.equals(preguntaComboBox)) {
+      if (n.equals(preguntaComboBoxForget)) {
          eraserBorder();
-         HBoxPregunta.getStyleClass().add("borderLoginVisible");
+         HBoxPreguntaForget.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(respuestaTextField)) {
+      if (n.equals(respuestaTextFieldForget)) {
          eraserBorder();
-         HBoxRespuesta.getStyleClass().add("borderLoginVisible");
+         HBoxRespuestaForget.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(enviarButton)) {
+      if (n.equals(recuperarButtonForget)) {
          eraserBorder();
-         HBoxEnviar.getStyleClass().add("borderLoginVisible");
+         HBoxRecuperarForget.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(oldUserLabel)) {
+      if (n.equals(oldUserButtonForget)) {
          eraserBorder();
-         HBoxAntiguoUsuario.getStyleClass().add("borderLoginVisible");
+         HBoxAntiguoUsuarioForget.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
@@ -312,15 +319,15 @@ public class ForgetController {
    {
       currentNode.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxUsuario.getStyleClass()
+      HBoxUsuarioForget.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxPregunta.getStyleClass()
+      HBoxPreguntaForget.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxRespuesta.getStyleClass()
+      HBoxRespuestaForget.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxEnviar.getStyleClass()
+      HBoxRecuperarForget.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxAntiguoUsuario.getStyleClass()
+      HBoxAntiguoUsuarioForget.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
 //</editor-fold>
@@ -333,7 +340,7 @@ public class ForgetController {
     */
    private void handleValidationUser ()
    {
-      usuarioString = usuarioTextField.getText().trim();
+      usuarioString = usuarioTextFieldForget.getText().trim();
       registroUser = true;
 
       if (usuarioString.isEmpty() || usuarioString.length() == 0) {
@@ -361,7 +368,7 @@ public class ForgetController {
     */
    private void handlePregunta ()
    {
-      preguntaComboBox.show();
+      preguntaComboBoxForget.show();
    }
 
    /**
@@ -369,8 +376,8 @@ public class ForgetController {
     */
    private void handleValidationRespuesta ()
    {
-      Object preguntaObject = preguntaComboBox.getValue();
-      respuestaString = respuestaTextField.getText().trim();
+      Object preguntaObject = preguntaComboBoxForget.getValue();
+      respuestaString = respuestaTextFieldForget.getText().trim();
       registroPregunta = true;
       registroRespuesta = true;
 
@@ -421,18 +428,18 @@ public class ForgetController {
       }
    }
 
-      /**
+   /**
     *
     * @param text
     */
    private void showErrorPassword (String text)
    {
       errorPasswordLabel.setManaged(true);
-      errorPasswordPane.setManaged(true);
       errorPasswordLabel.setText(text);
       registroPregunta = false;
       registroRespuesta = false;
    }
+   
    /**
     *
     */

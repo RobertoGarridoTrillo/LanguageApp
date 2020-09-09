@@ -12,6 +12,7 @@ import LanguageApp.util.FormatTime;
 import LanguageApp.util.GetJson;
 import LanguageApp.util.SaveWordsAsList;
 import LanguageApp.util.SelectedFile;
+import LanguageApp.util.SortPhrase;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -198,8 +199,11 @@ public class PrincipalController {
    private MainScene mainScene;
 
    // Json
-   private Item[] itemsOriginal;
-   private Item[] itemsTranslation;
+   private Item[] itemsOriginal, itemsTranslation;
+
+   private Item[][] idiomas;
+   private String[] idiomaSubt;
+
    // Player
    private MediaPlayer mediaPlayer;
    private Media media;
@@ -215,7 +219,8 @@ public class PrincipalController {
    private int indexItemV;
 
    // Save as a list of words
-   private Set<String> wordSet;
+   private Set<String>[] wordSet;
+   private Set<String>[] phraseSet;
 
    // Show ListView 
    private String[] itemWordsOriginal;
@@ -227,7 +232,10 @@ public class PrincipalController {
    private String markerTextTranslation;
 
    // AudiClip
-   private Map<String, AudioClip> audioClips;
+   private Map<String, AudioClip>[] audioClipsWords;
+   private Map<String, AudioClip>[] audioClipsPhrases;
+
+
    private boolean exitLoop;
    private int currentPauseItem; // the actuan item when click the original pause 
 
@@ -267,6 +275,7 @@ public class PrincipalController {
    private SaveWordsAsList swal;
    private FormatTime ft;
    private Directorio dire;
+   private SortPhrase sp;
 
    // Active user
    private int usuario_id;
@@ -298,6 +307,8 @@ public class PrincipalController {
          ac = new AudioClips();
          swal = new SaveWordsAsList();
          ft = new FormatTime();
+         sp = new SortPhrase();
+
 
          path = System.getProperty("user.dir");
          se = System.getProperty("file.separator");
@@ -377,15 +388,15 @@ public class PrincipalController {
          currentPauseItem = 0;
 
          // Setting initial user
-         usuario_id = 0;
+         usuario_id = mainScene.getUsuario_id();
 
          // Check if there´s an initial file
-         usuario_id = mainScene.getUsuario_id();
+         // usuario_id = mainScene.getUsuario_id();
          if (dire.checkIni(usuario_id)) {
             handleOpenMenu2();
          }
-
-      } catch (Exception e) {
+         
+       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "MainController / initialize()", e.toString(), e);
       }
 
@@ -415,43 +426,67 @@ public class PrincipalController {
          message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", e.toString(), e);
       }
    }
-
+   
    /**
     * Open a SelectFile and seek a json to load the phrases (Part2)
     */
-   private void handleOpenMenu2 ()
+   public void handleOpenMenu2 ()
    {
       try {
          handleCloseMenu("handleOpenMenu2");
 
-         // Read a json in English, send a File JSON, return an array of Item class objects
-         File file = new File(dire.getLastDirectory() + "English.json");
-         itemsOriginal = gj.getJson(file);
+         // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
+         File jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
+         String[] listado = jsonBinder.list();
 
-         // Read a json in Spanish, send a File JSON, return an array of Item class objects
-         file = new File(dire.getLastDirectory() + "Spanish.json");
-         itemsTranslation = gj.getJson(file);
+         idiomas = new Item[listado.length][];
+         wordSet = (Set<String>[]) new Set[listado.length];
+         phraseSet = (Set<String>[]) new Set[listado.length];
+         audioClipsWords = (Map<String, AudioClip>[]) new Map[listado.length];
+         audioClipsPhrases = (Map<String, AudioClip>[]) new Map[listado.length];
+
+         for (int x = 0; x < listado.length; x++) {
+
+            // Read a json ,call a read JSON, return an array of Item class objects
+            File file = new File(dire.getLastDirectory() + "Json\\\\" + listado[x]);
+
+            if (file.exists()) {
+               // Read the Json witn the Item[]
+               idiomas[x] = gj.getJson(file);
+               // Extract the languages from the last row of the any item
+               idiomaSubt = idiomas[0][idiomas[0].length - 1].getText().split(" ");
+
+               wordSet[x] = swal.saveWordsAsList(idiomas[x]);
+               phraseSet[x] = sp.sortPhrases(idiomas[x]);
+            }
+         }
+
 
          // fill a ListView with the phrases of the Items array
-         String titleMp4 = flw.setListView(listViewV, itemsOriginal);
+         itemsOriginal = idiomas[0];
+         itemsTranslation = idiomas[1];
 
-         // Setting the last File
-         dire.setLastFile(titleMp4);
+         flw.setListView(listViewV, itemsOriginal);
 
          // Creating the path to the media
          mediaStringUrl = new File(dire.getLastDirectory() + dire.getLastFile()).toURI();
 
-         // Creating a list of words of the media
-         wordSet = swal.saveWordsAsList(itemsOriginal);
-
          // Set the MediaPlayer
          setMediaPlayer();
 
+
          // Setting audiclips
-         audioClips = ac.setAudioClip(wordSet, dire.getLastFile());
-         ac.setAudioClipRateSlider(rateSliderReading);
-         ac.setAudioClipBalanceSlider(balanceSliderReading);
-         ac.setAudioClipVolumeSlider(volumeSliderReading);
+         for (int x = 0; x < listado.length; x++) {
+            audioClipsWords[x] = ac.setAudioClip(wordSet[x],
+                    dire.getLastDirectory() + listado[x]
+                            .replaceAll(".json", "") + "Dictionary\\Words",
+                    rateSliderReading, balanceSliderReading, volumeSliderReading);
+            audioClipsPhrases[x] = ac.setAudioClip(phraseSet[x],
+                    dire.getLastDirectory() + listado[x]
+                            .replaceAll(".json", "") + "Dictionary\\Phrases",
+                    rateSliderReading, balanceSliderReading, volumeSliderReading);
+         }
+
 
          // Setting the listview
          setListViewV();
@@ -483,7 +518,7 @@ public class PrincipalController {
          setBinding();
 
          // Initial call that return the total duration of the file and 
-         // set it in  the label textLabel
+         // set it in  the label textLabel  
          setEndTimefile();
 
       } catch (Exception e) {
@@ -494,8 +529,8 @@ public class PrincipalController {
 
    /**
     * When click on the close menu
-    * @param origen Only when the origen is handleOpenMenu2 I create an empty inicial file
-    * is not, only close all.
+    *
+    * @param origen Only when the origen is handleOpenMenu2 I create an empty inicial file is not, only close all.
     */
    public void handleCloseMenu (String origen)
    {
@@ -506,7 +541,7 @@ public class PrincipalController {
 
          mediaPlayer.stop();
          mediaPlayer.dispose();
-         audioClips = null;
+         audioClipsWords = null;
 
          itemsOriginal = new Item[1];
          itemsOriginal[0] = new Item(0, 0, " ");
@@ -523,7 +558,7 @@ public class PrincipalController {
 
          // Delete and create and empty initial file
          usuario_id = mainScene.getUsuario_id();
-         if (!origen.equals("handleOpenMenu2")){
+         if (!origen.equals("handleOpenMenu2")) {
             dire.createIni(usuario_id);
          }
 
@@ -868,8 +903,7 @@ public class PrincipalController {
    {
 
       // Create an Observablelist to listview H    
-      ObservableList olItems = listViewH01Reading.getSelectionModel().
-              getSelectedItems();
+      ObservableList olItems = listViewH01Reading.getSelectionModel().getSelectedItems();
 
       if (olItems.size() > 0) {
          // Size of the list
@@ -879,13 +913,19 @@ public class PrincipalController {
          // Create an array of string whera I´ll put the texts of the listview H
          String[] text = new String[size];
 
+         // This is to fix the forbbiden name con. in windows
          for (Object item : olItems) {
-            text[cont] = item.toString();
-            cont++;
+            if (item.toString().equals("con")) {
+               text[cont] = "connn";
+               cont++;
+            } else {
+               text[cont] = item.toString();
+               cont++;
+            }
          }
 
          // Play the audioclips one behind the other
-         audioClips.get(text[0]).play();
+         audioClipsWords[0].get(text[0]).play();
 
          if (size > 1) {
             Thread audio = new Thread(new Runnable() {
@@ -901,10 +941,10 @@ public class PrincipalController {
                         break;
                      }
 
-                     while (audioClips.get(text[i - 1]).
+                     while (audioClipsWords[0].get(text[i - 1]).
                              isPlaying()) {
                      }
-                     audioClips.get(text[i]).play();
+                     audioClipsWords[0].get(text[i]).play();
                   }
                }
             });
@@ -1437,8 +1477,7 @@ public class PrincipalController {
    {
 
       // Enable the selection mode
-      listViewH01Reading.getSelectionModel().setSelectionMode(
-              SelectionMode.MULTIPLE);
+      listViewH01Reading.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
       // Enable the listeners
       listViewH01Reading.setOnMouseClicked(new EventHandler<MouseEvent>() {

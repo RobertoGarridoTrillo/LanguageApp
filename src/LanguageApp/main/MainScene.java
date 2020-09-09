@@ -11,13 +11,19 @@ import LanguageApp.controller.WelcomeController;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -32,6 +38,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 
@@ -70,6 +77,11 @@ public class MainScene extends Application {
    // When I'm in the welcome screen
    boolean welcomeScreen;
 
+   // Setting the idioms's bundle
+   ResourceBundle resources;
+   Locale locale;
+   FXMLLoader loader;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
@@ -89,8 +101,6 @@ public class MainScene extends Application {
 
 
       // Setting the welcome user
-      usuario_nombre = null;
-      usuario_id = 0;
       usuario_activo = 0;
       welcomeScreen = true;
    }
@@ -112,11 +122,12 @@ public class MainScene extends Application {
       // Set the Title to the Stage
       this.mainStage.setTitle("LanguagesApp");
       // Set the application icon.
-
       this.mainStage.getIcons().add(new Image(getClass()
               .getResourceAsStream("/LanguageApp/resources/images/languages_128.png")));
 
-      //
+      // Setting the close button
+      handleClose();
+      // 
       dataBaseView();
       // 
       mainView();
@@ -128,16 +139,34 @@ public class MainScene extends Application {
       loginView();
 
       // Checking if there's some active user
-      usuario_nombre = handleCheckNombre();
-      welcomeController.handleCheckNombre(usuario_nombre);
+      Object nombre = handleCheckNombre().getValue();
+      Object id = handleCheckNombre().getKey();
+
+      usuario_nombre = (nombre != null) ? nombre.toString() : null;
+      usuario_id = (id != null) ? (Integer) id : 0;
+
+      // Put the name in the welcome label
+      welcomeController.handlePutName(usuario_nombre);
 
       this.mainStage.setResizable(false);
       this.mainStage.setWidth(1215);
       this.mainStage.setHeight(640);
       this.mainStage.show();
 
+      // Thread that charge the Principal Controlleer
+      Task task = new Task<Void>() {
+         @Override public Void call ()
+         {
+            {
+               principalView();
+
+            }
+            return null;
+         }
+      };
+      new Thread(task).start();
    }
-//</editor-fold>   
+//</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="DataBaseView">
    private void dataBaseView ()
@@ -145,9 +174,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/DataBaseView.fxml"));
+         handleLocale("DataBaseView");
+
          dataBaseView = (AnchorPane) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
@@ -155,7 +183,7 @@ public class MainScene extends Application {
          dataBaseController.setMainScene(this);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / dataBaseView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -171,12 +199,11 @@ public class MainScene extends Application {
    {
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/MainView.fxml"));
+         handleLocale("MainView");
+
          mainView = (BorderPane) loader.load();
 
-         // Set the Scene to the Stage
+         // Set the Scene to the Stage (It the main wiew)
          mainScene = new Scene(mainView);
          mainStage.setScene(mainScene);
 
@@ -189,20 +216,23 @@ public class MainScene extends Application {
          jMetro.setScene(mainScene);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / mainView()", e.toString(), e);
       }
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="pricipalView">
+
+   /**
+    *
+    */
    private void principalView ()
    {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/PrincipalView.fxml"));
+         handleLocale("PrincipalView");
+
          principalView = (AnchorPane) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
@@ -210,9 +240,10 @@ public class MainScene extends Application {
          principalController.setMainScene(this);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / principalView()", e.toString(), e);
       }
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="LoginView">
@@ -221,27 +252,28 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/LoginView.fxml"));
+         handleLocale("LoginView");
+
          loginView = (HBox) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
          loginController = loader.getController();
          loginController.setMainScene(this);
+
+         // Put the welcome in the main (It's the initial view)
          loginController.loginViewAnchorPane.getChildren().add(welcomeView);
 
          // Create the Scene and put it in the center or the borderLayout
          mainView.setCenter(loginView);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / loginView()", e.toString(), e);
       }
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Welcome">
-
    /**
     *
     */
@@ -250,9 +282,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/WelcomeView.fxml"));
+         handleLocale("WelcomeView");
+
          welcomeView = (AnchorPane) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
@@ -260,13 +291,13 @@ public class MainScene extends Application {
          welcomeController.setMainScene(this);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / welcomeView()", e.toString(), e);
       }
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="FormView">
-
    /**
     *
     */
@@ -275,9 +306,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/FormView.fxml"));
+         handleLocale("FormView");
+
          formView = (AnchorPane) loader.load();
 
          // Give the mainController access to the main app (It´s like a instance)
@@ -285,7 +315,7 @@ public class MainScene extends Application {
          formController.setMainScene(this);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / formView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -296,9 +326,7 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/RegistrationView.fxml"));
+         handleLocale("RegistrationView");
 
          registrationView = (AnchorPane) loader.load();
 
@@ -307,7 +335,7 @@ public class MainScene extends Application {
          registrationController.setMainScene(this);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / registrationView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -318,9 +346,7 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         FXMLLoader loader = new FXMLLoader();
-         loader.setLocation(MainScene.class
-                 .getResource("/LanguageApp/view/ForgetView.fxml"));
+         handleLocale("ForgetView");
 
          forgetView = (AnchorPane) loader.load();
 
@@ -329,7 +355,7 @@ public class MainScene extends Application {
          forgetController.setMainScene(this);
 
       } catch (IOException e) {
-         e.printStackTrace();
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / forgetView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -340,11 +366,12 @@ public class MainScene extends Application {
     *
     * @return
     */
-   public String handleCheckNombre ()
+   public Pair handleCheckNombre ()
    {
       Connection conn = null;
       Statement stmt = null;
-      usuario_id = 0;
+      usuario_nombre = null;
+
       usuario_nombre = null;
 
       // Preparing statement
@@ -357,18 +384,15 @@ public class MainScene extends Application {
          //
          ResultSet rs = stmt.executeQuery(sql);
 
-         while (rs.next()) {
+         if (rs.next()) {
             usuario_id = rs.getInt("usuario_id");
             usuario_nombre = rs.getString("usuario_nombre");
+         } else {
+            usuario_id = 0;
          }
 
          stmt.close();
-
-         if (usuario_id > 0) {
-            conn.close();
-            //setting the Actul Static user
-            return usuario_nombre;
-         }
+         conn.close();
 
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
@@ -381,15 +405,16 @@ public class MainScene extends Application {
             message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
          }
       }
-      return null;
+      return new Pair(usuario_id, usuario_nombre);
    }
 
    /**
     *
     * @param activoBoolean
     */
-   public void handleEntrar (boolean activoBoolean)
+   public void handleEntrar (boolean activoBoolean, boolean usuario_last)
    {
+
       Connection conn = null;
       Statement stmt = null;
       PreparedStatement pstmt = null;
@@ -401,6 +426,7 @@ public class MainScene extends Application {
          // Try connection
          conn = dataBaseController.connect();
          conn.setAutoCommit(false);
+
 
          String sql = "UPDATE usuarios SET usuario_activo = 0;";
          stmt = conn.createStatement();
@@ -417,9 +443,11 @@ public class MainScene extends Application {
          pstmt.close();
          conn.close();
 
+         if (!usuario_last) {
+            principalView();
+         }
          welcomeScreen = false;
-         principalView();
-         handleDashBoardMenu();
+         buttonDashBoardMenu();
 
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
@@ -435,22 +463,18 @@ public class MainScene extends Application {
    }
 
    /**
-    * @param usuarioString
-    * @param passwordString
-    * @param activoBoolean
-    * @return
+    *
     */
-   public boolean handlelogin (String usuarioString, String passwordString, boolean activoBoolean)
+   public Pair handleCheckUser (String usuarioString, String passwordString)
    {
-
       Connection conn = null;
       PreparedStatement pstmt = null;
       Statement stmt = null;
-      // In SQLinte doesn't exit boolean
-      usuario_activo = (activoBoolean) ? 1 : 0;
+
+      usuario_nombre = null;
 
       // Preparing statement
-      String sql = "SELECT usuario_id FROM usuarios WHERE usuario_nombre = ? and password = ?";
+      String sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_nombre = ? and password = ?";
       try {
          // Try connection
          conn = dataBaseController.connect();
@@ -469,46 +493,22 @@ public class MainScene extends Application {
 
          if (rs.next()) {
             usuario_id = rs.getInt("usuario_id");
+            usuario_nombre = rs.getString("usuario_nombre");
+         } else {
 
-            // put the user usuario_activo or not
-
-            sql = "UPDATE usuarios SET usuario_activo = 0;";
-            stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
-            
-            conn.commit();
-
-            // set the value
-            sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, usuario_activo);
-            pstmt.setInt(2, usuario_id);
-            pstmt.executeUpdate();
-            conn.commit();
-            stmt.close();
-
-            // Start the dashborad
-            welcomeScreen = false;
-            principalView();
-            handleDashBoardMenu();
          }
-
-         // if exits the user and password return true
-         pstmt.close();
-         conn.close();
-
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleLogin()", e.toString(), e);
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
          } catch (SQLException e) {
-            message(Alert.AlertType.ERROR, "Error message", "MainScene / handleLogin()", e.toString(), e);
+            message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
          }
       }
-      return false;
+      return new Pair(usuario_id, usuario_nombre);
    }
 
    /**
@@ -629,17 +629,6 @@ public class MainScene extends Application {
    }
 
    /**
-    * Change the scene registrationView form to formView
-    *
-    */
-   public void handleAntiguoUsuario ()
-   {
-      // Create the Scene formView
-      loginView.getChildren().remove(registrationView);
-      loginView.getChildren().add(formView);
-   }
-
-   /**
     * Change the scene from formView to forgetView
     *
     */
@@ -661,15 +650,66 @@ public class MainScene extends Application {
       loginView.getChildren().add(formView);
    }
 
+   /**
+    *
+    */
+   public void handleClose ()
+   {
+      mainStage.setOnCloseRequest(e -> {
+         e.consume();
+         if (!message(Alert.AlertType.CONFIRMATION, "Salir",
+                 "¿Salir de la aplicación?", "", null)) {
+         } else {
+         Platform.exit();
+         System.exit(0);
+         }
+      });
+   }
+
+   /**
+    *
+    */
+   private void handleLocale (String s)
+   {
+      try {
+         // Create an array with the idioms of the app
+         String[] languages = {"en", "es", "fr", "it", "ja"};
+
+         // Get the local language
+         locale = new Locale(Locale.getDefault().getLanguage());
+
+         // if the local doesn't exit in the app, it uses "en"
+         boolean salida = false;
+         for (String language : languages) {
+            if (locale.getLanguage().equals(new Locale(language).getLanguage())) {
+               salida = true;
+               break;
+            }
+         }
+         if (!salida) {
+            locale = new Locale("en");
+         }
+
+         resources = ResourceBundle.getBundle("LanguageApp.resources.bundles.LanguageApp", locale);
+         URL urlFXML = new URL(MainScene.class
+                 .getResource("/LanguageApp/view/" + s + ".fxml").toExternalForm());
+
+         loader = new FXMLLoader(urlFXML, resources);
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
    /**
     *
+    * @param id
     * @param usuario_id
     *
     */
-   public static void gg (int usuario_id)
+   public static void setUsuario_id (int usuario_id)
    {
       MainScene.usuario_id = usuario_id;
    }
@@ -682,19 +722,9 @@ public class MainScene extends Application {
     */
    public static int getUsuario_id ()
    {
-      return usuario_id;
+      return MainScene.usuario_id;
    }
 
-   /**
-    * Change the scene from formView to registrationView
-    *
-    */
-   public void handleNuevoUsuario ()
-   {
-      // Create the Scene registrationView
-      loginView.getChildren().remove(formView);
-      loginView.getChildren().add(registrationView);
-   }
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Menu Buttons">
@@ -711,7 +741,7 @@ public class MainScene extends Application {
    /**
     * it's called by mainController when i click in the open menu
     */
-   public void handleOpenMenu ()
+   public void buttonOpenMenu ()
    {
       try {
          // if doesn't be user, return
@@ -726,7 +756,7 @@ public class MainScene extends Application {
    /**
     * it's called by mainController when i click in the close menu
     */
-   public void handleCloseMenu ()
+   public void buttonCloseMenu ()
    {
       try {
          // if doesn't be user, return
@@ -739,9 +769,24 @@ public class MainScene extends Application {
    }
 
    /**
+    * it's called by mainController when i click in the close menu
+    */
+   public void buttonExitMenu ()
+   {
+      if (!message(Alert.AlertType.CONFIRMATION, "Salir",
+              "¿Salir de la aplicación?", "", null)) {
+         return;
+      }
+
+      Platform.exit();
+      System.exit(0);
+   }
+
+
+   /**
     * it's called by mainController when i click in the Controles menu
     */
-   public void handleControlesMenu ()
+   public void buttonControlesMenu ()
    {
       message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
               "Controles: \n\n" +
@@ -758,16 +803,16 @@ public class MainScene extends Application {
    /**
     * it's called by mainController when i click in the About menu
     */
-   public void handleAboutMenu ()
+   public void buttonAboutMenu ()
    {
-     message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
+      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
               null);
    }
 
    /**
     * it's called by mainController when i click in the Login menu
     */
-   public void handleLoginMenu ()
+   public void buttonLoginMenu ()
    {
 
       try {
@@ -792,7 +837,7 @@ public class MainScene extends Application {
    /**
     * it's called by mainController when i click in the Login menu
     */
-   public void handleUnloginMenu ()
+   public void buttonUnloginMenu ()
    {
       // if doesn't be user, return
       if (welcomeScreen && usuario_id == 0) {
@@ -809,19 +854,41 @@ public class MainScene extends Application {
          loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
 
          // Deleting the active in the database
-         handleEntrar(false);
+         Platform.runLater(new Runnable() {
+            @Override
+            public void run ()
+            {
+               handleEntrar(false, false);
+            }
+         });
          // Deleting the global variables
          usuario_id = 0;
          usuario_nombre = null;
          usuario_activo = 0;
          welcomeScreen = true;
 
-         // Checking if there's some active user
-         usuario_nombre = handleCheckNombre();
-         welcomeController.handleCheckNombre(usuario_nombre);
+         welcomeController.handlePutName(usuario_nombre); //null
          loginView.getChildren().add(welcomeView);
          mainView.setCenter(loginView);
 
+      } catch (Exception e) {
+         message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonUnloginMenu()", e.toString(), e);
+      }
+   }
+
+   /**
+    * it's called by Welcome when i click in the Crear cuenta
+    */
+   public void buttorRegistro ()
+   {
+
+      try {
+         // Create the Scene and put it in the center or the borderLayout
+         mainView.getChildren().removeAll(principalView, dataBaseView);
+         loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+         loginView.getChildren().add(registrationView);
+         mainView.setCenter(loginView);
+         welcomeScreen = true;
 
          String result = principalController.getMediaStatus();
          if (result.equals("playing")) {
@@ -837,7 +904,7 @@ public class MainScene extends Application {
    /**
     * it's called by mainController when i click in the Dashboard menu
     */
-   public void handleDashBoardMenu ()
+   public void buttonDashBoardMenu ()
    {
       // if doesn't be user, return
       if (usuario_id == 0) {
@@ -860,7 +927,7 @@ public class MainScene extends Application {
    /**
     * it's called by mainController when i click in the Resultados menu
     */
-   public void handleDatabaseMenu ()
+   public void buttonDatabaseMenu ()
    {
       // if doesn't be user, return
       if (usuario_id == 0) {
@@ -881,8 +948,9 @@ public class MainScene extends Application {
       }
    }
 
-//</editor-fold>
 
+//</editor-fold>
+   
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
    /**
     * show a standard emergent message
@@ -941,7 +1009,7 @@ public class MainScene extends Application {
       stage.getIcons().add(icon);
 
       try {
-   Optional<ButtonType> result = alert.showAndWait();
+         Optional<ButtonType> result = alert.showAndWait();
          if (result.get() == ButtonType.OK) {
             return true;
          }
@@ -951,7 +1019,6 @@ public class MainScene extends Application {
    }
 
 //</editor-fold>
-
 
    /**
     * public static void main

@@ -42,7 +42,7 @@
                   <children>
                     <MediaView fx:id="mediaView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  
-        <ListView fx:id="listViewH01Reading" orientation="HORIZONTAL" prefHeight="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <ListView fx:id="listViewH01Reading" orientation="HORIZONTAL" prefHeight="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
@@ -56,28 +56,28 @@
         </ListView>
         <TextField fx:id="textFieldWriting" prefHeight="50.0" promptText="Escribe aquí la frase que se reproduce" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                  <styleClass>
-                                    <String fx:value="listViewH" />
+                                    <String fx:value="textFieldH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass></TextField>
         <TextField fx:id="textFieldTranslation" prefHeight="50.0" promptText="Escribe aquí la traduccion de la frase que se reproduce" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                  <styleClass>
-                                    <String fx:value="listViewH" />
+                                    <String fx:value="textFieldH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass></TextField>
-        <Label fx:id="timeLabelReading" alignment="CENTER_RIGHT" layoutX="499.0" layoutY="85.0" prefWidth="90.0" textAlignment="CENTER" AnchorPane.bottomAnchor="55.0" AnchorPane.rightAnchor="5.0">
+        <Label fx:id="timeLabelReading" alignment="CENTER_RIGHT" layoutX="499.0" layoutY="85.0" prefWidth="90.0" textAlignment="CENTER" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="5.0">
                                             </Label>
-        <ListView fx:id="listViewH02Reading" orientation="HORIZONTAL" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ListView fx:id="listViewH02Reading" orientation="HORIZONTAL" prefHeight="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="listViewH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass>
         </ListView>
-        <ListView fx:id="listViewH02Writing" orientation="HORIZONTAL" prefHeight="50.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ListView fx:id="listViewH02Writing" orientation="HORIZONTAL" prefHeight="60.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="listViewH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass></ListView>
-        <ListView fx:id="listViewH02Translation" orientation="HORIZONTAL" prefHeight="50.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ListView fx:id="listViewH02Translation" orientation="HORIZONTAL" prefHeight="60.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="listViewH" />
                                     <String fx:value="initialBorder" />

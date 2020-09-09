@@ -28,25 +28,32 @@ public class RegistrationController {
 
    @FXML public AnchorPane anchorRight;
 
-   @FXML private JFXTextField usuarioTextField;
-   @FXML private Label errorUserLabel;
-   @FXML private JFXPasswordField passwordTextField;
-   @FXML private Label errorPasswordLabel;
-   @FXML private JFXComboBox preguntaComboBox;
-   @FXML private JFXTextField respuestaTextField;
-   @FXML private Label errorRespuestaLabel;
-   @FXML private JFXButton registroButton;
-   @FXML private Label oldUserLabel;
-
-   @FXML private HBox HBoxUsuario;
+   @FXML private HBox HBoxUsuarioRegistro;
+   @FXML private JFXTextField usuarioTextFieldRegistro;
+   
    @FXML private HBox HBoxErrorUser;
-   @FXML private HBox HBoxPassword;
+   @FXML private Label errorUserLabel;
+   
+   @FXML private HBox HBoxPasswordRegistro;
+   @FXML private JFXPasswordField passwordTextFieldRegistro;
+   
    @FXML private HBox HBoxErrorPassword;
-   @FXML private HBox HBoxPregunta;
-   @FXML private HBox HBoxRespuesta;
+   @FXML private Label errorPasswordLabel;
+   
+   @FXML private HBox HBoxPreguntaRegistro;
+   @FXML private JFXComboBox preguntaComboBoxRegistro;
+   
+   @FXML private HBox HBoxRespuestaRegistro;
+   @FXML private JFXTextField respuestaTextFieldRegistro;
+   
    @FXML private HBox HBoxErrorRespuesta;
-   @FXML private HBox HBoxRegistro;
-   @FXML private HBox HBoxAntiguoUsuario;
+   @FXML private Label errorRespuestaLabel;
+   
+   @FXML private HBox HBoxRegistrar;
+   @FXML private JFXButton registroButtonRegistro;
+
+   @FXML private HBox HBoxAntiguoUsuarioRegistro;
+   @FXML private JFXButton oldUserButtonRegistro;
 
    // The nodes of the view
    private Node[] node;
@@ -87,34 +94,34 @@ public class RegistrationController {
       mainStage = MainScene.getMainStage();
 
       node = new Node[]{
-         usuarioTextField,
-         passwordTextField,
-         preguntaComboBox,
-         respuestaTextField,
-         registroButton,
-         oldUserLabel
+         usuarioTextFieldRegistro,
+         passwordTextFieldRegistro,
+         preguntaComboBoxRegistro,
+         respuestaTextFieldRegistro,
+         registroButtonRegistro,
+         oldUserButtonRegistro
       };
 
       // Setting the current node
-      currentNode = usuarioTextField;
-      oldNode = usuarioTextField;
-      usuarioTextField.requestFocus();
+      currentNode = usuarioTextFieldRegistro;
+      oldNode = usuarioTextFieldRegistro;
+      usuarioTextFieldRegistro.requestFocus();
 
       // Setting the jfxtextfield name
       setJFXTextField();
 
       // Settiong the intial border
-      setBorder(usuarioTextField);
+      setBorder(usuarioTextFieldRegistro);
 
       // Setting the ConboBox options
-      preguntaComboBox.getItems().removeAll(preguntaComboBox.getItems());
-      preguntaComboBox.getItems().addAll(
+      preguntaComboBoxRegistro.getItems().removeAll(preguntaComboBoxRegistro.getItems());
+      preguntaComboBoxRegistro.getItems().addAll(
               "¿Cuál es tu comida favorita?",
-              "¿Cuál es tu color favorita?",
+              "¿Cuál es tu color favorito?",
               "¿Cuál es tu ciudad favorita",
               "¿Cuál es tu ropa favorita?",
               "¿Cuál es tu bebida favorita?");
-      // preguntaComboBox.getSelectionModel().select("Option B");
+      // preguntaComboBoxRegistro.getSelectionModel().select("Option B");
 
       // HBoxError disabled
       errorUserLabel.setManaged(false);
@@ -130,12 +137,12 @@ public class RegistrationController {
     */
    private void setJFXTextField ()
    {
-      eventButton(usuarioTextField, 5, 1);
-      eventButton(passwordTextField, 0, 2);
-      eventButton(preguntaComboBox, 1, 3);
-      eventButton(respuestaTextField, 2, 4);
-      eventButton(registroButton, 3, 5);
-      eventButton(HBoxAntiguoUsuario, 4, 0);
+      eventButton(usuarioTextFieldRegistro, 5, 1);
+      eventButton(passwordTextFieldRegistro, 0, 2);
+      eventButton(preguntaComboBoxRegistro, 1, 3);
+      eventButton(respuestaTextFieldRegistro, 2, 4);
+      eventButton(registroButtonRegistro, 3, 5);
+      eventButton(oldUserButtonRegistro, 4, 0);
    }
 //</editor-fold>
 
@@ -165,8 +172,7 @@ public class RegistrationController {
       });
 
       // setting setOnKeyPressed
-      n.setOnKeyPressed(
-              new EventHandler<KeyEvent>() {
+      n.setOnKeyPressed(new EventHandler<KeyEvent>() {
          @Override
          public void handle (KeyEvent ke)
          {
@@ -183,22 +189,22 @@ public class RegistrationController {
             }
             if (ke.getCode().equals(KeyCode.ENTER)) {
                switch (n.getId()) {
-                  case "usuarioTextField":
+                  case "usuarioTextFieldRegistro;":
                      handleValidationUser();
                      break;
-                  case "passwordTextField":
+                  case "passwordTextFieldRegistro;":
                      handleValidationPassword();
                      break;
-                  case "preguntaComboBox":
+                  case "preguntaComboBoxRegistro":
                      handlePregunta();
                      break;
-                  case "respuestaTextField":
+                  case "respuestaTextFieldRegistro":
                      handleValidationRespuesta();
                      break;
-                  case "registroButton":
+                  case "registroButtonRegistro;":
                      handleRegistro();
                      break;
-                  case "HBoxAntiguoUsuario":
+                  case "HBoxAntiguoUsuarioRegistro;":
                      handleAntiguoUsuario();
                      break;
                   default:
@@ -207,13 +213,13 @@ public class RegistrationController {
             }
             if (ke.getCode().equals(KeyCode.SPACE)) {
                switch (n.getId()) {
-                  case "preguntaComboBox":
+                  case "preguntaComboBoxRegistro":
                      handlePregunta();
                      break;
-                  case "registroButton":
+                  case "registroButtonRegistro;":
                      handleRegistro();
                      break;
-                  case "HBoxAntiguoUsuario":
+                  case "HBoxAntiguoUsuarioRegistro;":
                      handleAntiguoUsuario();
                      break;
                   default:
@@ -234,9 +240,9 @@ public class RegistrationController {
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
          // HBoxError disabled
-         errorUserLabel.setManaged(false);
-         errorPasswordLabel.setManaged(false);
-         errorRespuestaLabel.setManaged(false);
+            errorUserLabel.setManaged(false);
+            errorPasswordLabel.setManaged(false);
+            errorRespuestaLabel.setManaged(false);
 
          n.requestFocus();
          setBorder(n);
@@ -244,10 +250,10 @@ public class RegistrationController {
          MouseEvent.consume();
 
          switch (n.getId()) {
-            case "registroButton":
+            case "registroButtonRegistro;":
                handleRegistro();
                break;
-            case "HBoxAntiguoUsuario":
+            case "HBoxAntiguoUsuarioRegistro":
                handleAntiguoUsuario();
                break;
             default:
@@ -266,49 +272,49 @@ public class RegistrationController {
     */
    private void setBorder (Node n)
    {
-      if (n.equals(usuarioTextField)) {
+      if (n.equals(usuarioTextFieldRegistro)) {
          eraserBorder();
-         HBoxUsuario.getStyleClass().add("borderLoginVisible");
+         HBoxUsuarioRegistro.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
 
-      if (n.equals(passwordTextField)) {
+      if (n.equals(passwordTextFieldRegistro)) {
          eraserBorder();
-         HBoxPassword.getStyleClass().add("borderLoginVisible");
+         HBoxPasswordRegistro.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
-      if (n.equals(preguntaComboBox)) {
+      if (n.equals(preguntaComboBoxRegistro)) {
          eraserBorder();
-         HBoxPregunta.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
-
-      if (n.equals(respuestaTextField)) {
-         eraserBorder();
-         HBoxRespuesta.getStyleClass().add("borderLoginVisible");
+         HBoxPreguntaRegistro.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(registroButton)) {
+      if (n.equals(respuestaTextFieldRegistro)) {
          eraserBorder();
-         HBoxRegistro.getStyleClass().add("borderLoginVisible");
+         HBoxRespuestaRegistro.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(oldUserLabel)) {
+      if (n.equals(registroButtonRegistro)) {
          eraserBorder();
-         HBoxAntiguoUsuario.getStyleClass().add("borderLoginVisible");
+         HBoxRegistrar.getStyleClass().add("borderLoginVisible");
+         oldNode = currentNode;
+         currentNode = n;
+         return;
+      }
+
+      if (n.equals(oldUserButtonRegistro)) {
+         eraserBorder();
+         HBoxAntiguoUsuarioRegistro.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
@@ -327,17 +333,17 @@ public class RegistrationController {
    {
       currentNode.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxUsuario.getStyleClass()
+      HBoxUsuarioRegistro.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxPassword.getStyleClass()
+      HBoxPasswordRegistro.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxPregunta.getStyleClass()
+      HBoxPreguntaRegistro.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxRespuesta.getStyleClass()
+      HBoxRespuestaRegistro.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxRegistro.getStyleClass()
+      HBoxRegistrar.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxAntiguoUsuario.getStyleClass()
+      HBoxAntiguoUsuarioRegistro.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
 //</editor-fold>
@@ -350,7 +356,7 @@ public class RegistrationController {
     */
    private void handleValidationUser ()
    {
-      usuarioString = usuarioTextField.getText().trim();
+      usuarioString = usuarioTextFieldRegistro.getText().trim();
       registroUser = true;
 
       if (usuarioString.isEmpty() || usuarioString.length() == 0) {
@@ -378,7 +384,7 @@ public class RegistrationController {
     */
    private void handleValidationPassword ()
    {
-      passwordString = passwordTextField.getText().trim();
+      passwordString = passwordTextFieldRegistro.getText().trim();
       registroPassword = true;
 
       if (passwordString.isEmpty() || passwordString.length() == 0) {
@@ -405,7 +411,7 @@ public class RegistrationController {
     */
    private void handlePregunta ()
    {
-      preguntaComboBox.show();
+      preguntaComboBoxRegistro.show();
    }
 
    /**
@@ -413,8 +419,8 @@ public class RegistrationController {
     */
    private void handleValidationRespuesta ()
    {
-      Object preguntaObject = preguntaComboBox.getValue();
-      respuestaString = respuestaTextField.getText().trim();
+      Object preguntaObject = preguntaComboBoxRegistro.getValue();
+      respuestaString = respuestaTextFieldRegistro.getText().trim();
       registroPregunta = true;
       registroRespuesta = true;
 
@@ -469,7 +475,7 @@ public class RegistrationController {
     */
    private void handleAntiguoUsuario ()
    {
-      mainScene.handleAntiguoUsuario();
+      mainScene.buttonLoginMenu();
    }
 //</editor-fold>
 }

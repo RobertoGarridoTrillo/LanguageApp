@@ -62,12 +62,18 @@
 
 /*  listView */
 .listViewH{
-  -fx-font-size: 9pt;
+  -fx-font-size: 10pt;
   -fx-font-weight: 900 ;
   -fx-font-style: normal;
   -fx-background-color:#000000a0;
 }
 
+/*  TextField  */
+.textFieldH{
+  -fx-font-size: 13pt;
+  -fx-font-weight: 900 ;
+  -fx-font-style: normal
+}
 /* Menu */
 .menu-item:focused {
   -fx-background: #333333;

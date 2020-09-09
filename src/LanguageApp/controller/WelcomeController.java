@@ -5,8 +5,11 @@ package LanguageApp.controller;
 import LanguageApp.main.MainScene;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -20,19 +23,27 @@ import javafx.stage.Stage;
  *
  * @author Roberto Garrido Trillo
  */
-public class WelcomeController {
+public class WelcomeController implements Initializable {
 
 //<editor-fold defaultstate="collapsed" desc="Field Class">
-
+   
    @FXML public AnchorPane anchorRight;
-   @FXML private JFXButton inicioButton;
-   @FXML private JFXButton loginButton;
-   @FXML private Label nameUserLabel;
-   @FXML private JFXCheckBox activoCheckBox;
 
-   @FXML private HBox HBoxInicio;
-   @FXML private HBox HBoxLogin;
-   @FXML private HBox HBoxRecordar;
+   @FXML private Label Bienvenido;
+   @FXML private Label nameUserLabel;
+   
+   @FXML private HBox HBoxInicioWelcome;
+   @FXML private JFXButton inicioButtonWelcome;
+   
+   @FXML private HBox HBoxLoginWelcome;
+   @FXML private JFXButton loginButtonWelcome;
+
+   @FXML private HBox HBoxCrearWelcome;
+   @FXML private JFXButton crearButtonWelcome;
+   
+   @FXML private HBox HBoxActivoWelcome;
+   @FXML private JFXCheckBox activoCheckBoxWelcome;
+
 
 
    // The nodes of the view
@@ -51,8 +62,12 @@ public class WelcomeController {
 
    // The active user
    String nombre;
-//</editor-fold>
+   
+   // For the bounle of idioms
+   ResourceBundle resources;
 
+//</editor-fold>
+   
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
    /**
     *
@@ -68,31 +83,35 @@ public class WelcomeController {
    /**
     * When the method is initialize
     */
-   public void initialize ()
+   @Override
+   public void initialize (URL location, ResourceBundle resources)
    {
+      
+      this.resources = resources;
+      
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
       node = new Node[]{
-         inicioButton,
-         loginButton,
-         activoCheckBox
+         inicioButtonWelcome,
+         loginButtonWelcome,
+         crearButtonWelcome,
+         activoCheckBoxWelcome
       };
 
       // Setting the current node
-      currentNode = inicioButton;
-      oldNode = inicioButton;
-      inicioButton.requestFocus();
+      currentNode = inicioButtonWelcome;
+      oldNode = inicioButtonWelcome;
+      inicioButtonWelcome.requestFocus();
 
       // Setting the jfxtextfield name
       setJFXTextField();
 
       // Settiong the intial border
-      setBorder(inicioButton);
+      setBorder(inicioButtonWelcome);
 
       // Settiong a active user
       nombre = null;
-
    }
 //</editor-fold> 
 
@@ -102,9 +121,10 @@ public class WelcomeController {
     */
    private void setJFXTextField ()
    {
-      eventButton(inicioButton, 2, 1);
-      eventButton(loginButton, 0, 2);
-      eventButton(activoCheckBox, 1, 0);
+      eventButton(inicioButtonWelcome, 3, 1);
+      eventButton(loginButtonWelcome, 0, 2);
+      eventButton(crearButtonWelcome, 1, 3);
+      eventButton(activoCheckBoxWelcome, 2, 0);
    }
 //</editor-fold>
 
@@ -146,15 +166,18 @@ public class WelcomeController {
             }
             if (ke.getCode().equals(KeyCode.ENTER)) {
                switch (n.getId()) {
-                  case "inicioButton":
+                  case "inicioButtonWelcome":
                      handleEntrar();
                      break;
-                  case "loginButton":
+                  case "loginButtonWelcome":
                      handleLogin();
                      break;
+                  case "crearButtonWelcome":
+                     handleRegistro();
+                     break;
                   case "activoCheckBox":
-                     activoCheckBox.setSelected(!activoCheckBox.isSelected());
-                     
+                     activoCheckBoxWelcome.setSelected(!activoCheckBoxWelcome.isSelected());
+
                      break;
                   default:
                      break;
@@ -162,11 +185,14 @@ public class WelcomeController {
             }
             if (ke.getCode().equals(KeyCode.SPACE)) {
                switch (n.getId()) {
-                  case "inicioButton":
+                  case "inicioButtonWelcome":
                      handleEntrar();
                      break;
-                  case "loginButton":
+                  case "loginButtonWelcome":
                      handleLogin();
+                     break;
+                  case "crearButtonWelcome":
+                     handleRegistro();
                      break;
                   default:
                      break;
@@ -190,14 +216,16 @@ public class WelcomeController {
          oldNode = n;
          MouseEvent.consume();
          switch (n.getId()) {
-            case "inicioButton":
-               handleEntrar();
+            case "inicioButtonWelcome":
                break;
-            case "loginButton":
+            case "loginButtonWelcome":
                handleLogin();
                break;
-            case "activoCheckBox":
-               activoCheckBox.setSelected(activoCheckBox.isSelected());
+            case "crearButtonWelcome":
+               handleRegistro();
+               break;
+            case "activoCheckBoxWelcome":
+               activoCheckBoxWelcome.setSelected(activoCheckBoxWelcome.isSelected());
                break;
             default:
                break;
@@ -215,25 +243,33 @@ public class WelcomeController {
    private void setBorder (Node n)
    {
 
-      if (n.equals(inicioButton)) {
+      if (n.equals(inicioButtonWelcome)) {
          eraserBorder();
-         HBoxInicio.getStyleClass().add("borderLoginVisible");
+         HBoxInicioWelcome.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(loginButton)) {
+      if (n.equals(loginButtonWelcome)) {
          eraserBorder();
-         HBoxLogin.getStyleClass().add("borderLoginVisible");
+         HBoxLoginWelcome.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
       }
 
-      if (n.equals(activoCheckBox)) {
+      if (n.equals(crearButtonWelcome)) {
          eraserBorder();
-         HBoxRecordar.getStyleClass().add("borderLoginVisible");
+         HBoxCrearWelcome.getStyleClass().add("borderLoginVisible");
+         oldNode = currentNode;
+         currentNode = n;
+         return;
+      }
+
+      if (n.equals(activoCheckBoxWelcome)) {
+         eraserBorder();
+         HBoxActivoWelcome.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
          return;
@@ -252,11 +288,13 @@ public class WelcomeController {
    {
       currentNode.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxInicio.getStyleClass()
+      HBoxInicioWelcome.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxLogin.getStyleClass()
+      HBoxLoginWelcome.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
-      HBoxRecordar.getStyleClass()
+      HBoxCrearWelcome.getStyleClass()
+              .removeAll("borderLoginVisible", "borderLoginInvisible");
+      HBoxActivoWelcome.getStyleClass()
               .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
 //</editor-fold>
@@ -265,10 +303,11 @@ public class WelcomeController {
 
 //<editor-fold defaultstate="collapsed" desc="Handles">  
    /**
+    * It's called from mainScene to put the name of the user in the label
     *
     * @param nombre
     */
-   public void handleCheckNombre (String nombre)
+   public void handlePutName (String nombre)
    {
       try {
          this.nombre = nombre;
@@ -276,9 +315,10 @@ public class WelcomeController {
          if (nombre != null) {
             nameUserLabel.setText(nombre);
          } else {
-            nameUserLabel.setText("Usuario no identificado");
+            nameUserLabel.setText(resources.getString("Usuario no identificado"));
          }
       } catch (Exception e) {
+         e.printStackTrace();
       }
    }
 
@@ -288,13 +328,13 @@ public class WelcomeController {
    private void handleEntrar ()
    {
 
-      boolean activoBoolean = activoCheckBox.isSelected();
+      boolean activoBoolean = activoCheckBoxWelcome.isSelected();
       if (nombre != null) {
 
-         mainScene.handleEntrar(activoBoolean);
+         mainScene.handleEntrar(activoBoolean, true);
 
       } else {
-         mainScene.handleLoginMenu();
+         mainScene.buttonLoginMenu();
       }
    }
 
@@ -303,7 +343,15 @@ public class WelcomeController {
     */
    private void handleLogin ()
    {
-      mainScene.handleLoginMenu();
+      mainScene.buttonLoginMenu();
+   }
+
+   /**
+    *
+    */
+   private void handleRegistro ()
+   {
+      mainScene.buttorRegistro();
    }
 //</editor-fold>
 

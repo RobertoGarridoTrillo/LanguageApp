@@ -40,7 +40,7 @@ public class DataBaseController {
 
    // Helper to directoriy
    private String path;
-   String se = "/";
+   String se ;
 
    // Savepoint
    Savepoint sp;
@@ -74,7 +74,7 @@ public class DataBaseController {
       // creating the path
       // The path is an absolute path (relarive to the initial instalation)    
       path = System.getProperty("user.dir");
-      //path = path.replace("\\", "/");
+      se = System.getProperty("file.separator");
 
       //Global varibles
       conn = null;

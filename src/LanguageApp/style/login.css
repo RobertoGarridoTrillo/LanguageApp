@@ -5,10 +5,25 @@
 
 .root2 {
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 10pt;
+  -fx-font-size: 12pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
   -fx-background-color: #004f8a; /*#333333;*/
+}
+
+/*      Right image login */
+.vboxLoginRight {
+  -fx-background-color: #004f8a;
+}
+.titleHeaderLogin{
+  -fx-font-family: 'Ebrina';
+  -fx-font-size: 24pt;
+  -fx-font-weight: bold;
+}
+.titleSubHeaderLogin{
+  -fx-font-family: 'Ebrina';
+  -fx-font-size: 20pt;
+  -fx-font-weight: bold;
 }
 
 
@@ -53,7 +68,7 @@
   -jfx-focus-color: coral; /* #4059A9; */
   -jfx-unfocus-color: #4d4d4d;
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 11pt;
+  -fx-font-size: 12pt;
   -fx-border-color: #004f8a; /*#333333;*/
 }
 
@@ -94,7 +109,7 @@
   -jfx-focus-color: coral; /*#4059A9; */
   -jfx-unfocus-color: #004f8a; /* #333333;*/
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 11pt;
+  -fx-font-size: 12pt;
   -fx-border-color: #004f8a; /*#333333;*/
 }
 
@@ -105,7 +120,7 @@
 }
 
 .jfx-text-field  .input-focused-line {
-  -fx-background-color: -jfx-focus-color; 
+  -fx-background-color:  #004f8a; /* -jfx-focus-color; */
   -fx-pref-height: 2px;
 }
 
@@ -136,9 +151,8 @@
 .jfx-combo-box {
   -jfx-focus-color: coral; /*#4059A9; */
   -jfx-unfocus-color: #4d4d4d;
-  -fx-prompt-text-fill: #4d4d4d;
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 11pt;
+  -fx-font-size: 12pt;
   -fx-border-color: #004f8a; /*#333333;*/
 }
 
@@ -149,8 +163,8 @@
 }
 
 .jfx-combo-box > .input-focused-line {
-  -fx-background-color: -jfx-focus-color;
-  -fx-pref-height: 2px;
+  -fx-background-color:  -jfx-focus-color; 
+  -fx-pref-height: 0px;
 }
 
 .jfx-combo-box,
@@ -178,7 +192,7 @@
 }
 
 .jfx-combo-box .error-label {
-  -fx-text-fill: #D34336;
+  -fx-text-fill:#ffffff #D34336;
 
 }
 
@@ -189,7 +203,7 @@
 .jfx-combo-box, .jfx-combo-box:focused, 
 .jfx-combo-box:hover, .jfx-combo-box:focused:hover {
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-  -fx-prompt-text-fill: #0f9d58; /* #4D4D4D; */
+  -fx-prompt-text-fill: #0f9d58a5; /* #4D4D4D; */
   -fx-text-fill: white;
 }
 
@@ -198,37 +212,49 @@
 .textFieldLogin, textFieldLogin:active, textFieldLogin:hover, textFieldLogin:focus {
   -fx-text-fill: white;
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 11pt; 
+  -fx-font-size: 12pt; 
   -fx-font-weight: bold;
 }
 
 .borderLoginVisible {
   -fx-border-color: coral;
 }
+
 .borderLoginInvisible {
-  -fx-border-color: #004f8a; /*#333333;*/
-  -fx-unfocus-color: #004f8a; /*#333333;*/
+  -fx-border-color: #004f8a;
 }
 
-.initialBorderLogin{    
-  -fx-background-color: #004f8a; /*#333333;*/
-  -fx-border-width: 1px;
-  -fx-border-radius: 3px;
-  -fx-border-insets: 0; 
+.initialBorderLogin {    
+  -fx-border-color: #004f8a; 
+  -fx-border-width: 1px 2px 2px 1px;
+  -fx-border-radius: 2px;
+  -fx-border-insets: 0;
+  -fx-background-inset: 0;
+  -fx-background-color: #004f8a;
+}
+/*        this is for the extrange of the button */
 
+/* Here is for the hover */
+.jfx-button:hover, .jfx-button:focus {
+  -fx-border-color: coral;
+  -fx-border-width: 1px 2px 2px 1px;
+  -fx-background-color: #004f8a;
 }
 
-.jfx-button:focused, jfx-button:hover, 
-.jfx-text-field:hover,
-.initialBorderLogin:hover,
-.hyperlink, .hyperlink:focused, .hyperlink:hover
+
+
+
+/* --------------*/
+
+.jfx-text-field:hover, .jfx-text-field:focused,
+.initialBorderLogin:hover, 
+.hyperlink, .hyperlink:focused, .hyperlink:focused,
+.jfx-combo-box:hover, .jfx-combo-box:focused
 {
   -fx-border-color: coral;
-  -fx-background-color: #004f8a; /*#333333;*/
-  -fx-border-width: 1px;
-  -fx-border-radius: 3px;
+  -fx-border-width: 2px 2px 2px 2px;
+  -fx-border-radius: 2px;
   -fx-border-insets: 0;
-  -fx-border-style: solid line-join bevel line-cap square;
 }
 
 .labelError, .labelError:hover, .labelError:focused{
@@ -243,7 +269,7 @@
 
 #labelError > .input-line {
   -fx-background-color: #004f8a; /*#333333;*/
-  -fx-pref-height: 1px;
+  -fx-pref-height: 2px;
   -fx-translate-y: 4;
 }
 
@@ -255,8 +281,4 @@
 #labelError > #labelError >:focused, #labelError >:hover {
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
   -fx-text-fill: red;
-}
-
-.labelRegistrate{
-  -fx-text-fill: #0f9d58; /* verde */
 }

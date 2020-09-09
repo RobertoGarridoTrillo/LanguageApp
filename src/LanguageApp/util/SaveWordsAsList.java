@@ -27,6 +27,12 @@ import javafx.stage.Stage;
  */
 public class SaveWordsAsList {
 
+   Pattern pattern = Pattern.compile(
+           "\\[|\\]|\\º|\\ª|\\@|\\·|\\#|\\$|\\~|\\%|\\€|\\&|\\¬|\\/|\\(|\\)|\\=|\\?|\\¿|\\¡" +
+           "|\\^|\\+|\\*|\\||\\{|\\}|\\_|\\-|\\.|\\:|\\,|\\;|\\<|\\>|\\«|\"|\\ |\\»|\\!");
+   Matcher matcherFirst, matcherLast;
+
+
    /**
     * Save in a File a list of words
     *
@@ -77,8 +83,6 @@ public class SaveWordsAsList {
    {
 
       String[] wordPhrase = null;
-      Pattern pattern;
-      Matcher matcher;
       String sub;
       String s;
       try {
@@ -135,15 +139,14 @@ public class SaveWordsAsList {
          // Deleting the first and last 'dot, comma, acent... of every
          // word of the phrase
          for (int k = 0; k < wordPhrase.length; k++) {
-            //pattern = Pattern.compile("[^a-zA-Z0-9]");
-            pattern = Pattern.compile("[ ºª\\\\!|\"@·#$~%€&¬/()=?¿¡^`+*ç\\[\\]\\{\\}_\\-\\.:\\,\\;'´<>]");
+
 
             for (int i = 0; i < 4; i++) {
                String first = wordPhrase[k].substring(0, 1);
                String last = wordPhrase[k].substring(wordPhrase[k].length() - 1);
 
-               Matcher matcherFirst = pattern.matcher(first);
-               Matcher matcherLast = pattern.matcher(last);
+               matcherFirst = pattern.matcher(first);
+               matcherLast = pattern.matcher(last);
                if (matcherFirst.find()) {
                   wordPhrase[k] = wordPhrase[k].substring(1, wordPhrase[k].length());
                }

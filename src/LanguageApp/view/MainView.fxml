@@ -9,23 +9,29 @@
 
 <BorderPane fx:id="MainViewBorderPane" styleClass="root" stylesheets="@../style/principal.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.MainController">
   <top>
-<MenuBar maxHeight="35.0" minHeight="35.0" prefHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<MenuBar fx:id="menuBar" maxHeight="35.0" minHeight="35.0" prefHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     <menus>
-      <Menu mnemonicParsing="false" text="File">
+      <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
         <items>
-          <MenuItem fx:id="openMenu" mnemonicParsing="false" onAction="#handleOpenMenu" text="Open" />
-          <MenuItem fx:id="closeMenu" mnemonicParsing="false" onAction="#handleCloseMenu" text="Close" />
+          <MenuItem fx:id="openMenu" mnemonicParsing="false" onAction="#handleOpenMenu" text="Abrir archivo" />
+          <MenuItem fx:id="closeMenu" mnemonicParsing="false" onAction="#handleCloseMenu" text="Cerrar archivo" />
+                <MenuItem fx:id="exitMenu" mnemonicParsing="false" onAction="#handleExitMenu" text="Salir" />
         </items>
       </Menu>
-            <Menu mnemonicParsing="false" text="Usuario">
+            <Menu fx:id="userMenu" mnemonicParsing="false" text="Usuario">
               <items>
                 <MenuItem fx:id="loginMenu" mnemonicParsing="false" onAction="#handleLoginMenu" text="Abrir sesion" />
                   <MenuItem fx:id="UnloginMenu" mnemonicParsing="false" onAction="#handleUnloginMenu" text="Cerrar sesion" />
-                  <MenuItem fx:id="DashBoard" mnemonicParsing="false" onAction="#handleDashBoardMenu" text="DashBoard" />
-                  <MenuItem fx:id="databaseMenu" mnemonicParsing="false" onAction="#handleDatabaseMenu" text="Database" />
+                  <MenuItem fx:id="RegistroMenu" mnemonicParsing="false" onAction="#handleNuevoUsuario" text="Crear cuenta" />
               </items>
             </Menu>
-      <Menu mnemonicParsing="false" text="Ayuda">
+            <Menu fx:id="goMenu" mnemonicParsing="false" text="Ir a">
+              <items>
+                  <MenuItem fx:id="dashBoard" mnemonicParsing="false" onAction="#handleDashBoardMenu" text="Tablero" />
+                  <MenuItem fx:id="databaseMenu" mnemonicParsing="false" onAction="#handleDatabaseMenu" text="Base de datos" />
+              </items>
+            </Menu>
+      <Menu fx:id="helpMenu" mnemonicParsing="false" text="Ayuda">
         <items>
           <MenuItem fx:id="controlesMenu" mnemonicParsing="false" onAction="#handleControlesMenu" text="Controles" />
           <MenuItem fx:id="aboutMenu" mnemonicParsing="false" onAction="#handleAboutMenu" text="About" />

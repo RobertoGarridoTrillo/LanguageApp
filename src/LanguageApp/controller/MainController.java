@@ -4,6 +4,8 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import javafx.fxml.FXML;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -18,14 +20,27 @@ public class MainController {
 //<editor-fold defaultstate="collapsed" desc="fields class">
 
    @FXML private BorderPane MainViewBorderPane;
+   
+   @FXML private MenuBar menuBar;
+   
+   @FXML private Menu fileMenu;
+   @FXML private Menu userMenu;
+   @FXML private Menu goMenu;
+   @FXML private Menu helpMenu;
+   
    @FXML private MenuItem openMenu;
    @FXML private MenuItem closeMenu;
+   @FXML private MenuItem exitMenu;
+   
+   @FXML private MenuItem loginMenu;
+   @FXML private MenuItem unloginMenu;
+   @FXML private MenuItem registroMenu;
+
+   @FXML private MenuItem dashBoard;
+   @FXML private MenuItem databaseMenu;
+   
    @FXML private MenuItem controlesMenu;
    @FXML private MenuItem aboutMenu;
-   @FXML private MenuItem loginMenu;
-   @FXML private MenuItem unloginMenu;   
-   @FXML private MenuItem databaseMenu;
-   @FXML private MenuItem DashBoard;
 
    // Reference to the main Stage from the main Scene
    private Stage mainStage;
@@ -63,7 +78,7 @@ public class MainController {
     */
    @FXML private void handleOpenMenu ()
    {
-      mainScene.handleOpenMenu();
+      mainScene.buttonOpenMenu();
    }
 
    /**
@@ -71,23 +86,15 @@ public class MainController {
     */
    @FXML private void handleCloseMenu ()
    {
-      mainScene.handleCloseMenu();
+      mainScene.buttonCloseMenu();
    }
-
+   
    /**
     * When click on the close menu
     */
-   @FXML private void handleControlesMenu ()
+   @FXML private void handleExitMenu ()
    {
-      mainScene.handleControlesMenu();
-   }
-
-   /**
-    * handle of the About menu"
-    */
-   @FXML private void handleAboutMenu ()
-   {
-      mainScene.handleAboutMenu();
+      mainScene.buttonExitMenu();
    }
 
    /**
@@ -95,15 +102,38 @@ public class MainController {
     */
    @FXML private void handleLoginMenu ()
    {
-      mainScene.handleLoginMenu();
+      mainScene.buttonLoginMenu();
    }
-      
+
    /**
     * handle of the Unlogin menu
     */
    @FXML private void handleUnloginMenu ()
    {
-      mainScene.handleUnloginMenu();
+      mainScene.buttonUnloginMenu();
+   }
+   
+   /**
+    * handle of the login menu
+    */
+   @FXML private void handleNuevoUsuario ()
+   {
+      mainScene.buttorRegistro();
+   }
+   /**
+    * When click on the close menu
+    */
+   @FXML private void handleControlesMenu ()
+   {
+      mainScene.buttonControlesMenu();
+   }
+
+   /**
+    * handle of the About menu"
+    */
+   @FXML private void handleAboutMenu ()
+   {
+      mainScene.buttonAboutMenu();
    }
 
    /**
@@ -111,14 +141,14 @@ public class MainController {
     */
    @FXML private void handleDatabaseMenu ()
    {
-      mainScene.handleDatabaseMenu();
+      mainScene.buttonDatabaseMenu();
    }
-      
+
    /**
     * handle of the Dashboard menu
     */
    @FXML private void handleDashBoardMenu ()
    {
-      mainScene.handleDashBoardMenu();
+      mainScene.buttonDashBoardMenu();
    }
 }

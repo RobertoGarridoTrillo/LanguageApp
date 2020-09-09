@@ -100,7 +100,7 @@ public class Directorio {
           */
          sql = "SELECT m.directorio, m.materia_nombre FROM materias m " +
                  "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
-                 "WHERE u.usuario_id = ? and m.materia_activo = 1;";
+                 "WHERE u.usuario_id = ? and m.materia_activo = 1";
 
          // Try connection
          conn = connect();
@@ -226,11 +226,10 @@ public class Directorio {
          //rs.first();
          // if there is any 
          while (rs.next() && salida == false) {
+            
             // si hay un registro igual al pedido por el filechoose
-            if (rs.getString(2).equals(name)) {
-
+            if (rs.getString("materia_nombre").equals(name)) {
                materia_id = rs.getInt("materia_id");
-
                sql = "UPDATE materias set materia_activo = 0 " +
                        "WHERE materia_id IN ( " +
                        "SELECT m.materia_id FROM materias m " +
@@ -238,13 +237,13 @@ public class Directorio {
                        "ON u.usuario_id = m.fk_usuario_id " +
                        "WHERE u.usuario_id = ?)";
 
-               pstmt = conn.prepareStatement(sql);
+               pstmt = conn.prepareStatement(sql);               
                pstmt.setInt(1, usuario_id);
                pstmt.executeUpdate();
                conn.commit();
-               
+
                // set the value on active
-               sql = "UPDATE materias set materia_activo = 1 " +
+               sql = "UPDATE materias set materia_activo = 1, directorio = ? " +
                        "WHERE materia_id IN ( " +
                        "SELECT m.materia_id FROM materias m " +
                        "INNER JOIN usuarios u " +
@@ -252,15 +251,16 @@ public class Directorio {
                        "WHERE u.usuario_id = ? and m.materia_id = ? )";
                pstmt = null;
                pstmt = conn.prepareStatement(sql);
-               pstmt.setInt(1, usuario_id);
-               pstmt.setInt(2, materia_id);
+               pstmt.setString(1, lastDirectory);
+               pstmt.setInt(2, usuario_id);
+               pstmt.setInt(3, materia_id);
                pstmt.executeUpdate();
                conn.commit();
 
                // save in the model the global directory
                setPath(path);
                setLastDirectory(lastDirectory);
-               setLastFile(lastFile);
+               setLastFile(name);
 
                salida = true;
             }
@@ -285,7 +285,7 @@ public class Directorio {
             // save in the model the global directory
             setPath(path);
             setLastDirectory(lastDirectory);
-            setLastFile(lastFile);
+            setLastFile(name);
          }
       } catch (Exception e) {
          message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
