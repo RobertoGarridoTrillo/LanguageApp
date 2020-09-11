@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.Message;
 import javafx.fxml.FXML;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -23,6 +24,10 @@ public class LoginController {
    private Stage mainStage;
    // Reference to the main Scene
    private MainScene mainScene;
+   
+   // pop-up messages
+   Message message;   
+   
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">

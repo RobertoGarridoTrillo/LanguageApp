@@ -10,12 +10,11 @@ import LanguageApp.util.Directory;
 import LanguageApp.util.FillListView;
 import LanguageApp.util.FormatTime;
 import LanguageApp.util.GetJson;
+import LanguageApp.util.Message;
 import LanguageApp.util.SaveWordsAsList;
 import LanguageApp.util.SelectedFile;
 import LanguageApp.util.SortPhrase;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +40,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -53,8 +51,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaErrorEvent;
@@ -186,6 +182,9 @@ public class PrincipalController {
    // hyperlink youtube
    @FXML Hyperlink youtubeLink;
 
+   // pop-up messages
+   Message message;
+
    // The focused and old node
    Node currentNode, oldNode;
    // The tab thar is checkes
@@ -299,6 +298,12 @@ public class PrincipalController {
    {
       try {
 
+         // References to mainScene
+         mainStage = MainScene.getMainStage();
+
+         // Setting messages
+         message = new Message();
+
          // Instances
          sf = new SelectedFile();
          gj = new GetJson();
@@ -313,9 +318,6 @@ public class PrincipalController {
          path = System.getProperty("user.dir");
          se = System.getProperty("file.separator");
          //se = "/";
-
-         // References to mainScene
-         mainStage = MainScene.getMainStage();
 
          // if it playing an item, doesn´t scroll
          playButtonBoolean = true;
@@ -395,9 +397,9 @@ public class PrincipalController {
          if (dire.checkIni(usuario_id)) {
             handleOpenMenu2();
          }
-         
-       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainController / initialize()", e.toString(), e);
+
+      } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainController / initialize()", e.toString(), e);
       }
 
    }
@@ -423,10 +425,10 @@ public class PrincipalController {
 
          handleOpenMenu2();
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", e.toString(), e);
       }
    }
-   
+
    /**
     * Open a SelectFile and seek a json to load the phrases (Part2)
     */
@@ -479,11 +481,11 @@ public class PrincipalController {
          for (int x = 0; x < listado.length; x++) {
             audioClipsWords[x] = ac.setAudioClip(wordSet[x],
                     dire.getLastDirectory() + listado[x]
-                            .replaceAll(".json", "") + "Dictionary\\Words",
+                    .replaceAll(".json", "") + "Dictionary\\Words",
                     rateSliderReading, balanceSliderReading, volumeSliderReading);
             audioClipsPhrases[x] = ac.setAudioClip(phraseSet[x],
                     dire.getLastDirectory() + listado[x]
-                            .replaceAll(".json", "") + "Dictionary\\Phrases",
+                    .replaceAll(".json", "") + "Dictionary\\Phrases",
                     rateSliderReading, balanceSliderReading, volumeSliderReading);
          }
 
@@ -522,7 +524,7 @@ public class PrincipalController {
          setEndTimefile();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu2()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu2()", e.toString(), e);
       }
 
    }
@@ -563,7 +565,7 @@ public class PrincipalController {
          }
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
       }
    }
 
@@ -644,7 +646,7 @@ public class PrincipalController {
          stopButtonItemOriginalTranslation.setGraphic(imageViews[32]);
          correctionButtonTranslation.setGraphic(imageViews[33]);
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainController / setImageButton()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainController / setImageButton()", e.toString(), e);
       }
 
    }
@@ -737,7 +739,7 @@ public class PrincipalController {
 
 
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButton()", e.toString(), e);      
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButton()", e.toString(), e);      
       }
    }
 
@@ -788,7 +790,7 @@ public class PrincipalController {
             playButtonTranslation.setGraphic(imageViews[23]);
          }
       } catch (Exception e) {
-         //message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleStopButton()",  e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleStopButton()",  e.toString(), e);
       }
    }
 
@@ -849,7 +851,7 @@ public class PrincipalController {
 
          }
       } catch (Exception e) {
-         // message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButtonItemOriginal()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButtonItemOriginal()", e.toString(), e);
       }
    }
 
@@ -1199,7 +1201,7 @@ public class PrincipalController {
             indicatorSuccessTranslation.setProgress(success);
          }
       } catch (Exception e) {
-         // message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleCorrectionButton()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleCorrectionButton()", e.toString(), e);
       }
 
    }
@@ -1300,7 +1302,7 @@ public class PrincipalController {
                mediaPlayer.setBalance((Double) newValue);
             }
          } catch (Exception e) {
-            //message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setSliderForm()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setSliderForm()", e.toString(), e);
          }
       });
    }
@@ -1354,7 +1356,7 @@ public class PrincipalController {
          setEndTimefile();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setMediaPlayer()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setMediaPlayer()", e.toString(), e);
       }
    }
 
@@ -1464,7 +1466,7 @@ public class PrincipalController {
 
 
       } catch (Exception e) {
-         /* message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);*/
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);
 
       }
    }
@@ -1562,7 +1564,7 @@ public class PrincipalController {
 
                showListViewH();
             } catch (Exception e) {
-               message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setEventMarker()", e.toString(), e);
+               message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setEventMarker()", e.toString(), e);
             }
          }
       });
@@ -1611,9 +1613,7 @@ public class PrincipalController {
          public void run ()
          {
             // Handle asynchronous error in Player object.
-            message(Alert.AlertType.ERROR, "Error message", mediaPlayer.
-                    getError().toString(),
-                    "PrincipalController / mediaPlayer.setOnError()", null);
+            message.message(Alert.AlertType.ERROR, "Error message", mediaPlayer.getError().toString(), "PrincipalController / mediaPlayer.setOnError()", null);
          }
 
 
@@ -1625,9 +1625,7 @@ public class PrincipalController {
          public void run ()
          {
             // Handle asynchronous error in Media object.
-            message(Alert.AlertType.ERROR, "Error message",
-                    media.getError().toString(),
-                    "PrincipalController / media.setOnError()", null);
+            message.message(Alert.AlertType.ERROR, "Error message", media.getError().toString(), "PrincipalController / media.setOnError()", null);
          }
 
 
@@ -1640,9 +1638,7 @@ public class PrincipalController {
          public void handle (MediaErrorEvent event)
          {
             // Handle asynchronous error in MediaView.
-            message(Alert.AlertType.ERROR, "Error message", event.
-                    getMediaError().toString(),
-                    "PrincipalController / mediaView.setOnError()", null);
+            message.message(Alert.AlertType.ERROR, "Error message", event.getMediaError().toString(), "PrincipalController / mediaView.setOnError()", null);
          }
 
 
@@ -1765,72 +1761,8 @@ public class PrincipalController {
             }
          });
       } catch (Exception e) {
-
-         new PrincipalController().message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / setMediaPlayerChangeListener()", e.toString(), e);
-
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / setMediaPlayerChangeListener()", e.toString(), e);
       }
-   }
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-   /**
-    * show a standard emergent message
-    *
-    * @param alertType alertType.CONFIRMATION, ERROR, INFORMATION, NONE, WARNING
-    * @param title The title of the windows
-    * @param about The them to expose
-    * @param contextText The showed text
-    * @param ex The thrown exception
-    */
-   public void message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
-   {
-
-      Alert alert = new Alert(alertType);
-      alert.setTitle(title);
-      //lert.getDialogPane().setMinWidth(600);
-      //alert.getDialogPane().setMinHeight(480);
-      //alert.getDialogPane().setPrefWidth(600);
-      //alert.getDialogPane().setPrefHeight(480);
-      alert.setResizable(true);
-      alert.getDialogPane().setHeaderText(about);
-      alert.getDialogPane().setContentText(contextText);
-
-      if (ex != null) {
-         // Create expandable Exception.
-         StringWriter sw = new StringWriter();
-         PrintWriter pw = new PrintWriter(sw);
-         ex.printStackTrace(pw);
-         String exceptionText = sw.toString();
-
-         Label label = new Label("El seguimiento del error fue:");
-
-         TextArea textArea = new TextArea(exceptionText);
-         textArea.setEditable(true);
-         textArea.setWrapText(true);
-
-         textArea.setMaxWidth(Double.MAX_VALUE);
-         textArea.setMaxHeight(Double.MAX_VALUE);
-         GridPane.setVgrow(textArea, Priority.ALWAYS);
-         GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-         GridPane expContent = new GridPane();
-         expContent.setMaxWidth(Double.MAX_VALUE);
-         expContent.add(label, 0, 0);
-         expContent.add(textArea, 0, 1);
-         // Set expandable Exception into the dialog pane.
-         alert.getDialogPane().setExpandableContent(expContent);
-      }
-
-      alert.getDialogPane().getStylesheets().
-              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
-      alert.getDialogPane().getStyleClass().add("style");
-
-      Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-      Image icon = new Image(getClass().getResourceAsStream("/LanguageApp/resources/images/languages_128.png"));
-      stage.getIcons().add(icon);
-
-
-      alert.showAndWait();
    }
 //</editor-fold>
 
@@ -1951,7 +1883,7 @@ public class PrincipalController {
                         mediaPlayer.seek(finalDuration);
                      }
                   } catch (Exception e) {
-                     new PrincipalController().message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / updateValues()", e.toString(), e);
+                     message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / updateValues()", e.toString(), e);
 
                   }
                }

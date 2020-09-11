@@ -13,7 +13,7 @@
 
 <AnchorPane fx:id="anchorRightLogin" minWidth="-Infinity" prefWidth="640.0" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.WelcomeController">
   <children>
-    <VBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <VBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
       <children>
             <Label fx:id="Bienvenido" alignment="TOP_CENTER" contentDisplay="CENTER" focusTraversable="false" styleClass="titleHeaderLogin" text="%Bienvenido" textFill="WHITE">
                <VBox.margin>
@@ -25,9 +25,9 @@
                   <Insets bottom="20.0" />
                </VBox.margin>
             </Label>
-        <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
+        <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="360.0">
           <VBox.margin>
-            <Insets bottom="20.0" />
+            <Insets bottom="10.0" top="15.0" />
           </VBox.margin>
           <children>
             <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
@@ -38,14 +38,13 @@
                 <Insets right="10.0" />
               </HBox.margin>
             </ImageView>
-            <HBox fx:id="HBoxInicioWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0">
+            <HBox fx:id="HBoxInicioWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="296.0">
               <children>      
                                                  
-                <JFXButton fx:id="inicioButtonWelcome" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" text="%Entrar" textFill="WHITE">
-                  <styleClass>
-                    <String fx:value="initialBorderLogin" />
-                    <String fx:value="borderLoginInvisible" />
-                  </styleClass>
+                <JFXButton fx:id="inicioButtonWelcome" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="290.0" styleClass="initialBorderItems" text="%Entrar" textFill="WHITE">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
                 </JFXButton>
               </children>
               <styleClass>
@@ -55,65 +54,7 @@
             </HBox>
           </children>
         </HBox>
-            <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../resources/images/name.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </ImageView>
-                  <HBox fx:id="HBoxLoginWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0">
-                     <children>
-                        <JFXButton fx:id="loginButtonWelcome" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" text="%Iniciar sesión" textFill="WHITE">
-                           <styleClass>
-                              <String fx:value="initialBorderLogin" />
-                              <String fx:value="borderLoginInvisible" />
-                           </styleClass>
-                        </JFXButton>
-                     </children>
-                     <styleClass>
-                        <String fx:value="initialBorderLogin" />
-                        <String fx:value="borderLoginInvisible" />
-                     </styleClass>
-                  </HBox>
-               </children>
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
-            </HBox>
-            <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../resources/images/registrar.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </ImageView>
-                  <HBox fx:id="HBoxCrearWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0">
-                     <children>
-                        <JFXButton fx:id="crearButtonWelcome" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0" text="%Crear Cuenta" textFill="WHITE">
-                           <styleClass>
-                              <String fx:value="initialBorderLogin" />
-                              <String fx:value="borderLoginInvisible" />
-                           </styleClass>
-                        </JFXButton>
-                     </children>
-                     <styleClass>
-                        <String fx:value="initialBorderLogin" />
-                        <String fx:value="borderLoginInvisible" />
-                     </styleClass>
-                  </HBox>
-               </children>
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
-            </HBox>
-            <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="330.0">
+            <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="360.0">
                <children>
                   <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -123,12 +64,15 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </ImageView>
-                  <HBox fx:id="HBoxActivoWelcome" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="250.0">
+                  <HBox fx:id="HBoxActivoWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="296.0">
                      <children>
-                        <JFXCheckBox fx:id="activoCheckBoxWelcome" selected="true" text="%Recordar  usuario" textFill="WHITE">
+                        <JFXCheckBox fx:id="activoCheckBoxWelcome" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="290.0" selected="true" styleClass="initialBorderItems" text="%Recordar  usuario" textFill="WHITE">
                            <HBox.margin>
-                              <Insets left="10.0" />
+                              <Insets />
                            </HBox.margin>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
                         </JFXCheckBox>
                      </children>
                      <styleClass>
@@ -141,7 +85,63 @@
                   </HBox>
                </children>
                <VBox.margin>
-                  <Insets bottom="20.0" />
+                  <Insets bottom="10.0" top="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="360.0">
+               <children>
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/name.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <HBox fx:id="HBoxLoginWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="296.0">
+                     <children>
+                        <JFXButton fx:id="loginButtonWelcome" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="290.0" styleClass="initialBorderItems" text="%Iniciar sesión" textFill="WHITE">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </JFXButton>
+                     </children>
+                     <styleClass>
+                        <String fx:value="initialBorderLogin" />
+                        <String fx:value="borderLoginInvisible" />
+                     </styleClass>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="360.0">
+               <children>
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/images/registrar.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <HBox fx:id="HBoxCrearWelcome" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="296.0">
+                     <children>
+                        <JFXButton fx:id="crearButtonWelcome" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="290.0" styleClass="initialBorderItems" text="%Crear cuenta" textFill="WHITE">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </JFXButton>
+                     </children>
+                     <styleClass>
+                        <String fx:value="initialBorderLogin" />
+                        <String fx:value="borderLoginInvisible" />
+                     </styleClass>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="15.0" />
                </VBox.margin>
             </HBox>
       </children>

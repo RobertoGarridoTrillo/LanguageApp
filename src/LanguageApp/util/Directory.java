@@ -32,12 +32,18 @@ public class Directory {
 
    String se = "/";
    String initialFile;
+   
+   // pop-up messages
+   Message message;
 
    /**
     * constructor
     */
    public Directory ()
    {
+
+   // Setting messages
+   message  = new Message();
 
       // The path is an absolute path (retarive to the initial instalation)    
       path = System.getProperty("user.dir");
@@ -48,7 +54,7 @@ public class Directory {
       initialFile = "LanguageApp.json";
 
 
-      // message(Alert.AlertType.INFORMATION, "message", "so " + so, "separador " + se, null);
+      // message.message(Alert.AlertType.INFORMATION, "message", "so " + so, "separador " + se, null);
       initial = new Initial();
    }
 
@@ -71,7 +77,7 @@ public class Directory {
             return null;
          }
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", initial.getLastDirectory() + initial.getLastFile() + "\nDirectory.java / checkIni()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", initial.getLastDirectory() + initial.getLastFile() + "\nDirectory.java / checkIni()", e.toString(), e);
       }
       return null;
    }
@@ -98,7 +104,7 @@ public class Directory {
          //return !file.createNewFile(); // Creating initial file
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "Directory.java / checkIni()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "Directory.java / checkIni()", e.toString(), e);
       }
 
       return false;
@@ -121,7 +127,7 @@ public class Directory {
          reader.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "Directory.java / readIni()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "Directory.java / readIni()", e.toString(), e);
       }
    }
 
@@ -148,7 +154,7 @@ public class Directory {
          writer.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "\nDirectory.java / createIni()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "\nDirectory.java / createIni()", e.toString(), e);
       }
    }
 
@@ -246,69 +252,8 @@ public class Directory {
          writer.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "\nDirectory.java / updateIni()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "\nDirectory.java / updateIni()", e.toString(), e);
       }
    }
 
-//<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-   /**
-    * show a standard emergent message
-    *
-    * @param alertType alertType.CONFIRMATION, ERROR, INFORMATION, NONE, WARNING
-    * @param title The title of the windows
-    * @param about The them to expose
-    * @param contextText The showed text
-    * @param ex The thrown exception
-    */
-   public void message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
-   {
-
-      Alert alert = new Alert(alertType);
-      alert.setTitle(title);
-      //lert.getDialogPane().setMinWidth(600);
-      //alert.getDialogPane().setMinHeight(480);
-      //alert.getDialogPane().setPrefWidth(600);
-      //alert.getDialogPane().setPrefHeight(480);
-      alert.setResizable(true);
-      alert.getDialogPane().setHeaderText(about);
-      alert.getDialogPane().setContentText(contextText);
-
-      if (ex != null) {
-         // Create expandable Exception.
-         StringWriter sw = new StringWriter();
-         PrintWriter pw = new PrintWriter(sw);
-         ex.printStackTrace(pw);
-         String exceptionText = sw.toString();
-
-         Label label = new Label("El seguimiento del error fue:");
-
-         TextArea textArea = new TextArea(exceptionText);
-         textArea.setEditable(true);
-         textArea.setWrapText(true);
-
-         textArea.setMaxWidth(Double.MAX_VALUE);
-         textArea.setMaxHeight(Double.MAX_VALUE);
-         GridPane.setVgrow(textArea, Priority.ALWAYS);
-         GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-         GridPane expContent = new GridPane();
-         expContent.setMaxWidth(Double.MAX_VALUE);
-         expContent.add(label, 0, 0);
-         expContent.add(textArea, 0, 1);
-         // Set expandable Exception into the dialog pane.
-         alert.getDialogPane().setExpandableContent(expContent);
-      }
-
-      alert.getDialogPane().getStylesheets().
-              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
-      alert.getDialogPane().getStyleClass().add("style");
-
-      Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-      Image icon = new Image(getClass().getResourceAsStream("/LanguageApp/resources/images/languages_128.png"));
-      stage.getIcons().add(icon);
-
-
-      alert.showAndWait();
-   }
-//</editor-fold>
 }

@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXPasswordField;
@@ -13,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -33,34 +35,32 @@ public class FormController implements Initializable {
 
    @FXML private HBox HBoxUsuarioLogin;
    @FXML private JFXTextField usuarioTextFieldLogin;
-   
+
    @FXML private HBox HBoxErrorUser;
    @FXML private Label errorUserLabel;
-   
+
    @FXML private HBox HboxPasswordLogin;
    @FXML private JFXPasswordField passwordTextFieldLogin;
-   
+
    @FXML private HBox HBoxErrorPassword;
    @FXML private Label errorPasswordLabel;
-   
+
    @FXML private HBox HBoxLoginLogin;
    @FXML private JFXButton loginButtonLogin;
-   
+
    @FXML private JFXCheckBox activoCheckBoxLogin;
    @FXML private HBox HBoxActivoLogin;
-   
+
    @FXML private HBox HBoxRecuperarLogin;
    @FXML private JFXButton recuperarButtonLogin;
-      
-   
+
+
    @FXML private HBox HBoxNuevoUsuarioLogin;
    @FXML private JFXButton newUserButtonLogin;
-   
-   
- 
- 
-  
-  
+
+   // pop-up messages
+   Message message;
+
    // The nodes of the view
    private Node[] node;
 
@@ -74,9 +74,10 @@ public class FormController implements Initializable {
 
    // The Login or not Login
    boolean login, loginUser, loginPassword;
-  
+
    // For the bounle of idioms
-   ResourceBundle resources;   
+   ResourceBundle resources;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
@@ -96,9 +97,9 @@ public class FormController implements Initializable {
     */
    @Override
    public void initialize (URL location, ResourceBundle resources)
-   {      
+   {
       this.resources = resources;
-      
+
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
@@ -122,8 +123,7 @@ public class FormController implements Initializable {
       setBorder(usuarioTextFieldLogin);
 
       // HBoxError disabled
-      errorUserLabel.setManaged(false);
-      errorPasswordLabel.setManaged(false);
+      handleEraseError();
    }
 
 
@@ -158,111 +158,127 @@ public class FormController implements Initializable {
     */
    private void eventButton (Node n, int up, int down)
    {
-      // setting onFocus (USe of Tab)
-      n.focusedProperty().addListener((o, oldVal, newVal) ->
-      {
-         if (newVal) {
-            errorUserLabel.setManaged(false);
-            errorPasswordLabel.setManaged(false);
-            setBorder(n);
-         }
-      });
+      try {
 
-      // setting onClick
-      n.setOnKeyPressed(
-              new EventHandler<KeyEvent>() {
-         @Override
-         public void handle (KeyEvent ke)
+         // setting onFocus (USe of Tab)
+         n.focusedProperty().addListener((o, oldVal, newVal) ->
          {
-            errorUserLabel.setManaged(false);
-            errorPasswordLabel.setManaged(false);
-
-            int i = -1;
-
-            if (ke.getCode().equals(KeyCode.UP)) {
-               i = up;
+            if (newVal) {
+               handleEraseError();
+               setBorder(n);
             }
-            if (ke.getCode().equals(KeyCode.DOWN)) {
-               i = down;
-            }
-            if (ke.getCode().equals(KeyCode.ENTER)) {
-               switch (n.getId()) {
-                  case "usuarioTextFieldLogin":
-                     handleValidationUser();
-                     break;
-                  case "passwordTextFieldLogin":
-                     handleValidationPassword();
-                     break;
-                  case "loginButtonLogin":
-                     handlelogin();
-                     break;
-                  case "activoCheckBoxLogin":
-                     activoCheckBoxLogin.setSelected(!activoCheckBoxLogin.isSelected());
-                     break;
-                  case "recuperarButtonLogin":
-                     handleForget();
-                     break;
-                  case "newUserButtonLogin":
-                     handleNuevoUsuario();
-                     break;
-                  default:
-                     break;
+         });
+
+         // setting onClick
+         n.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle (KeyEvent ke)
+            {
+               handleEraseError();
+
+               int i = -1;
+
+               if (ke.getCode().equals(KeyCode.UP)) {
+                  i = up;
+               }
+               if (ke.getCode().equals(KeyCode.DOWN)) {
+                  i = down;
+               }
+               if (ke.getCode().equals(KeyCode.ENTER)) {
+                  switch (n.getId()) {
+                     case "usuarioTextFieldLogin":
+                        handleValidationUser();
+                        break;
+                     case "passwordTextFieldLogin":
+                        handleValidationPassword();
+                        break;
+                     case "loginButtonLogin":
+                        handlelogin();
+                        break;
+                     case "activoCheckBoxLogin":
+                        activoCheckBoxLogin.setSelected(!activoCheckBoxLogin.isSelected());
+                        break;
+                     case "recuperarButtonLogin":
+                        handleForget();
+                        break;
+                     case "newUserButtonLogin":
+                        handleNuevoUsuario();
+                        break;
+                     default:
+                        break;
+                  }
+               }
+               if (ke.getCode().equals(KeyCode.SPACE)) {
+                  switch (n.getId()) {
+                     case "loginButtonLogin":
+                        handlelogin();
+                        break;
+                     case "recuperarButtonLogin":
+                        handleForget();
+                        break;
+                     case "newUserButtonLogin":
+                        handleNuevoUsuario();
+                        break;
+                     default:
+                        break;
+                  }
+               }
+               if (i != -1) {
+                  node[i].requestFocus();
+                  setBorder(node[i]);
+                  //oldNode = n;
+                  ke.consume();
+
                }
             }
-            if (ke.getCode().equals(KeyCode.SPACE)) {
-               switch (n.getId()) {
-                  case "loginButtonLogin":
-                     handlelogin();
-                     break;
-                  case "recuperarButtonLogin":
-                     handleForget();
-                     break;
-                  case "newUserButtonLogin":
-                     handleNuevoUsuario();
-                     break;
-                  default:
-                     break;
-               }
+
+         });
+
+         // setting onClick
+         n.setOnMouseClicked((MouseEvent) -> {
+            // HBoxError disabled
+            handleEraseError();
+
+            n.requestFocus();
+            setBorder(n);
+            oldNode = n;
+            MouseEvent.consume();
+            switch (n.getId()) {
+               case "loginButtonLogin":
+                  handlelogin();
+                  break;
+               case "activoCheckBoxLogin":
+                  activoCheckBoxLogin.setSelected(activoCheckBoxLogin.isSelected());
+                  break;
+               case "recuperarButtonLogin":
+                  handleForget();
+                  break;
+               case "newUserButtonLogin":
+                  handleNuevoUsuario();
+                  break;
+               default:
+                  break;
             }
-            if (i != -1) {
-               node[i].requestFocus();
-               setBorder(node[i]);
-               //oldNode = n;
-               ke.consume();
-
-            }
-         }
-
-      });
-
-      // setting onClick
-      n.setOnMouseClicked((MouseEvent) -> {
-         // HBoxError disabled
-            errorUserLabel.setManaged(false);
-            errorPasswordLabel.setManaged(false);
-
-         n.requestFocus();
-         setBorder(n);
-         oldNode = n;
-         MouseEvent.consume();
-         switch (n.getId()) {
-            case "loginButtonLogin":
-               handlelogin();
-               break;
-            case "activoCheckBoxLogin":
-               activoCheckBoxLogin.setSelected(activoCheckBoxLogin.isSelected());
-               break;
-            case "recuperarButtonLogin":
-               handleForget();
-               break;
-            case "newUserButtonLogin":
-               handleNuevoUsuario();
-               break;
-            default:
-               break;
-         }
-      });
+         });
+      } catch (Exception e) {
+        message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);                  
+      }
    }
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="EraseError">
+
+   /**
+    *
+    */
+   private void handleEraseError ()
+   {
+      errorUserLabel.setManaged(false);
+      errorUserLabel.setText(null);
+      errorPasswordLabel.setManaged(false);
+      errorPasswordLabel.setText(null);
+   }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="setBorder">
@@ -273,56 +289,60 @@ public class FormController implements Initializable {
     */
    private void setBorder (Node n)
    {
-      if (n.equals(usuarioTextFieldLogin)) {
-         eraserBorder();
-         HBoxUsuarioLogin.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
+      try {
+         if (n.equals(usuarioTextFieldLogin)) {
+            eraserBorder();
+            HBoxUsuarioLogin.getStyleClass().add("borderLoginVisible");
+            oldNode = currentNode;
+            currentNode = n;
+            return;
+         }
 
-      if (n.equals(passwordTextFieldLogin)) {
-         eraserBorder();
-         HboxPasswordLogin.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
+         if (n.equals(passwordTextFieldLogin)) {
+            eraserBorder();
+            HboxPasswordLogin.getStyleClass().add("borderLoginVisible");
+            oldNode = currentNode;
+            currentNode = n;
+            return;
+         }
 
-      if (n.equals(loginButtonLogin)) {
-         eraserBorder();
-         HBoxLoginLogin.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
+         if (n.equals(loginButtonLogin)) {
+            eraserBorder();
+            HBoxLoginLogin.getStyleClass().add("borderLoginVisible");
+            oldNode = currentNode;
+            currentNode = n;
+            return;
+         }
 
-      if (n.equals(activoCheckBoxLogin)) {
-         eraserBorder();
-         HBoxActivoLogin.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
+         if (n.equals(activoCheckBoxLogin)) {
+            eraserBorder();
+            HBoxActivoLogin.getStyleClass().add("borderLoginVisible");
+            oldNode = currentNode;
+            currentNode = n;
+            return;
+         }
 
-      if (n.equals(recuperarButtonLogin)) {
+         if (n.equals(recuperarButtonLogin)) {
+            eraserBorder();
+            HBoxRecuperarLogin.getStyleClass().add("borderLoginVisible");
+            oldNode = currentNode;
+            currentNode = n;
+            return;
+         }
+         if (n.equals(newUserButtonLogin)) {
+            eraserBorder();
+            HBoxNuevoUsuarioLogin.getStyleClass().add("borderLoginVisible");
+            oldNode = currentNode;
+            currentNode = n;
+            return;
+         }
          eraserBorder();
-         HBoxRecuperarLogin.getStyleClass().add("borderLoginVisible");
+         n.getStyleClass().add("borderLoginVisible");
          oldNode = currentNode;
          currentNode = n;
-         return;
+      } catch (Exception e) {
+         e.printStackTrace();
       }
-      if (n.equals(newUserButtonLogin)) {
-         eraserBorder();
-         HBoxNuevoUsuarioLogin.getStyleClass().add("borderLoginVisible");
-         oldNode = currentNode;
-         currentNode = n;
-         return;
-      }
-      eraserBorder();
-      n.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
 
    }
 
@@ -414,7 +434,7 @@ public class FormController implements Initializable {
     */
    private void showErrorPassword (String text)
    {
-      errorPasswordLabel.setManaged(true);      
+      errorPasswordLabel.setManaged(true);
       errorPasswordLabel.setText(resources.getString(text));
       loginPassword = false;
    }
@@ -459,7 +479,7 @@ public class FormController implements Initializable {
    private void handleNuevoUsuario ()
    {
       mainScene.buttorRegistro();
-      
+
    }
 //</editor-fold>
 

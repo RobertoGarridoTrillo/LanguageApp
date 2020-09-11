@@ -8,10 +8,8 @@ import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
 import LanguageApp.controller.RegistrationController;
 import LanguageApp.controller.WelcomeController;
+import LanguageApp.util.Message;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -27,15 +24,10 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -82,6 +74,9 @@ public class MainScene extends Application {
    Locale locale;
    FXMLLoader loader;
 
+   // pop-up messages
+   Message message;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
@@ -99,10 +94,12 @@ public class MainScene extends Application {
       super.init();
       Font.loadFont(MainScene.class.getResource("/LanguageApp/resources/fonts/freefont/FreeSans.ttf").toExternalForm(), 10);
 
-
       // Setting the welcome user
       usuario_activo = 0;
       welcomeScreen = true;
+
+      // Setting messages
+      message = new Message();
    }
 //</editor-fold>
 
@@ -183,7 +180,7 @@ public class MainScene extends Application {
          dataBaseController.setMainScene(this);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / dataBaseView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / dataBaseView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -216,7 +213,7 @@ public class MainScene extends Application {
          jMetro.setScene(mainScene);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / mainView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / mainView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -240,7 +237,7 @@ public class MainScene extends Application {
          principalController.setMainScene(this);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / principalView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / principalView()", e.toString(), e);
       }
    }
 
@@ -267,7 +264,7 @@ public class MainScene extends Application {
          mainView.setCenter(loginView);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / loginView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / loginView()", e.toString(), e);
       }
    }
 
@@ -291,7 +288,7 @@ public class MainScene extends Application {
          welcomeController.setMainScene(this);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / welcomeView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / welcomeView()", e.toString(), e);
       }
    }
 
@@ -315,7 +312,7 @@ public class MainScene extends Application {
          formController.setMainScene(this);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / formView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / formView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -335,7 +332,7 @@ public class MainScene extends Application {
          registrationController.setMainScene(this);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / registrationView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / registrationView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -355,7 +352,7 @@ public class MainScene extends Application {
          forgetController.setMainScene(this);
 
       } catch (IOException e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / forgetView()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / forgetView()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -395,14 +392,14 @@ public class MainScene extends Application {
          conn.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
          } catch (Exception e) {
-            message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
          }
       }
       return new Pair(usuario_id, usuario_nombre);
@@ -450,14 +447,14 @@ public class MainScene extends Application {
          buttonDashBoardMenu();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
          } catch (Exception e) {
-            message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
          }
       }
    }
@@ -498,14 +495,14 @@ public class MainScene extends Application {
 
          }
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
          } catch (SQLException e) {
-            message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
          }
       }
       return new Pair(usuario_id, usuario_nombre);
@@ -567,14 +564,14 @@ public class MainScene extends Application {
          pstmt.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
          } catch (Exception e) {
-            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
          }
       }
       return false;
@@ -615,14 +612,14 @@ public class MainScene extends Application {
          conn.close();
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
       } finally {
          try {
             if (conn != null) {
                conn.close();
             }
          } catch (Exception e) {
-            message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
          }
       }
       return password;
@@ -657,11 +654,10 @@ public class MainScene extends Application {
    {
       mainStage.setOnCloseRequest(e -> {
          e.consume();
-         if (!message(Alert.AlertType.CONFIRMATION, "Salir",
-                 "¿Salir de la aplicación?", "", null)) {
+         if (!message.message(Alert.AlertType.CONFIRMATION, "Salir", "¿Salir de la aplicación?", "", null)) {
          } else {
-         Platform.exit();
-         System.exit(0);
+            Platform.exit();
+            System.exit(0);
          }
       });
    }
@@ -773,7 +769,7 @@ public class MainScene extends Application {
     */
    public void buttonExitMenu ()
    {
-      if (!message(Alert.AlertType.CONFIRMATION, "Salir",
+      if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
               "¿Salir de la aplicación?", "", null)) {
          return;
       }
@@ -788,7 +784,7 @@ public class MainScene extends Application {
     */
    public void buttonControlesMenu ()
    {
-      message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
+      message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
               "Controles: \n\n" +
               "Cursores:  para desplazarte por los diferentes " +
               "elementos.\n\n" +
@@ -805,7 +801,7 @@ public class MainScene extends Application {
     */
    public void buttonAboutMenu ()
    {
-      message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
+      message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
               null);
    }
 
@@ -843,7 +839,7 @@ public class MainScene extends Application {
       if (welcomeScreen && usuario_id == 0) {
          return;
       }
-      boolean salida = message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "Cerrar la sesión?", "", null);
+      boolean salida = message.message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "Cerrar la sesión?", "", null);
       if (!salida) {
          return;
       }
@@ -872,7 +868,7 @@ public class MainScene extends Application {
          mainView.setCenter(loginView);
 
       } catch (Exception e) {
-         message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonUnloginMenu()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message.message", "MainScene / buttonUnloginMenu()", e.toString(), e);
       }
    }
 
@@ -950,76 +946,7 @@ public class MainScene extends Application {
 
 
 //</editor-fold>
-   
-//<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
-   /**
-    * show a standard emergent message
-    *
-    * @param alertType alertType.CONFIRMATION, ERROR, INFORMATION, NONE, WARNING
-    * @param title The title of the windows
-    * @param about The them to expose
-    * @param contextText The showed text
-    * @param ex The thrown exception
-    */
-   public boolean message (Alert.AlertType alertType, String title, String about, String contextText, Exception ex)
-   {
-
-      Alert alert = new Alert(alertType);
-      alert.setTitle(title);
-      //lert.getDialogPane().setMinWidth(600);
-      //alert.getDialogPane().setMinHeight(480);
-      //alert.getDialogPane().setPrefWidth(600);
-      //alert.getDialogPane().setPrefHeight(480);
-      alert.setResizable(true);
-      alert.getDialogPane().setHeaderText(about);
-      alert.getDialogPane().setContentText(contextText);
-
-      if (ex != null) {
-         // Create expandable Exception.
-         StringWriter sw = new StringWriter();
-         PrintWriter pw = new PrintWriter(sw);
-         ex.printStackTrace(pw);
-         String exceptionText = sw.toString();
-
-         Label label = new Label("El seguimiento del error fue:");
-
-         TextArea textArea = new TextArea(exceptionText);
-         textArea.setEditable(true);
-         textArea.setWrapText(true);
-
-         textArea.setMaxWidth(Double.MAX_VALUE);
-         textArea.setMaxHeight(Double.MAX_VALUE);
-         GridPane.setVgrow(textArea, Priority.ALWAYS);
-         GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-         GridPane expContent = new GridPane();
-         expContent.setMaxWidth(Double.MAX_VALUE);
-         expContent.add(label, 0, 0);
-         expContent.add(textArea, 0, 1);
-         // Set expandable Exception into the dialog pane.
-         alert.getDialogPane().setExpandableContent(expContent);
-      }
-
-      alert.getDialogPane().getStylesheets().
-              add(getClass().getResource("/LanguageApp/style/style.css").toExternalForm());
-      alert.getDialogPane().getStyleClass().add("style");
-
-      Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-      Image icon = new Image(getClass().getResourceAsStream("/LanguageApp/resources/images/languages_128.png"));
-      stage.getIcons().add(icon);
-
-      try {
-         Optional<ButtonType> result = alert.showAndWait();
-         if (result.get() == ButtonType.OK) {
-            return true;
-         }
-      } catch (Exception e) {
-      }
-      return false;
-   }
-
 //</editor-fold>
-
    /**
     * public static void main
     *

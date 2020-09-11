@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.Message;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -20,27 +21,30 @@ public class MainController {
 //<editor-fold defaultstate="collapsed" desc="fields class">
 
    @FXML private BorderPane MainViewBorderPane;
-   
+
    @FXML private MenuBar menuBar;
-   
+
    @FXML private Menu fileMenu;
    @FXML private Menu userMenu;
    @FXML private Menu goMenu;
    @FXML private Menu helpMenu;
-   
+
    @FXML private MenuItem openMenu;
    @FXML private MenuItem closeMenu;
    @FXML private MenuItem exitMenu;
-   
+
    @FXML private MenuItem loginMenu;
    @FXML private MenuItem unloginMenu;
    @FXML private MenuItem registroMenu;
 
    @FXML private MenuItem dashBoard;
    @FXML private MenuItem databaseMenu;
-   
+
    @FXML private MenuItem controlesMenu;
    @FXML private MenuItem aboutMenu;
+
+   // pop-up messages
+   Message message;
 
    // Reference to the main Stage from the main Scene
    private Stage mainStage;
@@ -68,13 +72,16 @@ public class MainController {
    {
       // References to mainStage
       mainStage = MainScene.getMainStage();
+      
+      // Setting messages
+      message = new Message();
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Menu">
 
    /**
-    * Open a SelectFile and seek a json to load the phrases (Part 1)
+    * Open a SelectFile and seek a json to load the phrases
     */
    @FXML private void handleOpenMenu ()
    {
@@ -88,7 +95,7 @@ public class MainController {
    {
       mainScene.buttonCloseMenu();
    }
-   
+
    /**
     * When click on the close menu
     */
@@ -112,7 +119,7 @@ public class MainController {
    {
       mainScene.buttonUnloginMenu();
    }
-   
+
    /**
     * handle of the login menu
     */
@@ -120,6 +127,7 @@ public class MainController {
    {
       mainScene.buttorRegistro();
    }
+
    /**
     * When click on the close menu
     */

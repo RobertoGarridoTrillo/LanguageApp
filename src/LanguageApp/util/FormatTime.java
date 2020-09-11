@@ -2,6 +2,7 @@ package LanguageApp.util;
 
 import static java.lang.Math.floor;
 import static java.lang.String.format;
+import javafx.scene.control.Alert;
 import javafx.util.Duration;
 
 /**
@@ -10,21 +11,31 @@ import javafx.util.Duration;
  */
 public class FormatTime {
 
-    /**
-     * Format the Duration object elapsedToSeconds
-     *
-     * @param elapsedToSeconds (Duration currentTime = mediaPlayer.getCurrentTime();)
-     * @param durationToSeconds The total durationToSeconds of the media
-     * @return An string with the time correctly form
-     */
-    public String formatting (Duration elapsed, Duration duration) {
+   // pop-up messages
+   Message message = new Message();
 
-        int intElapsed = (int) floor(elapsed.toSeconds());
-        int intDuration = (int) floor(duration.toSeconds());
-        
-        return format("%d:%02d:%02d %d:%02d:%02d", intElapsed / 3600, (intElapsed % 3600) / 60, 
-                (intElapsed % 60), intDuration / 3600, (intDuration % 3600) / 60, (intDuration % 60));
+   /**
+    * Format the Duration object elapsedToSeconds
+    *
+    * @param elapsed
+    * @param duration
+    * @return An string with the time correctly form
+    */
+   public String formatting (Duration elapsed, Duration duration)
+   {
+      int intElapsed = 0;
+      int intDuration = 0;
+      try {
+         intElapsed = (int) floor(elapsed.toSeconds());
+         intDuration = (int) floor(duration.toSeconds());
 
-    }
+      } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "FormatTime / formatting()", e.toString(), e);
+      }
+      return format("%d:%02d:%02d %d:%02d:%02d", intElapsed / 3600, (intElapsed % 3600) / 60,
+              (intElapsed % 60), intDuration / 3600, (intDuration % 3600) / 60, (intDuration % 60));
+
+   }
+
 
 }

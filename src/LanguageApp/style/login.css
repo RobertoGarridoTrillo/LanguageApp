@@ -26,6 +26,9 @@
   -fx-font-weight: bold;
 }
 
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
 
 /*      left image login */
 .vboxLoginLeft {
@@ -48,6 +51,10 @@
   -fx-font-weight: bold;
 }
 
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
 /*      right right login*/
 .vboxLoginRight {
   -fx-background-color: #004f8a;
@@ -63,6 +70,10 @@
   -fx-font-weight: bold;
 }
 
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
 /*        Password login*/
 .jfx-password-field {
   -jfx-focus-color: coral; /* #4059A9; */
@@ -74,7 +85,7 @@
 
 .jfx-password-field > .input-line {
   -fx-background-color: -jfx-unfocus-color;
-  -fx-pref-height: 1px;
+  -fx-pref-height: 0px;
   -fx-translate-y: 4;
 }
 
@@ -102,15 +113,17 @@
   -fx-fill: #D34336;  
 }
 
-
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
 
 /*        textField login  */
 .jfx-text-field {
-  -jfx-focus-color: coral; /*#4059A9; */
-  -jfx-unfocus-color: #004f8a; /* #333333;*/
+  -jfx-focus-color: coral; 
+  -jfx-unfocus-color: #004f8a; 
   -fx-font-family: 'FreeSans';
   -fx-font-size: 12pt;
-  -fx-border-color: #004f8a; /*#333333;*/
+  -fx-border-color: #004f8a; 
 }
 
 .jfx-text-field  .input-line {
@@ -126,7 +139,7 @@
 
 .jfx-text-field, .jfx-text-field:focused, .jfx-text-field:hover {
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-  -fx-prompt-text-fill: #0f9d58; /* #4D4D4D; */
+  -fx-prompt-text-fill: #0f9d58; 
   -fx-text-fill: white;
   -fx-highlight-fill: #000000;
 
@@ -146,6 +159,10 @@
   -fx-fill: #D34336;  
 
 }
+
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
 
 /*      ComboBox               */
 .jfx-combo-box {
@@ -203,10 +220,13 @@
 .jfx-combo-box, .jfx-combo-box:focused, 
 .jfx-combo-box:hover, .jfx-combo-box:focused:hover {
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-  -fx-prompt-text-fill: #0f9d58a5; /* #4D4D4D; */
+  -fx-prompt-text-fill: #0f9d58a5;
   -fx-text-fill: white;
 }
 
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
 
 /*        Genericos */
 .textFieldLogin, textFieldLogin:active, textFieldLogin:hover, textFieldLogin:focus {
@@ -215,66 +235,72 @@
   -fx-font-size: 12pt; 
   -fx-font-weight: bold;
 }
-
-.borderLoginVisible {
-  -fx-border-color: coral;
-}
-
-.borderLoginInvisible {
-  -fx-border-color: #004f8a;
-}
-
-.initialBorderLogin {    
-  -fx-border-color: #004f8a; 
-  -fx-border-width: 1px 2px 2px 1px;
-  -fx-border-radius: 2px;
-  -fx-border-insets: 0;
+/*
+/* For delete the border of the item that aren't Hbox */
+.initialBorderItems .initialBorderItems:hover, .initialBorderItems:focused,  
+.jfx-button, .jfx-button:hover, .jfx-button:focused {    
+  -fx-background-color: #004f8a;
+  -fx-background-radius: 0px;
   -fx-background-inset: 0;
-  -fx-background-color: #004f8a;
-}
-/*        this is for the extrange of the button */
 
-/* Here is for the hover */
-.jfx-button:hover, .jfx-button:focus {
-  -fx-border-color: coral;
-  -fx-border-width: 1px 2px 2px 1px;
-  -fx-background-color: #004f8a;
-}
-
-
-
-
-/* --------------*/
-
-.jfx-text-field:hover, .jfx-text-field:focused,
-.initialBorderLogin:hover, 
-.hyperlink, .hyperlink:focused, .hyperlink:focused,
-.jfx-combo-box:hover, .jfx-combo-box:focused
-{
-  -fx-border-color: coral;
-  -fx-border-width: 2px 2px 2px 2px;
-  -fx-border-radius: 2px;
+  -fx-border-color: #004f8a; 
+  -fx-border-width: 0px;
+  -fx-border-radius: 0px;
   -fx-border-insets: 0;
+}
+
+/* For For delete the border of the item that are Hbox */   
+.initialBorderLogin, .borderLoginInvisible  {    
+  -fx-background-color: #004f8a;
+  -fx-background-inset: 0;
+  
+
+  -fx-border-color: #004f8a; 
+  -fx-border-width: 3px;;
+  -fx-border-radius: 3px;
+  -fx-border-insets: 0;
+}
+
+.initialBorderLogin:hover, .borderLoginVisible {
+  -fx-background-color: #004f8a;
+  -fx-background-inset: 0;
+
+  -fx-border-color: coral;
+  -fx-border-width: 3px;;
+  -fx-border-radius: 3px;
+  -fx-border-insets: 0;
+}
+
+
+/* -------------------------------------------*/
+
+#errorPasswordLabelForget {
+  -fx-border-color: #004f8a;
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 13pt;
+  -fx-text-fill: #0fd068;
 }
 
 .labelError, .labelError:hover, .labelError:focused{
-  -fx-border-color: #004f8a; /*#333333;*/
-  -fx-text-fill: #ff0000;
+  -fx-border-color: #004f8a;
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 13pt;
+  -fx-text-fill: #ff3460;
 }
 
 #labelError, #labelError:hover, #labelError:focused{
-  -fx-border-color: #004f8a; /*#333333;*/
+  -fx-border-color: #004f8a;
   -fx-text-fill: #0f9d58;
 }
 
 #labelError > .input-line {
-  -fx-background-color: #004f8a; /*#333333;*/
+  -fx-background-color: #004f8a; 
   -fx-pref-height: 2px;
   -fx-translate-y: 4;
 }
 
 #labelError > .input-focused-line {
-  -fx-background-color: #004f8a; /*#333333;*/
+  -fx-background-color: #004f8a; 
   -fx-pref-height: 0px;
 }
 
