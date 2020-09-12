@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -95,8 +96,9 @@ public class WelcomeController implements Initializable {
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
-      // Setting messages
-      message = new Message();
+      // Create the locale for the pop up messages
+      HandleLocale01.handleLocale01();
+      message = new Message(resources);
 
       node = new Node[]{
          inicioButtonWelcome,
@@ -328,7 +330,7 @@ public class WelcomeController implements Initializable {
             nameUserLabel.setText(resources.getString("Usuario no identificado"));
          }
       } catch (Exception e) {
-         e.printStackTrace();
+         message.message(Alert.AlertType.ERROR, "Error message", "handlePutName / eventButton()", e.toString(), e);
       }
    }
 

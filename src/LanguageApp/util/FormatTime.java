@@ -12,7 +12,7 @@ import javafx.util.Duration;
 public class FormatTime {
 
    // pop-up messages
-   Message message = new Message();
+   Message message = new Message(HandleLocale01.handleLocale01());
 
    /**
     * Format the Duration object elapsedToSeconds

@@ -13,39 +13,40 @@ import javafx.scene.control.Alert;
  * @author Roberto Garrido Trillo
  */
 public class GetJson {
-   
+
    // pop-up messages
-   Message message = new Message();
-   
-    /**
-     * Read a json file and return an Array of Items object
-     *
-     * @param fl The file return by filechooser
-     * @return An array of item object
-     */
-    public Item[] getJson (File fl) {
+   Message message = new Message(HandleLocale01.handleLocale01());
 
-        Item[] is = null;
-        
-        Gson gson = new Gson();
+   /**
+    * Read a json file and return an Array of Items object
+    *
+    * @param fl The file return by filechooser
+    * @return An array of item object
+    */
+   public Item[] getJson (File fl)
+   {
 
-        try {
-            Reader reader = new FileReader(fl);
-            
-            // Convert JSON File to Java Object
-            is = gson.fromJson(reader, Item[].class);
+      Item[] is = null;
 
-            // Put the id handly
-            for (int i = 0; i < is.length; i++) {
-                is[i].setId(i);
-                is[i].setStart(is[i].getStart());
-                is[i].setEnd(is[i].getEnd());
-                is[i].setText(is[i].getText());
-            }
+      Gson gson = new Gson();
 
-        } catch (Exception e) {
-           message.message(Alert.AlertType.ERROR, "Error message", "GetJson.java / getJson()", e.toString(), e);
-        }
-        return is;
-    }
+      try {
+         Reader reader = new FileReader(fl);
+
+         // Convert JSON File to Java Object
+         is = gson.fromJson(reader, Item[].class);
+
+         // Put the id handly
+         for (int i = 0; i < is.length; i++) {
+            is[i].setId(i);
+            is[i].setStart(is[i].getStart());
+            is[i].setEnd(is[i].getEnd());
+            is[i].setText(is[i].getText());
+         }
+
+      } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "GetJson.java / getJson()", e.toString(), e);
+      }
+      return is;
+   }
 }

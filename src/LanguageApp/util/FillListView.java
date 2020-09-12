@@ -13,7 +13,7 @@ import javafx.scene.control.ListView;
 public class FillListView {
 
    // pop-up messages
-   Message message = new Message();
+   Message message = new Message(HandleLocale01.handleLocale01());
 
    /**
     * Fill a listview with items

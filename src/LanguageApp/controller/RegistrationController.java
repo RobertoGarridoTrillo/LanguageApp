@@ -3,13 +3,17 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -24,7 +28,7 @@ import javafx.stage.Stage;
  *
  * @author Roberto Garrido Trillo
  */
-public class RegistrationController {
+public class RegistrationController implements Initializable {
 
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
@@ -76,6 +80,10 @@ public class RegistrationController {
 
    // The Login or not Login
    boolean registro, registroUser, registroPassword, registroPregunta, registroRespuesta;
+
+   // For the bounle of idioms
+   ResourceBundle resources;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
@@ -92,48 +100,59 @@ public class RegistrationController {
 //<editor-fold defaultstate="collapsed" desc="Initialize">
    /**
     * When the method is initialize
+    *
+    * @param location
+    * @param resources
     */
-   public void initialize ()
+   @Override
+   public void initialize (URL location, ResourceBundle resources)
    {
-      // References to mainStage
-      mainStage = MainScene.getMainStage();
+      try {
 
-      // Setting messages
-      message = new Message();
+         this.resources = resources;
 
-      node = new Node[]{
-         usuarioTextFieldRegistro,
-         passwordTextFieldRegistro,
-         preguntaComboBoxRegistro,
-         respuestaTextFieldRegistro,
-         registroButtonRegistro,
-         oldUserButtonRegistro
-      };
+         // References to mainStage
+         mainStage = MainScene.getMainStage();
 
-      // Setting the current node
-      currentNode = usuarioTextFieldRegistro;
-      oldNode = usuarioTextFieldRegistro;
-      usuarioTextFieldRegistro.requestFocus();
+         // Create the locale for the pop up messages
+         HandleLocale01.handleLocale01();
+         message = new Message(resources);
 
-      // Setting the jfxtextfield name
-      setJFXTextField();
+         node = new Node[]{
+            usuarioTextFieldRegistro,
+            passwordTextFieldRegistro,
+            preguntaComboBoxRegistro,
+            respuestaTextFieldRegistro,
+            registroButtonRegistro,
+            oldUserButtonRegistro
+         };
 
-      // Settiong the intial border
-      setBorder(usuarioTextFieldRegistro);
+         // Setting the current node
+         currentNode = usuarioTextFieldRegistro;
+         oldNode = usuarioTextFieldRegistro;
+         usuarioTextFieldRegistro.requestFocus();
 
-      // Setting the ConboBox options
-      preguntaComboBoxRegistro.getItems().removeAll(preguntaComboBoxRegistro.getItems());
-      preguntaComboBoxRegistro.getItems().addAll(
-              "¿Cuál es tu comida favorita?",
-              "¿Cuál es tu color favorito?",
-              "¿Cuál es tu ciudad favorita",
-              "¿Cuál es tu ropa favorita?",
-              "¿Cuál es tu bebida favorita?");
-      // preguntaComboBoxRegistro.getSelectionModel().select("Option B");
+         // Setting the jfxtextfield name
+         setJFXTextField();
 
-      // HBoxError disabled
-      handleEraseError();
+         // Settiong the intial border
+         setBorder(usuarioTextFieldRegistro);
 
+         // Setting the ConboBox options
+         preguntaComboBoxRegistro.getItems().removeAll(preguntaComboBoxRegistro.getItems());
+         preguntaComboBoxRegistro.getItems().addAll(
+                 resources.getString("¿Cuál es tu comida favorita?"),
+                 resources.getString("¿Cuál es tu color favorito?"),
+                 resources.getString("¿Cuál es tu ciudad favorita?"),
+                 resources.getString("¿Cuál es tu ropa favorita?"),
+                 resources.getString("¿Cuál es tu bebida favorita?"));
+         // preguntaComboBoxRegistro.getSelectionModel().select("Option B");
+
+         // HBoxError disabled
+         handleEraseError();
+      } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / initialize()", e.toString(), e);
+      }
    }
 //</editor-fold> 
 
@@ -381,7 +400,7 @@ public class RegistrationController {
    private void showErrorUser (String text)
    {
       errorUserLabel.setManaged(true);
-      errorUserLabel.setText(text);
+      errorUserLabel.setText(resources.getString(text));
       registroUser = false;
    }
 
@@ -408,7 +427,7 @@ public class RegistrationController {
    private void showErrorPassword (String text)
    {
       errorPasswordLabel.setManaged(true);
-      errorPasswordLabel.setText(text);
+      errorPasswordLabel.setText(resources.getString(text));
       registroPassword = false;
    }
 
@@ -452,7 +471,7 @@ public class RegistrationController {
    private void showErrorRespuesta (String text)
    {
       errorRespuestaLabel.setManaged(true);
-      errorRespuestaLabel.setText(text);
+      errorRespuestaLabel.setText(resources.getString(text));
       registroPregunta = false;
       registroRespuesta = false;
    }
@@ -469,10 +488,15 @@ public class RegistrationController {
       //boolean activoBoolean = activoCheckBox.isSelected();
       if (registroUser == true && registroPassword == true &&
               registroPregunta == true && registroRespuesta == true) {
-         boolean result = mainScene.handleRegistro(usuarioString, passwordString, preguntaString, respuestaString);
-         if (result) {
+
+         int result = mainScene.handleRegistro(usuarioString, passwordString, preguntaString, respuestaString);
+
+         if (result!=0) {
             showErrorUser("El usuario ya existe");
+         } else {
+            mainScene.handleEntrar(true, true);
          }
+
       }
    }
 

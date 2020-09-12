@@ -11,9 +11,9 @@ import javafx.stage.Stage;
  * @author Roberto Garrido Trillo
  */
 public class SelectedFile {
-      
+
    // pop-up messages
-   Message message = new Message();
+   Message message = new Message(HandleLocale01.handleLocale01());
 
    /**
     * Show a filechooser

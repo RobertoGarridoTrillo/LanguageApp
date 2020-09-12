@@ -3,8 +3,12 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -16,7 +20,7 @@ import javafx.stage.Stage;
  *
  * @author Roberto Garrido Trillo
  */
-public class MainController {
+public class MainController implements Initializable {
 
 //<editor-fold defaultstate="collapsed" desc="fields class">
 
@@ -51,6 +55,9 @@ public class MainController {
    // Reference to the main Scene
    private MainScene mainScene;
 
+   // For the bounle of idioms
+   ResourceBundle resources;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
@@ -68,13 +75,17 @@ public class MainController {
    /**
     * When the method is initialize
     */
-   public void initialize ()
+   @Override
+   public void initialize (URL location, ResourceBundle resources)
    {
+      this.resources = resources;
+
       // References to mainStage
       mainStage = MainScene.getMainStage();
-      
-      // Setting messages
-      message = new Message();
+
+      // Create the locale for the pop up messages
+      HandleLocale01.handleLocale01();
+      message = new Message(resources);
    }
 //</editor-fold>
 
@@ -159,4 +170,6 @@ public class MainController {
    {
       mainScene.buttonDashBoardMenu();
    }
+
+//</editor-fold>
 }

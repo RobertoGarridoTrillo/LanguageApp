@@ -5,17 +5,17 @@
 
 .root {
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 10pt;
+  -fx-font-size: 13pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
   -fx-background-color: #333333;
-  -fx-effect: dropshadow( gaussian, rgba(255, 255,255, 0.4), 10, 0.5, 0.0, 0.0 );
+  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0.0, 0.0 );
 }
 
 /* fuentes */
 .dialog-pane{
   -fx-font-family: 'FreeSans';
-  -fx-font-size: 11pt;
+  -fx-font-size: 13pt;
   -fx-font-weight: bold;
   -fx-font-style: normal;
   -fx-text-fill: white;
@@ -27,7 +27,7 @@
 .alert.information.dialog-pane, .alert.information.dialog-pane label,
 .alert.confirmation .dialog-pane, .alert.confirmation .dialog-pane label
 {
-  -fx-text-fill: white;
+  -fx-text-fill: white;  
 }
 .dialog-pane:header .header-panel {
   -fx-background-color: #004f8a;
@@ -36,6 +36,7 @@
 .dialog-pane:header .header-panel .label, .expandable-content{
   -fx-background-color: #004f8a;
   -fx-text-fill: white;
+  -fx-font-size: 15pt;
 }
 .details-button:hover {
   -fx-underline: false;

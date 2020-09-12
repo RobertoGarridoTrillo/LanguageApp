@@ -2,28 +2,27 @@
     Created on : 13-jul-2020, 17:13:18
     Author     : Roberto Garrido Trillo
 */
+/* dropshadow( <blur-type> , <color> , <radius> , <number> , <offset in the x> , <offset in the y> )
+
+ <blur-type> = [ gaussian | one-pass-box | three-pass-box | two-pass-box ]
+ <Radius>  [0.0 ... 127.0]
+ <Spread> [0.0 ... 1.0]
+ <offset in the x> Pixels
+ <offset in the y> Pixels
+   The spread of the shadow. 
+   The spread is the portion of the radius where the contribution of the source material will be 100%. 
+   The remaining portion of the radius will have a contribution controlled by the blur kernel. 
+   A spread of 0.0 will result in a distribution of the shadow determined entirely by the blur algorithm. 
+   A spread of 1.0 will result in a solid growth outward of the source material opacity to the limit of the radius with a very sharp cutoff to transparency at the radius. 
+ 
+*/
 
 .root2 {
   -fx-font-family: 'FreeSans';
   -fx-font-size: 12pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
-  -fx-background-color: #004f8a; /*#333333;*/
-}
-
-/*      Right image login */
-.vboxLoginRight {
   -fx-background-color: #004f8a;
-}
-.titleHeaderLogin{
-  -fx-font-family: 'Ebrina';
-  -fx-font-size: 24pt;
-  -fx-font-weight: bold;
-}
-.titleSubHeaderLogin{
-  -fx-font-family: 'Ebrina';
-  -fx-font-size: 20pt;
-  -fx-font-weight: bold;
 }
 
 /*------------------------------------------------------------------------*/
@@ -43,12 +42,15 @@
   -fx-font-family: 'Ebrina';
   -fx-font-size: 18pt;
   -fx-font-weight: bold;
+  -fx-effect: dropshadow( one-pass-box, rgba(0, 0, 0, 0.4), 10, 0.8, 8.0, 1.0 );
+
 }
 
 .subTitleVboxloginLeft{  
   -fx-font-family: 'Ebrina';
   -fx-font-size: 14pt;
   -fx-font-weight: bold;
+  -fx-effect: dropshadow( one-pass-box, rgba(0, 0, 0, 0.4), 10, 0.8, 8.0, 1.0 );
 }
 
 /*------------------------------------------------------------------------*/
@@ -63,14 +65,52 @@
   -fx-font-family: 'Ebrina';
   -fx-font-size: 26pt;
   -fx-font-weight: bold;
+  -fx-effect: dropshadow( one-pass-box, rgba(0, 0, 0, 0.4), 10, 0.6, 8.0, 1.0 );
 }
+.titleSubHeaderLogin{
+  -fx-font-family: 'Ebrina';
+  -fx-font-size: 20pt;
+  -fx-font-weight: bold; 
+  -fx-effect: dropshadow( one-pass-box, rgba(0, 0, 0, 0.4), 10, 0.6, 8.0, 1.0 );
+}
+
 .titleLogin{
   -fx-font-family: 'Ebrina';
   -fx-font-size: 22pt;
   -fx-font-weight: bold;
+  -fx-effect: dropshadow( one-pass-box, rgba(0, 0, 0, 0.4), 10, 0.6, 8.0, 2.0 );
 }
 
 /*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*      Menu bar    */
+.menu-bar > .label,
+.menu > .label,
+.menu-item > .label{
+  -fx-font-family: 'Ebrina';
+  -fx-font-size: 12pt;
+  -fx-font-weight: bold; 
+  -jfx-focus-color: coral;
+ -fx-padding: 5px 10px 5px 10px;  
+  -fx-border-color: transparent;
+ -fx-border-width: 2px;
+}
+.menu-item:focused, 
+.menu-item:hover{
+ -fx-background-color: #004f8a;
+ -fx-border-color: coral;
+ -fx-border-width: 2px;
+ -fx-padding: 5px 10px 5px 10px;
+  -fx-border-radius: 3px;
+  -fx-border-insets: 0;
+}
+.menu-item:focused > .label, 
+.menu-item:hover > .label{
+ -fx-background-color: transparent;
+}
+
+  /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 
@@ -253,7 +293,7 @@
 .initialBorderLogin, .borderLoginInvisible  {    
   -fx-background-color: #004f8a;
   -fx-background-inset: 0;
-  
+
 
   -fx-border-color: #004f8a; 
   -fx-border-width: 3px;;

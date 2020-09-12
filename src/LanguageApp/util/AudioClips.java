@@ -23,11 +23,9 @@ public class AudioClips {
    private AudioClip ac;
    private Set<String> wordSet;
    private String path;
-   
-   
+
    // pop-up messages
    Message message;
-   
 
    /**
     * Setting the audioclips
@@ -39,13 +37,13 @@ public class AudioClips {
     */
    public Map<String, AudioClip> setAudioClip (Set<String> wordSet, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
    {
-            
-      // Setting messages
-      message =  new Message();
-      
+
+      // pop-up messages
+      Message message = new Message(HandleLocale01.handleLocale01());
+
       // instance of the Map
       audioClips = new HashMap<>();
-      
+
       //this.wordSet = wordSet;
       String audioError = null;
 

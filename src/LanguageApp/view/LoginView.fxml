@@ -20,7 +20,7 @@
               </ImageView>
               <Label id="titleVboxLogin" styleClass="titleVboxLoginLeft" text="LanguageApp" textFill="WHITE">
         </Label>
-              <Label styleClass="subTitleVboxloginLeft" text="Nuevas formas de aprender" textFill="WHITE">
+              <Label styleClass="subTitleVboxloginLeft" text="%Nuevas formas de aprender" textFill="WHITE">
         </Label>
             </children>
           </VBox>

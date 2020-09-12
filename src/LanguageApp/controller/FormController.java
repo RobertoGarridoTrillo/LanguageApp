@@ -98,32 +98,37 @@ public class FormController implements Initializable {
    @Override
    public void initialize (URL location, ResourceBundle resources)
    {
-      this.resources = resources;
+      try {
 
-      // References to mainStage
-      mainStage = MainScene.getMainStage();
+         this.resources = resources;
 
-      node = new Node[]{
-         usuarioTextFieldLogin,
-         passwordTextFieldLogin,
-         loginButtonLogin,
-         activoCheckBoxLogin,
-         recuperarButtonLogin,
-         newUserButtonLogin};
+         // References to mainStage
+         mainStage = MainScene.getMainStage();
 
-      // Setting the current node
-      currentNode = usuarioTextFieldLogin;
-      oldNode = usuarioTextFieldLogin;
-      usuarioTextFieldLogin.requestFocus();
+         node = new Node[]{
+            usuarioTextFieldLogin,
+            passwordTextFieldLogin,
+            loginButtonLogin,
+            activoCheckBoxLogin,
+            recuperarButtonLogin,
+            newUserButtonLogin};
 
-      // Setting the jfxtextfield name
-      setJFXTextField();
+         // Setting the current node
+         currentNode = usuarioTextFieldLogin;
+         oldNode = usuarioTextFieldLogin;
+         usuarioTextFieldLogin.requestFocus();
 
-      // Settiong the intial border
-      setBorder(usuarioTextFieldLogin);
+         // Setting the jfxtextfield name
+         setJFXTextField();
 
-      // HBoxError disabled
-      handleEraseError();
+         // Settiong the intial border
+         setBorder(usuarioTextFieldLogin);
+
+         // HBoxError disabled
+         handleEraseError();
+      } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "FormController / initialize()", e.toString(), e);
+      }
    }
 
 
@@ -261,7 +266,7 @@ public class FormController implements Initializable {
             }
          });
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);                  
+         message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);
       }
    }
 //</editor-fold>
@@ -341,7 +346,7 @@ public class FormController implements Initializable {
          oldNode = currentNode;
          currentNode = n;
       } catch (Exception e) {
-         e.printStackTrace();
+         message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);
       }
 
    }

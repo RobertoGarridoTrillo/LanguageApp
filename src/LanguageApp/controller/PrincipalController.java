@@ -10,15 +10,18 @@ import LanguageApp.util.Directory;
 import LanguageApp.util.FillListView;
 import LanguageApp.util.FormatTime;
 import LanguageApp.util.GetJson;
+import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import LanguageApp.util.SaveWordsAsList;
 import LanguageApp.util.SelectedFile;
 import LanguageApp.util.SortPhrase;
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -29,6 +32,7 @@ import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -68,7 +72,7 @@ import javafx.util.Pair;
  *
  * @author Roberto Garrido Trillo
  */
-public class PrincipalController {
+public class PrincipalController implements Initializable {
 
 
 //<editor-fold defaultstate="collapsed" desc="fields class">
@@ -160,24 +164,6 @@ public class PrincipalController {
    @FXML private ProgressIndicator indicatorSuccessTranslation;
 
    @FXML private TabPane tabPanelListViewH;
-
-   @FXML private Tooltip tooltiptlistViewV;
-   @FXML private Tooltip tooltipListViewH1;
-   @FXML private Tooltip tooltipSliderReading;
-   @FXML private Tooltip tooltipRateReading;
-   @FXML private Tooltip tooltipBalanceReading;
-   @FXML private Tooltip tooltipVolumenReading;
-   @FXML private Tooltip tooltipSliderWriting;
-   @FXML private Tooltip tooltipRateWriting;
-   @FXML private Tooltip tooltipBalanceWriting;
-   @FXML private Tooltip tooltipVolumenWriting;
-   @FXML private Tooltip tooltipSliderTranslation;
-   @FXML private Tooltip tooltipRateTranslation;
-   @FXML private Tooltip tooltipBalanceTranslation;
-   @FXML private Tooltip tooltipVolumenTranslation;
-   @FXML private Tooltip toottipPlayOriginalReading;
-   @FXML private Tooltip toottipPlayOriginalWriting;
-   @FXML private Tooltip toottipPlayOriginalTranslation;
 
    // hyperlink youtube
    @FXML Hyperlink youtubeLink;
@@ -279,6 +265,9 @@ public class PrincipalController {
    // Active user
    private int usuario_id;
 
+   // For the bounle of idioms
+   ResourceBundle resources;
+
 //</editor-fold>
 
    /**
@@ -294,15 +283,17 @@ public class PrincipalController {
    /**
     * When the method is initialize
     */
-   public void initialize ()
+   @Override
+   public void initialize (URL location, ResourceBundle resources)
    {
       try {
 
          // References to mainScene
          mainStage = MainScene.getMainStage();
 
-         // Setting messages
-         message = new Message();
+         // Create the locale for the pop up messages
+         HandleLocale01.handleLocale01();
+         message = new Message(resources);
 
          // Instances
          sf = new SelectedFile();
@@ -380,9 +371,6 @@ public class PrincipalController {
          // Settiong the intial border
          setBorder(listViewV);
 
-         // Setting the tooltips      
-         setTooltips();
-
          // Setting if the stop is from original button or media (true id original)
          originalButton = false;
 
@@ -399,7 +387,7 @@ public class PrincipalController {
          }
 
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "MainController / initialize()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / initialize()", e.toString(), e);
       }
 
    }
@@ -424,6 +412,8 @@ public class PrincipalController {
          dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
 
          handleOpenMenu2();
+      } catch (NullPointerException ex) {
+                  message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", ex.toString(), ex);
       } catch (Exception e) {
          message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", e.toString(), e);
       }
@@ -739,7 +729,7 @@ public class PrincipalController {
 
 
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButton()", e.toString(), e);      
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handlePlayButton()", e.toString(), e);
       }
    }
 
@@ -790,7 +780,7 @@ public class PrincipalController {
             playButtonTranslation.setGraphic(imageViews[23]);
          }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleStopButton()",  e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleStopButton()", e.toString(), e);
       }
    }
 
@@ -995,7 +985,7 @@ public class PrincipalController {
             backForward();
          }
       } catch (Exception e) {
-
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleForwardButton()", e.toString(), e);
       }
    }
 
@@ -1365,9 +1355,11 @@ public class PrincipalController {
     *
     * @return
     */
+
    public String getMediaStatus ()
    {
       try {
+
          Status s = mediaPlayer.getStatus();
          if (s.equals(Status.PLAYING)) {
             if (originalButton) {
@@ -1384,7 +1376,10 @@ public class PrincipalController {
                return "pause";
             }
          }
+      } catch (NullPointerException ex) {
+                  message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", ex.toString(), ex);         
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / getMediaStatus()", e.toString(), e);
       }
       return "stop";
 
@@ -1427,7 +1422,7 @@ public class PrincipalController {
             }
          });
       } catch (Exception e) {
-         e.printStackTrace();
+         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setListViewV()", e.toString(), e);
       }
    }
 
@@ -2053,7 +2048,7 @@ public class PrincipalController {
                      break;
                }
             } catch (Exception e) {
-
+               message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setTransversalFocus()", e.toString(), e);
             }
          }
       });
@@ -2120,7 +2115,7 @@ public class PrincipalController {
                   event.consume();
                }
             } catch (Exception e) {
-
+               message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setTransversalFocus()", e.toString(), e);
             }
          }
       });
@@ -2774,49 +2769,6 @@ public class PrincipalController {
    }
 //</editor-fold>
 
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="Tooltips">
-   /**
-    * Setting the Tooltips
-    */
-   private void setTooltips ()
-   {
-      String t1 = "Control + Izquierda: Bajar nivel.\n" +
-              "Control + Derecha: Subir nivel.\n" +
-              "Izquierda / Derecha: Cambia de zona.";
-      String t2 = "Izquierda: Ir a la lista de frases.\n" +
-              "Enter: Reproduce la frase.\n" +
-              "Space: Reproduce la palabra.\n";
-      String t3 = "Izquierda / Derecha: Desplazarte por la lista.\n" +
-              "Space: Reproduce la frase.\n" +
-              "Izquierda: Retrocede la frase.\n" +
-              "Derecha: Cambia de zona.";
-      String t4 = "Space: Reproduce la frase.\n" +
-              "Control + Derecha: Avanza un poco la frase.\n" +
-              "Control + Izquierda: Retrocede un poco la frase.";
-
-      tooltiptlistViewV.setText(t3);
-      tooltipListViewH1.setText(t2);
-
-      tooltipRateReading.setText(t1);
-      tooltipBalanceReading.setText(t1);
-      tooltipVolumenReading.setText(t1);
-      tooltipSliderWriting.setText(t1);
-      tooltipRateWriting.setText(t1);
-      tooltipBalanceWriting.setText(t1);
-      tooltipVolumenWriting.setText(t1);
-      tooltipSliderTranslation.setText(t1);
-      tooltipRateTranslation.setText(t1);
-      tooltipBalanceTranslation.setText(t1);
-      tooltipVolumenTranslation.setText(t1);
-      tooltipSliderReading.setText(t1);
-
-      toottipPlayOriginalReading.setText(t4);
-      toottipPlayOriginalWriting.setText(t4);
-      toottipPlayOriginalTranslation.setText(t4);
-
-   }
 //</editor-fold>
 
 }

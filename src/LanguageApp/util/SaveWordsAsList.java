@@ -19,9 +19,8 @@ import javafx.scene.control.Alert;
  */
 public class SaveWordsAsList {
 
-      
    // pop-up messages
-   Message message = new Message();
+   Message message = new Message(HandleLocale01.handleLocale01());
    
    Pattern pattern = Pattern.compile(
            "\\[|\\]|\\º|\\ª|\\@|\\·|\\#|\\$|\\~|\\%|\\€|\\&|\\¬|\\/|\\(|\\)|\\=|\\?|\\¿|\\¡" +

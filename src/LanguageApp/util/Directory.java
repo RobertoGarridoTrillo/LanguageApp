@@ -7,16 +7,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.StringWriter;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.stage.Stage;
 
 
 /**
@@ -32,7 +24,7 @@ public class Directory {
 
    String se = "/";
    String initialFile;
-   
+
    // pop-up messages
    Message message;
 
@@ -42,8 +34,8 @@ public class Directory {
    public Directory ()
    {
 
-   // Setting messages
-   message  = new Message();
+      // pop-up messages
+      Message message = new Message(HandleLocale01.handleLocale01());
 
       // The path is an absolute path (retarive to the initial instalation)    
       path = System.getProperty("user.dir");
@@ -77,7 +69,8 @@ public class Directory {
             return null;
          }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", initial.getLastDirectory() + initial.getLastFile() + "\nDirectory.java / checkIni()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", initial.getLastDirectory() + initial.getLastFile() + "\nDirectory.java / checkIni()", e.
+                 toString(), e);
       }
       return null;
    }

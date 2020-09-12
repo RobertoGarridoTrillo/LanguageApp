@@ -12,7 +12,6 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -28,10 +27,7 @@
       <items>
         <AnchorPane fx:id="anchorListViewV" maxWidth="600.0" prefWidth="600.0" styleClass="initialBorder">
           <children>
-            <ListView fx:id="listViewV" prefWidth="590.0" styleClass="listViewV" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <tooltip>
-                        <Tooltip fx:id="tooltiptlistViewV" />
-                     </tooltip></ListView>
+            <ListView fx:id="listViewV" prefWidth="590.0" styleClass="listViewV" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
         <AnchorPane>
@@ -50,16 +46,13 @@
                                     <String fx:value="listViewH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass>
-                                 <tooltip>
-                                    <Tooltip fx:id="tooltipListViewH1" />
-                                 </tooltip>
         </ListView>
-        <TextField fx:id="textFieldWriting" prefHeight="50.0" promptText="Escribe aquí la frase que se reproduce" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <TextField fx:id="textFieldWriting" prefHeight="50.0" promptText="%Escribe aquí la frase que se reproduce" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="textFieldH" />
                                     <String fx:value="initialBorder" />
                                  </styleClass></TextField>
-        <TextField fx:id="textFieldTranslation" prefHeight="50.0" promptText="Escribe aquí la traduccion de la frase que se reproduce" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <TextField fx:id="textFieldTranslation" prefHeight="50.0" promptText="%Escribe aquí la traduccion de la frase que se reproduce" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                  <styleClass>
                                     <String fx:value="textFieldH" />
                                     <String fx:value="initialBorder" />
@@ -89,7 +82,7 @@
                   <children>
                     <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                       <tabs>
-                        <Tab closable="false" text="Leer">
+                        <Tab closable="false" text="%Leer">
                           <content>
                             <AnchorPane>
                               <children>
@@ -99,32 +92,26 @@
                                       <children>
                                         <HBox fx:id="hboxPlayReading" alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                           <children>
-                                            <Label prefWidth="90.0" text="Reproducir Película" textAlignment="CENTER" wrapText="true" />
+                                            <Label prefWidth="90.0" text="%Reproducir Película" textAlignment="CENTER" wrapText="true" />
                                             <Button fx:id="playButtonReading" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" HBox.hgrow="NEVER" />
                                                                
                                             <Button fx:id="backButtonReading" mnemonicParsing="false" onAction="#handleBackButton" styleClass="initialBorder" />
                                             <Button fx:id="forwardButtonReading" mnemonicParsing="false" onAction="#handleForwardButton" styleClass="initialBorder" />
                                             <Button fx:id="stopButtonReading" mnemonicParsing="false" onAction="#handleStopButton" styleClass="initialBorder" AnchorPane.rightAnchor="0.0" HBox.hgrow="NEVER" />
                                 
-                                            <Slider fx:id="mediaSliderReading" styleClass="initialBorder" HBox.hgrow="ALWAYS">
-                                                                     <tooltip>
-                                                                        <Tooltip fx:id="tooltipSliderReading" />
-                                                                     </tooltip></Slider>
+                                            <Slider fx:id="mediaSliderReading" styleClass="initialBorder" HBox.hgrow="ALWAYS" />
                                           </children>
                                                            
                                         </HBox>
                                         <HBox minHeight="-Infinity" prefHeight="50.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                           <children>
-                                            <Label prefWidth="90.0" text="Reproducir Frase" textAlignment="CENTER" wrapText="true">
+                                            <Label prefWidth="90.0" text="%Frase original" textAlignment="CENTER" wrapText="true">
                                             </Label>
-                                            <Button fx:id="playButtonItemOriginalReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder">
-                                                                     <tooltip>
-                                                                        <Tooltip fx:id="toottipPlayOriginalReading" />
-                                                                     </tooltip></Button>
+                                            <Button fx:id="playButtonItemOriginalReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="backButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="forwardButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="stopButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
-                                            <Label prefWidth="90.0" text="Reproducir Palabra" textAlignment="CENTER" wrapText="true">
+                                            <Label prefWidth="90.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true">
   
                                             </Label>
                                             <Button fx:id="playButtonItemMachineReading" mnemonicParsing="false" onAction="#handlePlayButtonItemMachine" styleClass="initialBorder" />
@@ -150,31 +137,22 @@
                                             <children>
                                               <AnchorPane prefHeight="40.0">
                                                 <children>
-                                                  <Slider fx:id="rateSliderReading" layoutX="20.0" layoutY="7.0" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipRateReading" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="rateSliderReading" layoutX="20.0" layoutY="7.0" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane prefHeight="40.0" GridPane.columnIndex="1">
                                                 <children>
-                                                  <Slider fx:id="balanceSliderReading" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipBalanceReading" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="balanceSliderReading" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane prefHeight="40.0" GridPane.columnIndex="2">
                                                 <children>
-                                                  <Slider fx:id="volumeSliderReading" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipVolumenReading" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="volumeSliderReading" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="57.0" layoutY="-2.0" text="Velocidad:" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="57.0" layoutY="-2.0" text="%Velocidad:" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
                                                     <graphic>
                                                       <Label fx:id="rateLabelReading" />
                                                     </graphic>
@@ -183,7 +161,7 @@
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" minHeight="-Infinity" prefHeight="20.0" text="Balance:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" minHeight="-Infinity" prefHeight="20.0" text="%Equilibrio:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <graphic>
                                                       <Label fx:id="balanceLabelReading" contentDisplay="CENTER" maxHeight="-Infinity" textAlignment="RIGHT" />
                                                     </graphic>
@@ -192,7 +170,7 @@
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" text="Volumen:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="-11.0" AnchorPane.topAnchor="1.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" text="%Volumen:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="-11.0" AnchorPane.topAnchor="1.0">
                                                     <graphic>
                                                       <Label fx:id="volumeLabelReading" />
                                                     </graphic>
@@ -213,7 +191,7 @@
                             </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab closable="false" text="Escribir">
+                        <Tab closable="false" text="%Escribir">
                           <content>
                             <AnchorPane>
                               <children>
@@ -223,28 +201,22 @@
                                       <children>
                                         <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                           <children>
-                                            <Label prefWidth="90.0" text="Reproducir Película" textAlignment="CENTER" wrapText="true" />
+                                            <Label prefWidth="90.0" text="%Reproducir Película" textAlignment="CENTER" wrapText="true" />
                                             <Button fx:id="playButtonWriting" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" HBox.hgrow="NEVER" />
                                             <Button fx:id="backButtonWriting" mnemonicParsing="false" onAction="#handleBackButton" styleClass="initialBorder" />
                                             <Button fx:id="forwardButtonWriting" mnemonicParsing="false" onAction="#handleForwardButton" styleClass="initialBorder" />
                                             <Button fx:id="stopButtonWriting" mnemonicParsing="false" onAction="#handleStopButton" styleClass="initialBorder" AnchorPane.rightAnchor="0.0" HBox.hgrow="NEVER" />
-                                            <Slider fx:id="mediaSliderWriting" styleClass="initialBorder" HBox.hgrow="ALWAYS">
-                                                                     <tooltip>
-                                                                        <Tooltip fx:id="tooltipSliderWriting" />
-                                                                     </tooltip></Slider>
+                                            <Slider fx:id="mediaSliderWriting" styleClass="initialBorder" HBox.hgrow="ALWAYS" />
                                           </children>
                                         </HBox>
                                         <HBox minHeight="-Infinity" prefHeight="50.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                           <children>
-                                            <Label prefWidth="90.0" text="Reproducir frase" textAlignment="CENTER" wrapText="true" />
-                                            <Button fx:id="playButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder">
-                                                                     <tooltip>
-                                                                        <Tooltip fx:id="toottipPlayOriginalWriting" text="Empty Tooltip" />
-                                                                     </tooltip></Button>
+                                            <Label prefWidth="90.0" text="%Frase original" textAlignment="CENTER" wrapText="true" />
+                                            <Button fx:id="playButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="backButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="forwardButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="stopButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
-                                            <Label prefWidth="90.0" text="Corregir Ejercicio" textAlignment="CENTER" wrapText="true" />
+                                            <Label prefWidth="90.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
                                             <Button fx:id="correctionButtonWriting" mnemonicParsing="false" onAction="#handlecorrectionButtonWriting" styleClass="initialBorder" />
                                             <ProgressIndicator fx:id="indicatorSuccessWriting" progress="0.0" />
                                           </children>
@@ -256,31 +228,22 @@
                                             <children>
                                               <AnchorPane prefHeight="40.0">
                                                 <children>
-                                                  <Slider fx:id="rateSliderWriting" layoutX="20.0" layoutY="7.0" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipRateWriting" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="rateSliderWriting" layoutX="20.0" layoutY="7.0" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane prefHeight="40.0" GridPane.columnIndex="1">
                                                 <children>
-                                                  <Slider fx:id="balanceSliderWriting" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipBalanceWriting" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="balanceSliderWriting" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane prefHeight="40.0" GridPane.columnIndex="2">
                                                 <children>
-                                                  <Slider fx:id="volumeSliderWriting" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipVolumenWriting" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="volumeSliderWriting" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="57.0" layoutY="-2.0" text="Velocidad:" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="57.0" layoutY="-2.0" text="%Velocidad:" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
                                                     <graphic>
                                                       <Label fx:id="rateLabelWriting" />
                                                     </graphic>
@@ -289,7 +252,7 @@
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" minHeight="-Infinity" prefHeight="20.0" text="Balance:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" minHeight="-Infinity" prefHeight="20.0" text="%Equilibrio:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <graphic>
                                                       <Label fx:id="balanceLabelWriting" contentDisplay="CENTER" maxHeight="-Infinity" textAlignment="RIGHT" />
                                                     </graphic>
@@ -298,7 +261,7 @@
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" text="Volumen:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="-11.0" AnchorPane.topAnchor="1.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" text="%Volumen:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="-11.0" AnchorPane.topAnchor="1.0">
                                                     <graphic>
                                                       <Label fx:id="volumeLabelWriting" />
                                                     </graphic>
@@ -327,7 +290,7 @@
                             </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab closable="false" text="Traducir">
+                        <Tab closable="false" text="%Traducir">
                           <content>
                             <AnchorPane>
                               <children>
@@ -337,28 +300,22 @@
                                       <children>
                                         <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                           <children>
-                                            <Label prefWidth="90.0" text="Reproducir Película" textAlignment="CENTER" wrapText="true" />
+                                            <Label prefWidth="90.0" text="%Reproducir Película" textAlignment="CENTER" wrapText="true" />
                                             <Button fx:id="playButtonTranslation" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="initialBorder" AnchorPane.leftAnchor="0.0" HBox.hgrow="NEVER" />
                                             <Button fx:id="backButtonTranslation" mnemonicParsing="false" onAction="#handleBackButton" styleClass="initialBorder" />
                                             <Button fx:id="forwardButtonTranslation" mnemonicParsing="false" onAction="#handleForwardButton" styleClass="initialBorder" />
                                             <Button fx:id="stopButtonTranslation" mnemonicParsing="false" onAction="#handleStopButton" styleClass="initialBorder" AnchorPane.rightAnchor="0.0" HBox.hgrow="NEVER" />
-                                            <Slider fx:id="mediaSliderTranslation" styleClass="initialBorder" HBox.hgrow="ALWAYS">
-                                                                     <tooltip>
-                                                                        <Tooltip fx:id="tooltipSliderTranslation" />
-                                                                     </tooltip></Slider>
+                                            <Slider fx:id="mediaSliderTranslation" styleClass="initialBorder" HBox.hgrow="ALWAYS" />
                                           </children>
                                         </HBox>
                                         <HBox minHeight="-Infinity" prefHeight="50.0" spacing="5.0" VBox.vgrow="ALWAYS">
                                           <children>
-                                            <Label prefWidth="90.0" text="Reproducir frase" textAlignment="CENTER" wrapText="true" />
-                                            <Button fx:id="playButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder">
-                                                                     <tooltip>
-                                                                        <Tooltip fx:id="toottipPlayOriginalTranslation" />
-                                                                     </tooltip></Button>
+                                            <Label prefWidth="90.0" text="%Frase original" textAlignment="CENTER" wrapText="true" />
+                                            <Button fx:id="playButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="backButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="forwardButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
                                             <Button fx:id="stopButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
-                                            <Label prefWidth="90.0" text="Corregir Traducción" textAlignment="CENTER" wrapText="true" />
+                                            <Label prefWidth="90.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
                                             <Button fx:id="correctionButtonTranslation" mnemonicParsing="false" onAction="#handlecorrectionButtonTranslation" styleClass="initialBorder" />
                                             <ProgressIndicator fx:id="indicatorSuccessTranslation" progress="0.0" />
                                           </children>
@@ -370,31 +327,22 @@
                                             <children>
                                               <AnchorPane prefHeight="40.0">
                                                 <children>
-                                                  <Slider fx:id="rateSliderTranslation" layoutX="20.0" layoutY="7.0" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipRateTranslation" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="rateSliderTranslation" layoutX="20.0" layoutY="7.0" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane prefHeight="40.0" GridPane.columnIndex="1">
                                                 <children>
-                                                  <Slider fx:id="balanceSliderTranslation" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipBalanceTranslation" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="balanceSliderTranslation" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane prefHeight="40.0" GridPane.columnIndex="2">
                                                 <children>
-                                                  <Slider fx:id="volumeSliderTranslation" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
-                                                                           <tooltip>
-                                                                              <Tooltip fx:id="tooltipVolumenTranslation" />
-                                                                           </tooltip></Slider>
+                                                  <Slider fx:id="volumeSliderTranslation" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
                                                 </children>
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="57.0" layoutY="-2.0" text="Velocidad:" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" layoutX="57.0" layoutY="-2.0" text="%Velocidad:" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
                                                     <graphic>
                                                       <Label fx:id="rateLabelTranslation" />
                                                     </graphic>
@@ -403,7 +351,7 @@
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" minHeight="-Infinity" prefHeight="20.0" text="Balance:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" minHeight="-Infinity" prefHeight="20.0" text="%Equilibrio:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <graphic>
                                                       <Label fx:id="balanceLabelTranslation" contentDisplay="CENTER" maxHeight="-Infinity" textAlignment="RIGHT" />
                                                     </graphic>
@@ -412,7 +360,7 @@
                                               </AnchorPane>
                                               <AnchorPane minHeight="-Infinity" prefHeight="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                 <children>
-                                                  <Label alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" text="Volumen:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="-11.0" AnchorPane.topAnchor="1.0">
+                                                  <Label alignment="CENTER" contentDisplay="RIGHT" prefHeight="20.0" text="%Volumen:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="-11.0" AnchorPane.topAnchor="1.0">
                                                     <graphic>
                                                       <Label fx:id="volumeLabelTranslation" />
                                                     </graphic>

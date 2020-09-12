@@ -3,13 +3,17 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -20,7 +24,7 @@ import javafx.stage.Stage;
  *
  * @author Roberto Garrido Trillo
  */
-public class DataBaseController {
+public class DataBaseController implements Initializable{
 
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
@@ -34,7 +38,7 @@ public class DataBaseController {
 
    // Helper to directoriy
    private String path;
-   String se ;
+   String se;
 
    // Savepoint
    Savepoint sp;
@@ -42,9 +46,12 @@ public class DataBaseController {
    //Global varibles
    Connection conn;
    Statement stmt;
-   
+
    // pop-up messages
    Message message;
+
+   // For the bounle of idioms
+   ResourceBundle resources;   
 
 //</editor-fold>
 
@@ -63,14 +70,19 @@ public class DataBaseController {
    /**
     * When the method is initialize
     */
-   public void initialize ()
+   @Override
+   public void initialize (URL location, ResourceBundle resources)
    {
+      
+      this.resources = resources;
+         
       // References to mainStage
       mainStage = MainScene.getMainStage();
-      
-      // Setting messages
-      message =  new Message();
-      
+
+      // Create the locale for the pop up messages
+      HandleLocale01.handleLocale01();
+      message = new Message(resources);
+
       // creating the path
       // The path is an absolute path (relarive to the initial instalation)    
       path = System.getProperty("user.dir");
@@ -85,6 +97,8 @@ public class DataBaseController {
       //insertData(connect()); // Only for testing purpose
    }
 
+//</editor-fold>
+   
 //<editor-fold defaultstate="collapsed" desc="Connect">
    /**
     *
@@ -102,7 +116,7 @@ public class DataBaseController {
          // if doesn't exit it's create the database
          Class.forName("org.sqlite.JDBC");
       } catch (ClassNotFoundException | SQLException e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
       }
       return conn;
    }

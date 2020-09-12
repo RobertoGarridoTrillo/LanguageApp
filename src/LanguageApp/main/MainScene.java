@@ -8,13 +8,16 @@ import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
 import LanguageApp.controller.RegistrationController;
 import LanguageApp.controller.WelcomeController;
+import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
+import LanguageApp.util.PreguntasRegistro;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -77,6 +80,12 @@ public class MainScene extends Application {
    // pop-up messages
    Message message;
 
+   // Preguntas para el registro y la recuperacion
+   PreguntasRegistro pr = new PreguntasRegistro();
+
+   // Savepoint
+   Savepoint sp;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
@@ -97,9 +106,6 @@ public class MainScene extends Application {
       // Setting the welcome user
       usuario_activo = 0;
       welcomeScreen = true;
-
-      // Setting messages
-      message = new Message();
    }
 //</editor-fold>
 
@@ -114,8 +120,12 @@ public class MainScene extends Application {
    @Override
    public void start (Stage mainStage)
    {
-
       this.mainStage = mainStage;
+
+      // Create the locale for the pop up messages
+      resources = HandleLocale01.handleLocale01();
+      message = new Message(resources);
+
       // Set the Title to the Stage
       this.mainStage.setTitle("LanguagesApp");
       // Set the application icon.
@@ -171,7 +181,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("DataBaseView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("DataBaseView");
 
          dataBaseView = (AnchorPane) loader.load();
 
@@ -196,7 +207,8 @@ public class MainScene extends Application {
    {
       try {
          // Create the FXMLLoader
-         handleLocale("MainView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("MainView");
 
          mainView = (BorderPane) loader.load();
 
@@ -228,7 +240,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("PrincipalView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("PrincipalView");
 
          principalView = (AnchorPane) loader.load();
 
@@ -249,7 +262,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("LoginView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("LoginView");
 
          loginView = (HBox) loader.load();
 
@@ -279,7 +293,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("WelcomeView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("WelcomeView");
 
          welcomeView = (AnchorPane) loader.load();
 
@@ -303,7 +318,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("FormView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("FormView");
 
          formView = (AnchorPane) loader.load();
 
@@ -323,7 +339,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("RegistrationView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("RegistrationView");
 
          registrationView = (AnchorPane) loader.load();
 
@@ -343,7 +360,8 @@ public class MainScene extends Application {
 
       try {
          // Create the FXMLLoader
-         handleLocale("ForgetView");
+         HandleLocale01.handleLocale01();
+         handleLocale02("ForgetView");
 
          forgetView = (AnchorPane) loader.load();
 
@@ -408,6 +426,7 @@ public class MainScene extends Application {
    /**
     *
     * @param activoBoolean
+    * @param usuario_last
     */
    public void handleEntrar (boolean activoBoolean, boolean usuario_last)
    {
@@ -424,21 +443,7 @@ public class MainScene extends Application {
          conn = dataBaseController.connect();
          conn.setAutoCommit(false);
 
-
-         String sql = "UPDATE usuarios SET usuario_activo = 0;";
-         stmt = conn.createStatement();
-         stmt.executeUpdate(sql);
-         conn.commit();
-         stmt.close();
-         // set the value
-         sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
-         pstmt = conn.prepareStatement(sql);
-         pstmt.setInt(1, usuario_activo);
-         pstmt.setInt(2, usuario_id);
-         pstmt.executeUpdate();
-         conn.commit();
-         pstmt.close();
-         conn.close();
+         handlBorrarMarcar(activoBoolean);
 
          if (!usuario_last) {
             principalView();
@@ -461,6 +466,56 @@ public class MainScene extends Application {
 
    /**
     *
+    * @param activoBoolean If only wants to delete, put it false
+    */
+   public void handlBorrarMarcar (boolean activoBoolean)
+   {
+
+      Connection conn = null;
+      Statement stmt = null;
+      PreparedStatement pstmt = null;
+
+      // In SQLinte doesn't exit boolean
+      usuario_activo = (activoBoolean) ? 1 : 0;
+
+      try {
+         // Try connection
+         conn = dataBaseController.connect();
+         conn.setAutoCommit(false);
+
+         String sql = "UPDATE usuarios SET usuario_activo = 0;";
+         stmt = conn.createStatement();
+         stmt.executeUpdate(sql);
+         conn.commit();
+         stmt.close();
+         // set the value
+         sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
+         pstmt = conn.prepareStatement(sql);
+         pstmt.setInt(1, usuario_activo);
+         pstmt.setInt(2, usuario_id);
+         pstmt.executeUpdate();
+         conn.commit();
+         pstmt.close();
+         conn.close();
+
+      } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handlBorrarMarcar()", e.toString(), e);
+      } finally {
+         try {
+            if (conn != null) {
+               conn.close();
+            }
+         } catch (Exception e) {
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handlBorrarMarcar()", e.toString(), e);
+         }
+      }
+   }
+
+   /**
+    *
+    * @param usuarioString
+    * @param passwordString
+    * @return
     */
    public Pair handleCheckUser (String usuarioString, String passwordString)
    {
@@ -516,43 +571,32 @@ public class MainScene extends Application {
     * @param user
     * @return
     */
-   public boolean handleRegistro (String usuarioString, String passwordString, String preguntaString, String respuestaString)
+   public int handleRegistro (String usuarioString, String passwordString, String preguntaString, String respuestaString)
    {
 
       Connection conn = null;
       PreparedStatement pstmt = null;
+      Statement stmt = null;
+      String sql = null;
+      Pair usuario;
 
-      // Preparing statement
-      String sql = "SELECT usuario_id FROM usuarios WHERE usuario_nombre = ? and password = ?";
       try {
-         // Try connection
+
+         //  if don't, I create him
+         usuario = handleCheckUser(usuarioString, passwordString);
+         if ((String) usuario.getValue() != null) {
+            return (Integer) usuario.getKey();
+         }
+
+         // I create the user
          conn = dataBaseController.connect();
          conn.setAutoCommit(false);
+         sp = conn.setSavepoint("Registration");
 
-         // preparing statement
-         pstmt = conn.prepareStatement(sql);
+         handlBorrarMarcar(false); //put all the usuario_id to 0
 
-         // set the value
-         pstmt.setString(1, usuarioString);
-         pstmt.setString(2, passwordString);
-
-         //
-         ResultSet rs = pstmt.executeQuery();
-
-         int count = 0;
-         while (rs.next()) {
-            count++;
-         }
-
-         if (count > 0) {
-            pstmt.close();
-            conn.close();
-            // if exits the user and password return true
-            return true;
-         }
-
-         sql = "INSERT INTO  usuarios (usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
-                 "VALUES (?,?,0,?,?)";
+         // Preparing statement
+         sql = "INSERT INTO  usuarios (usuario_nombre, password, usuario_activo, pregunta, respuesta) " + "VALUES (?,?,1,?,?)";
          pstmt = conn.prepareStatement(sql);
          // set the value
          pstmt.setString(1, usuarioString);
@@ -564,6 +608,11 @@ public class MainScene extends Application {
          pstmt.close();
 
       } catch (Exception e) {
+         try {
+            conn.rollback(sp);
+         } catch (SQLException ex) {
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", ex.toString(), ex);
+         }
          message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
       } finally {
          try {
@@ -571,10 +620,15 @@ public class MainScene extends Application {
                conn.close();
             }
          } catch (Exception e) {
-            message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
          }
       }
-      return false;
+
+      // Read the usuario_id of the rec
+      usuario = handleCheckUser(usuarioString, passwordString);
+      setUsuario_id(usuario_id);
+
+      return 0;
    }
 
    public String handleRecordar (String usuarioString, String preguntaString, String respuestaString)
@@ -619,7 +673,7 @@ public class MainScene extends Application {
                conn.close();
             }
          } catch (Exception e) {
-            message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / handleRegistro()", e.toString(), e);
+            message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
          }
       }
       return password;
@@ -647,6 +701,7 @@ public class MainScene extends Application {
       loginView.getChildren().add(formView);
    }
 
+   /* there is two methods of close*/
    /**
     *
     */
@@ -654,7 +709,7 @@ public class MainScene extends Application {
    {
       mainStage.setOnCloseRequest(e -> {
          e.consume();
-         if (!message.message(Alert.AlertType.CONFIRMATION, "Salir", "¿Salir de la aplicación?", "", null)) {
+         if (!message.message(Alert.AlertType.CONFIRMATION, "Salir", "¿Quieres salir de la aplicación?", "", null)) {
          } else {
             Platform.exit();
             System.exit(0);
@@ -665,43 +720,25 @@ public class MainScene extends Application {
    /**
     *
     */
-   private void handleLocale (String s)
+   private void handleLocale02 (String s)
    {
       try {
-         // Create an array with the idioms of the app
-         String[] languages = {"en", "es", "fr", "it", "ja"};
-
-         // Get the local language
-         locale = new Locale(Locale.getDefault().getLanguage());
-
-         // if the local doesn't exit in the app, it uses "en"
-         boolean salida = false;
-         for (String language : languages) {
-            if (locale.getLanguage().equals(new Locale(language).getLanguage())) {
-               salida = true;
-               break;
-            }
-         }
-         if (!salida) {
-            locale = new Locale("en");
-         }
-
-         resources = ResourceBundle.getBundle("LanguageApp.resources.bundles.LanguageApp", locale);
+         HandleLocale01.handleLocale01();
          URL urlFXML = new URL(MainScene.class
                  .getResource("/LanguageApp/view/" + s + ".fxml").toExternalForm());
 
          loader = new FXMLLoader(urlFXML, resources);
       } catch (Exception e) {
-         e.printStackTrace();
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
       }
    }
+
 
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
    /**
     *
-    * @param id
     * @param usuario_id
     *
     */
@@ -712,7 +749,6 @@ public class MainScene extends Application {
 
    /**
     *
-    * @param usuario_id
     * @return
     *
     */
@@ -746,6 +782,7 @@ public class MainScene extends Application {
          }
          principalController.handleOpenMenu();
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonOpenMenu()", e.toString(), e);
       }
    }
 
@@ -761,6 +798,7 @@ public class MainScene extends Application {
          }
          principalController.handleCloseMenu("handleCloseMenu");
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonCloseMenu()", e.toString(), e);
       }
    }
 
@@ -770,7 +808,7 @@ public class MainScene extends Application {
    public void buttonExitMenu ()
    {
       if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
-              "¿Salir de la aplicación?", "", null)) {
+              "¿Quieres salir de la aplicación?", "", null)) {
          return;
       }
 
@@ -801,8 +839,7 @@ public class MainScene extends Application {
     */
    public void buttonAboutMenu ()
    {
-      message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Sobre esta aplicación:", "Autor: Roberto Garrido Trillo",
-              null);
+      message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:", "Autor: Roberto Garrido Trillo", null);
    }
 
    /**
@@ -827,6 +864,7 @@ public class MainScene extends Application {
          }
 
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonLoginMenu()", e.toString(), e);
       }
    }
 
@@ -839,7 +877,7 @@ public class MainScene extends Application {
       if (welcomeScreen && usuario_id == 0) {
          return;
       }
-      boolean salida = message.message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "Cerrar la sesión?", "", null);
+      boolean salida = message.message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "¿Quieres cerrar la sesión?", "", null);
       if (!salida) {
          return;
       }
@@ -848,15 +886,12 @@ public class MainScene extends Application {
          // Create the Scene and put it in the center or the borderLayout
          mainView.getChildren().removeAll(principalView, dataBaseView);
          loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+         loginView.getChildren().add(welcomeView);
+         mainView.setCenter(loginView);
 
          // Deleting the active in the database
-         Platform.runLater(new Runnable() {
-            @Override
-            public void run ()
-            {
-               handleEntrar(false, false);
-            }
-         });
+         handlBorrarMarcar(false);
+
          // Deleting the global variables
          usuario_id = 0;
          usuario_nombre = null;
@@ -864,11 +899,10 @@ public class MainScene extends Application {
          welcomeScreen = true;
 
          welcomeController.handlePutName(usuario_nombre); //null
-         loginView.getChildren().add(welcomeView);
-         mainView.setCenter(loginView);
+
 
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message.message", "MainScene / buttonUnloginMenu()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonUnloginMenu()", e.toString(), e);
       }
    }
 
@@ -894,6 +928,7 @@ public class MainScene extends Application {
          }
 
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttorRegistro()", e.toString(), e);
       }
    }
 
@@ -917,6 +952,7 @@ public class MainScene extends Application {
             principalController.handlePlayButtonItemOriginal();
          }
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDashBoardMenu()", e.toString(), e);
       }
    }
 
@@ -941,12 +977,13 @@ public class MainScene extends Application {
             principalController.handlePlayButtonItemOriginal();
          }
       } catch (Exception e) {
+         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDatabaseMenu()", e.toString(), e);
       }
    }
 
+//</editor-fold>
 
-//</editor-fold>
-//</editor-fold>
+   
    /**
     * public static void main
     *
