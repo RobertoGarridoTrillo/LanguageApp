@@ -157,21 +157,20 @@ public class MainScene extends Application {
 
       this.mainStage.setResizable(false);
       this.mainStage.setWidth(1215);
-      this.mainStage.setHeight(640);
+      this.mainStage.setHeight(660);
       this.mainStage.show();
 
       // Thread that charge the Principal Controlleer
-      Task task = new Task<Void>() {
+   /*/*   Task task = new Task<Void>() {
          @Override public Void call ()
          {
-            {
+            {*/
                principalView();
-
-            }
+   /*/*         }
             return null;
          }
       };
-      new Thread(task).start();
+      new Thread(task).start();*/
    }
 //</editor-fold> 
 

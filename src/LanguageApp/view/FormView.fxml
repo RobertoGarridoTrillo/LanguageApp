@@ -16,7 +16,7 @@
 
 <AnchorPane fx:id="anchorRightLogin" minWidth="-Infinity" prefWidth="640.0" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.FormController">
   <children>
-    <VBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
+    <VBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
             <Label alignment="TOP_CENTER" contentDisplay="CENTER" styleClass="titleLogin" text="%Iniciar sesión" textFill="WHITE">
                <VBox.margin>
@@ -227,11 +227,15 @@
             </HBox>
           </children>
         </HBox>
+            <Pane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" />
       </children>
          <styleClass>
             <String fx:value="textFieldLogin" />
             <String fx:value="root2" />
          </styleClass>
+         <padding>
+            <Insets right="40.0" />
+         </padding>
     </VBox>
   </children>
    <styleClass>

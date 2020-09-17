@@ -20,7 +20,7 @@
     <String fx:value="textFieldLogin" />
   </styleClass>
    <children>
-      <VBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label alignment="CENTER" styleClass="titleLogin" text="%Crear cuenta" textFill="WHITE">
                <VBox.margin>
@@ -250,14 +250,18 @@
                   </HBox>
                </children>
                <VBox.margin>
-                  <Insets bottom="10.0" top="15.0" />
+                  <Insets top="15.0" />
                </VBox.margin>
             </HBox>
+            <Pane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" />
          </children>
          <styleClass>
             <String fx:value="textFieldLogin" />
             <String fx:value="root2" />
          </styleClass>
+         <padding>
+            <Insets right="40.0" />
+         </padding>
       </VBox>
    </children>
 </AnchorPane>

@@ -41,6 +41,7 @@ public class FillListView {
          message.message(Alert.AlertType.ERROR, "Error message", "FillListView.java / setListView()", e.toString(), e); 
          return "";
       }
+      
       if (it.length <= 0) {
          return "";
       } else {
