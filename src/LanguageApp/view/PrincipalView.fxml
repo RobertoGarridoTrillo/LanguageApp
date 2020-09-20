@@ -25,7 +25,7 @@
   <children>
     <SplitPane dividerPositions="0.5150259067357513" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
-        <AnchorPane fx:id="anchorListViewV" styleClass="initialBorder">
+        <AnchorPane id="anchorListViewV" fx:id="anchorListViewV" styleClass="initialBorder">
           <children>
             <ListView fx:id="listViewV" styleClass="listViewV" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
@@ -76,7 +76,7 @@
                           <content>
                             <AnchorPane>
                               <children>
-                                <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
                                   <top>
                                     <VBox BorderPane.alignment="CENTER">
                                       <children>

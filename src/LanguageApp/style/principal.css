@@ -20,44 +20,77 @@
 
 }
 /* borro el borde por defecto de los botones y de los slider*/
-.button:focused, .button:hover, .slider:focused, .slider:hover, .hyperlink, .hyperlink:focused, .hyperlinkk:hover    {
+.button:hover, .button:focused,
+.hyperlink:hover, .hyperlink:focused,
+.slider:hover, .slider:focused, 
+.listViewH:hover, 
+.textFieldH:hover,
+.tab-pane:hover, .tab-pane:focused,
+#anchorListViewV:hover{
   -fx-border-color: coral;
-  -fx-background-color: transparent;
-  -fx-border-width: 3;
-  -fx-border-radius: 3;
+  /*-fx-background-color: transparent; */
+  -fx-border-width: 2;
+  -fx-border-radius: 2;
   -fx-border-insets: 0;
   -fx-border-style: solid line-join bevel line-cap square;
+
 }
 
 /* borde transparente inicial para luego cambiarlo de color*/
-.initialBorder, .button .link{  
+.initialBorder, .button, .hyperlink, .listViewH, 
+.textFieldH, .tab-pane{  
   -fx-border-color: transparent;
   -fx-background-color: transparent;  
-  -fx-border-width: 3;
-  -fx-border-radius: 3;
+  -fx-border-width: 2;
+  -fx-border-radius: 2;
   -fx-border-insets: 0;  
 }
 
 .borderVisible{
-  -fx-border-color: coral;
+  -fx-border-color: coral;  
 }
 
 
 /* para las pestañas del tab */
-.tab-pane > .tab-header-area > .headers-region > .tab:selected {
-  -fx-background-color: #004f8b ;
-}
-
 .tab-pane {
   -fx-tab-min-height: 1.8333em; 
   -fx-tab-max-height: 1.8333em; 
+}
+
+.tab-pane > .tab-header-area > .tab-header-background {
+  -fx-background-color: #252525;
+
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab {
   -fx-background-insets: 0 1 1 0, 1 2 1 1, 2 3 1 2;
   -fx-background-radius: 3 3 0 0, 2 2 0 0, 1 1 0 0;
   -fx-padding: 0.083333em 0.5em 0.0769em 0.5em; 
+  -fx-background-color:#252525;
 }
+.tab-pane > .tab-header-area > .headers-region > .tab:hover{
+  -fx-alignment: CENTER;
+  -fx-background-color: #404040;  
+}
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container:hover{
+
+}
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+  -fx-alignment: CENTER;
+  -fx-background-color: transparent;  
+  -fx-text-fill: white;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label:selected {
+  -fx-alignment: CENTER;
+  -fx-background-color: #004f8b;  
+
+}
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label:hover {
+  -fx-alignment: CENTER;
+  -fx-background-color: #404040;  
+}
+
+
 
 
 /*  listView */
@@ -74,18 +107,3 @@
   -fx-font-weight: 900 ;
   -fx-font-style: normal
 }
-/* Menu */
-.menu-item:focused {
-  -fx-background: #333333;
-  -fx-background-color: -fx-background;
-
-  -fx-text-fill:  -fx-text-background-color;
-}
-
-.menu-bar > .container > .menu-button:hover,
-.menu-bar > .container > .menu-button:focused,
-.menu-bar > .container > .menu-button:showing {
-  -fx-background: #004f8a;
-  -fx-background-color: -fx-background;
-}
-

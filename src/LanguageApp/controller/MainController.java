@@ -13,6 +13,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 //</editor-fold>
 
@@ -25,7 +26,8 @@ public class MainController implements Initializable {
 //<editor-fold defaultstate="collapsed" desc="fields class">
 
    @FXML private BorderPane MainViewBorderPane;
-
+   @FXML private Pane MainViewPaneBottom;
+   
    @FXML private MenuBar menuBar;
 
    @FXML private Menu fileMenu;
@@ -79,13 +81,12 @@ public class MainController implements Initializable {
    public void initialize (URL location, ResourceBundle resources)
    {
       this.resources = resources;
-
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
       // Create the locale for the pop up messages
       HandleLocale01.handleLocale01();
-      message = new Message(resources);
+      message = new Message(resources); 
    }
 //</editor-fold>
 
@@ -172,4 +173,5 @@ public class MainController implements Initializable {
    }
 
 //</editor-fold>
+   
 }

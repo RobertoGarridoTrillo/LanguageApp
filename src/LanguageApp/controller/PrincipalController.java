@@ -76,6 +76,8 @@ import javafx.util.Pair;
 public class PrincipalController implements Initializable
  {
 //<editor-fold defaultstate="collapsed" desc="fields class">
+
+  //<editor-fold defaultstate="collapsed" desc="FXML">
   @FXML private BorderPane MainViewBorderPane;
   @FXML private AnchorPane principalViewAnchorPane;
   @FXML private AnchorPane dataBaseviewAnchorPane;
@@ -152,6 +154,8 @@ public class PrincipalController implements Initializable
   @FXML private TabPane tabPanelListViewH;
   // hyperlink youtube
   @FXML Hyperlink youtubeLink;
+  //</editor-fold>
+
   // pop-up messages
   Message message;
   // The focused and old node
@@ -164,11 +168,17 @@ public class PrincipalController implements Initializable
   private Stage mainStage;
   // Reference to the main Scene
   private MainScene mainScene;
+
+
   // Json
   private Item[] itemsOriginal, itemsTranslation;
   private Item[][] idiomas;
   private String[] idiomaSubt;
-  // Player
+  File jsonBinder;
+  String[] listado;
+
+
+// Player
   private MediaPlayer mediaPlayer;
   private Media media;
   private URI mediaStringUrl;
@@ -178,11 +188,12 @@ public class PrincipalController implements Initializable
   private Duration currentTime; // the actual position of the media
   private Status status; // the status of the media
   private double sliderMediaCurrent; // the temporal status of the sliderMedia
-  private final ChangeListener<Duration> mediaPlayerChangeListener;
-  private final ChangeListener<Number> sliderMeediaChangeListener;
+  private ChangeListener<Duration> mediaPlayerChangeListener;
+  private ChangeListener<Number> sliderMeediaChangeListener;
   private Thread mediaToSlideThread;
-  private boolean mediaToSlider;
-  // itemInicio
+  private String mediaToSlider; // pause stop play the thread media to slider 
+
+// itemInicio
   private double start;
   private double end;
   private int indexItemV;
@@ -204,8 +215,6 @@ public class PrincipalController implements Initializable
   private int currentPauseItem; // the actual itemInicio when click the original pause 
   // slider media, to control if the moviment of the media comes from the slider or the media
   private static String mediaPlayerSlider;
-  // Temporal to fix the sliderMedia
-  private double errorMediaSalir;
   // if I´m stopping from itemInicio original or media
   private boolean originalButton;
   // From original itemInicio to pause / play
@@ -245,7 +254,7 @@ public class PrincipalController implements Initializable
    {
     /*            --------------- NO SIRVEN, SOLO DE RECUERDO ------------*/
 
-    // Listener for the media when changes move the slide
+    //<editor-fold defaultstate="collapsed" desc="Listener for the media when changes move the slide">
     mediaPlayerChangeListener = new ChangeListener<Duration>()
      {
 
@@ -254,12 +263,13 @@ public class PrincipalController implements Initializable
               ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue)
        {
         mediaPlayerSlider = "media";
-        updateValuesMedia();
+        // updateValuesMedia();
        }
 
-
      };
-    // Listener for the slider when changes move the media
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Listener for the slider when changes move the media">
     sliderMeediaChangeListener = new ChangeListener<Number>()
      {
 
@@ -273,11 +283,60 @@ public class PrincipalController implements Initializable
           updateValuesSlider();
         }
        }
-
-
      };
+    //</editor-fold>
 
-    // Instances
+    /*            --------------- SI SIRVEN -----------------------------*/
+
+    //<editor-fold defaultstate="collapsed" desc="Thread that change the slider when the media has changed">
+
+    mediaToSlideThread = new Thread(new Runnable()
+     {
+
+      @Override
+      public void run()
+       {
+
+        try {
+          while ( ! mediaToSlider.equals("stop")) {
+            mediaToSlideThread.sleep(1000);
+
+            if (timeLabelReading != null && mediaSliderReading != null && duration != null) {
+
+              // Extract the current time of the media and put in in the label
+              currentTime = mediaPlayer.getCurrentTime();
+              Platform.runLater(() -> {
+                timeLabelReading.setText(ft.formatting(currentTime, duration));
+              });
+
+              double totalDuration = duration.toMillis();
+              double positionMedia = currentTime.toMillis();
+              double positionFinal = ((positionMedia * 100) / totalDuration);
+
+              synchronized (PrincipalController.this) {
+                while (mediaToSlider.equals("pause")) {
+                  PrincipalController.this.wait();
+                }
+              }
+              if (mediaPlayerSlider.equals("media")) {
+                mediaSliderReading.setValue(positionFinal);
+              }
+            }
+
+            System.out.println("status " + status +
+                    " mediaPlayerSlider " + mediaPlayerSlider +
+                    " mediaToSlider " + mediaToSlider +
+                    " nombre del hilo " + mediaToSlideThread.getName());
+          }
+        } catch (InterruptedException e) {
+          message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / mediaToSlideThread", e.toString(), e);
+        }
+       }
+     }
+    );
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="instances">
     sf = new SelectedFile();
     gj = new GetJson();
     flw = new FillListView();
@@ -286,18 +345,23 @@ public class PrincipalController implements Initializable
     swal = new SaveWordsAsList();
     ft = new FormatTime();
     sp = new SortPhrase();
+    //</editor-fold>
    }
+  //</editor-fold>
 
-//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="setMainScene">
 
   /**
    *
    * @param aThis
    */
+
   public void setMainScene(MainScene aThis)
    {
     mainScene = aThis;
    }
+
+//</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
 
@@ -386,13 +450,17 @@ public class PrincipalController implements Initializable
       // Setting the status of the media and the sliderMedia
       status = Status.STOPPED;
       // Setting the event that move the slider media by the media
-      mediaToSlider = false;
+      mediaToSlider = "play";
       // Setting initial user
       usuario_id = mainScene.getUsuario_id();
       // Setting the subtitle that I'm going to put in listview H01 y H02
       subOrig = 0;
       subTrans = 1;
 
+      // Starting (once time) the Thread the change the slider for media
+      mediaToSlideThread.start();
+      mediaToSliderPause();
+      
       // Check if there´s an initial file
       if (dire.checkIni(usuario_id)) {
         handleOpenMenu2();
@@ -420,6 +488,7 @@ public class PrincipalController implements Initializable
       // Checking if exists some equal
       dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
       handleOpenMenu2();
+
     } catch (NullPointerException ex) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", ex.toString(), ex);
     } catch (Exception e) {
@@ -427,56 +496,99 @@ public class PrincipalController implements Initializable
     }
    }
 
-
   /**
    * Open a SelectFile and seek a json to load the phrases (Part2)
    */
   public void handleOpenMenu2()
    {
     try {
+
+      //<editor-fold defaultstate="collapsed" desc="Creando Matrices">
+
+      System.out.println("Creando Matrices");
       handleCloseMenu("handleOpenMenu2");
       // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
-      File jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
-      String[] listado = jsonBinder.list();
+      jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
+
+
+      listado = jsonBinder.list();
       idiomas = new Item[listado.length][];
       wordSet = (Set<String>[]) new Set[listado.length];
       phraseSet = (Set<String>[]) new Set[listado.length];
+
       audioClipsWords = (Map<String, AudioClip>[]) new Map[listado.length];
       audioClipsPhrases = (Map<String, AudioClip>[]) new Map[listado.length];
+
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Comenzando a crear los audios">
+
+      System.out.println("Comenzando a crear los audios");
       for (int x = 0; x < listado.length; x ++) {
+
+        System.out.println("Leyendo Json en " + listado[x].replaceAll(".json", ""));
+
         // Read a json ,call a read JSON, return an array of Item class objects
         File file = new File(dire.getLastDirectory() + "Json\\\\" + listado[x]);
+
         if (file.exists()) {
           // Read the Json witn the Item[]
           idiomas[x] = gj.getJson(file);
           // Extract the languages from the last row of the any itemInicio
           idiomaSubt = idiomas[0][idiomas[0].length - 1].getText().split(" ");
+
+          System.out.println("Creando palabras en " + idiomaSubt[x].replaceAll(".json", ""));
           wordSet[x] = swal.saveWordsAsList(idiomas[x]);
+
+          System.out.println("Creando frases en " + idiomaSubt[x].replaceAll(".json", ""));
           phraseSet[x] = sp.sortPhrases(idiomas[x]);
         }
       }
+
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Llenando tablas">
+      System.out.println("Llenando tablas");
+
       // fill a ListView with the phrases of the Items array
       itemsOriginal = idiomas[0];
       itemsTranslation = idiomas[1];
       flw.setListView(listViewV, itemsOriginal);
       // Creating the path to the media
       mediaStringUrl = new File(dire.getLastDirectory() + dire.getLastFile()).toURI();
+
+
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Configurando los archivos de medios">
+      System.out.println("Configurando los archivos de medios");
+
       // Set the MediaPlayer
       setMediaPlayer();
+
       // Setting audiclips
       for (int x = 0; x < listado.length; x ++) {
+
+        System.out.println("Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
+
         audioClipsWords[x] = ac.setAudioClip(wordSet[x],
                 dire.getLastDirectory() + listado[x]
                 .replaceAll(".json", "") + "Dictionary\\Words",
                 rateSliderReading, balanceSliderReading, volumeSliderReading);
+
+        System.out.println("Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
         audioClipsPhrases[x] = ac.setAudioClip(phraseSet[x],
                 dire.getLastDirectory() + listado[x]
                 .replaceAll(".json", "") + "Dictionary\\Phrases",
                 rateSliderReading, balanceSliderReading, volumeSliderReading);
       }
-      // Setting the listview
-      setListViewV();
-      setListViewH();
+
+
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Configurando los deslizadores">
+
+      System.out.println("Configurando los deslizadores");
       // Setting the sliderMedia
       setSliderMedia(mediaSliderReading);
       setSliderMedia(mediaSliderWriting);
@@ -484,6 +596,12 @@ public class PrincipalController implements Initializable
       setTicksSliderMedia(mediaSliderReading, 100);
       setTicksSliderMedia(mediaSliderWriting, 100);
       setTicksSliderMedia(mediaSliderTranslation, 100);
+
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Configuración final">
+
+      System.out.println("Configuración final");
       // The first lap of the slider
       mediaPlayerSlider = "media"; // to the first lap
       // Setting the first itemInicio
@@ -496,14 +614,15 @@ public class PrincipalController implements Initializable
       currentOriginal = new Duration(itemsOriginal[indexItemV].getStart());
       // Setting the binding beetwen Writer Tab and Reader Tab
       setBinding();
-      // Initial call that return the total duration of the file and 
-      // set it in  the label textLabel  
+      // Initial call that return the total duration of the file and set it in  the label textLabel  
       setEndTimefile();
+
+      //</editor-fold>
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu2()", e.toString(), e);
     }
    }
-
 
   /**
    * When click on the close menu
@@ -517,23 +636,39 @@ public class PrincipalController implements Initializable
         return;
       }
       handleStopButton();
-      mediaPlayerStop();
+
       mediaPlayer.dispose();
       audioClipsWords = null;
+
       itemsOriginal = new Item[1];
       itemsOriginal[0] = new Item(0, 0, " ");
       itemsTranslation = new Item[1];
       itemsTranslation[0] = new Item(0, 0, " ");
+
       flw.setListView(listViewV, itemsOriginal);
       flw.setListView(listViewH01Reading, itemsOriginal);
       flw.setListView(listViewH02Reading, itemsOriginal);
+
       textFieldWriting.setText("");
       textFieldTranslation.setText("");
+
+
       // Delete and create and empty initial file
       usuario_id = mainScene.getUsuario_id();
-      if ( ! origen.equals("handleOpenMenu2")) {
-        dire.createIni(usuario_id);
+
+      switch (origen) {
+        case "handleCloseMenu":
+          dire.createIni(usuario_id);
+          break;
+        case "buttonUnloginMenu":
+        case "buttonLoginMenu":
+          mediaToSliderStop();
+          break;
+        default:
+          break;
       }
+
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
     }
@@ -624,7 +759,8 @@ public class PrincipalController implements Initializable
   @FXML public void handlePlayButton()
    {
     try {
-      /*/* Status st = mediaPlayer.getStatus(); */
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
       mediaSliderReading.setDisable(false);
       mediaSliderWriting.setDisable(false);
       mediaSliderTranslation.setDisable(false);
@@ -633,8 +769,11 @@ public class PrincipalController implements Initializable
       if (mediaPlayer.getCurrentTime().equals(mediaPlayer.getStopTime())) {
         handleStopButton();
         mediaPlayerPlay();
+
         playedImageButton();
         playedImageButtonOriginal();
+
+        mediaToSliderPlay(); // thread media to slider
         return;
       }
 //</editor-fold>
@@ -651,6 +790,9 @@ public class PrincipalController implements Initializable
         mediaPlayerStop();
         mediaPlayerPlay();
         pausedImageButton();
+
+        mediaToSliderPlay(); // thread media to slider
+
         return;
       }
 //</editor-fold>
@@ -664,6 +806,8 @@ public class PrincipalController implements Initializable
         originalButton = false;
         mediaPlayerPlay();
         pausedImageButton();
+
+        mediaToSliderPlay(); // thread media to slider
         return;
       }
 //</editor-fold>
@@ -679,6 +823,8 @@ public class PrincipalController implements Initializable
         mediaPlayerPlay();
         pausedImageButton();
         playedImageButtonOriginal();
+
+        mediaToSliderPlay(); // thread media to slider
         return;
       }
 //</editor-fold>
@@ -694,6 +840,8 @@ public class PrincipalController implements Initializable
         mediaPlayerPlay();
         pausedImageButton();
         playedImageButtonOriginal();
+
+        mediaToSliderPlay(); // thread media to slider
         return;
       }
 //</editor-fold>
@@ -703,6 +851,8 @@ public class PrincipalController implements Initializable
         mediaPlayerPause();
         playedImageButton();
         playedImageButtonOriginal();
+
+        mediaToSliderPause(); // thread media to slider
       }
 //</editor-fold>
 
@@ -718,15 +868,19 @@ public class PrincipalController implements Initializable
   @FXML public void handleStopButton()
    {
     try {
-      //if (!originalButton) {
-      mediaPlayerStop();
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
+      mediaPlayerStop(); // The normal stop
+      mediaToSliderPause(); // thread media to slider
+
       mediaPlayer.setStartTime(Duration.ZERO);
       mediaPlayer.setStopTime(mediaPlayer.getMedia().getDuration());
-      /*/*mediaPlayer.seek(Duration.ZERO);*/
+
       // index of listview to zero
       indexItemV = 0;
       listViewV.scrollTo(0);
       listViewV.getSelectionModel().select(0);
+
       // putting in listviewH the phases
       showListViewH();
       duration = mediaPlayer.getMedia().getDuration();
@@ -760,7 +914,8 @@ public class PrincipalController implements Initializable
    {
     try {
 
-      /*/* Status status = mediaPlayer.getStatus(); */
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
       mediaSliderReading.setDisable(true);
       mediaSliderWriting.setDisable(true);
       mediaSliderTranslation.setDisable(true);
@@ -828,6 +983,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handleStopButtonItemOriginal()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     if (originalButton) {
       mediaPlayerStop();
       // Change the image buttons to play
@@ -842,6 +999,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handlePlayButtonItemOriginalMachine()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     // Create an Observablelist to listview H    
     ObservableList olItems = listViewH01Reading.getSelectionModel().getSelectedItems();
     if (olItems.size() > 0) {
@@ -901,6 +1060,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handlePlayButtonItemTranslationMachine()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     // Create an Observablelist to listview H    
     ObservableList olItems = listViewH02Reading.getSelectionModel().getSelectedItems();
     if (olItems.size() > 0) {
@@ -969,12 +1130,12 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handleBackButton()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     if (indexItemV > 0) {
       // Back the index
       indexItemV --;
-      // index of listview to zero
-      listViewV.scrollTo(indexItemV);
-      listViewV.getSelectionModel().select(indexItemV);
+
       backForward();
     }
    }
@@ -985,13 +1146,13 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handleForwardButton()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     try {
-      if (indexItemV < itemsOriginal.length) {
+      if (indexItemV < itemsOriginal.length - 2) {
         // forward the index
         indexItemV ++;
-        // index of listview to zero
-        listViewV.scrollTo(indexItemV);
-        listViewV.getSelectionModel().select(indexItemV);
+
         backForward();
       }
     } catch (Exception e) {
@@ -1005,13 +1166,19 @@ public class PrincipalController implements Initializable
    */
   private void backForward()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
+    // index of listview to zero
+    listViewV.scrollTo(indexItemV);
+    listViewV.getSelectionModel().select(indexItemV);
+    // putting in listviewH the phases
+    showListViewH();
+
+    // 
     start = itemsOriginal[indexItemV].getStart();
-    /*/*end = itemsOriginal[indexItemV].getEnd();*/
     end = duration.toMillis();
     mediaPlayer.setStartTime(Duration.seconds(start));
     mediaPlayer.setStopTime(Duration.seconds(end));
-    // putting in listviewH the phases
-    showListViewH();
     // Label time to cero
     duration = mediaPlayer.getMedia().getDuration();
     timeLabelReading.setText(ft.formatting(Duration.seconds(start), duration));
@@ -1021,10 +1188,10 @@ public class PrincipalController implements Initializable
     originalButton = false;
     // The first lap of the slider
     mediaPlayerSlider = "media"; // to the first lap
-    // Change the image buttons to play
-    playedImageButton();
-    playedImageButtonOriginal();
-    mediaPlayerStop();
+
+    mediaPlayerSlider = "slider";
+    updateValuesSlider();
+    mediaPlayerSlider = "media";
    }
 
 
@@ -1033,6 +1200,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handleBackButtonItemOriginal()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     if (originalButton) {
       if (mediaPlayer.getCurrentTime()
               .greaterThanOrEqualTo(Duration.seconds(start)
@@ -1050,6 +1219,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handleForwardPlayButtonItemOriginal()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     if (originalButton) {
       if (mediaPlayer.getCurrentTime()
               .lessThanOrEqualTo(Duration.seconds(end)
@@ -1067,6 +1238,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handlecorrectionButtonWriting()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     handleCorrectionButton(textFieldWriting);
    }
 
@@ -1076,6 +1249,8 @@ public class PrincipalController implements Initializable
    */
   @FXML private void handlecorrectionButtonTranslation()
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     handleCorrectionButton(textFieldTranslation);
    }
 
@@ -1152,6 +1327,8 @@ public class PrincipalController implements Initializable
   private void handleCorrectionButton(TextField tf)
    {
     try {
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
       listViewH02Reading.setVisible(true);
       indexItemV = listViewV.getSelectionModel().getSelectedIndex();
       markerTextOriginal = itemsOriginal[indexItemV].getText();
@@ -1283,10 +1460,11 @@ public class PrincipalController implements Initializable
    * @param majorTick The numbers of major ticks
    * @param minorTick The numbers of minor ticks
    */
-  private void setSliderForm(Slider slider, Double min, Double max,
-          Double initial,
-          double majorTick, int minorTick)
+  private void setSliderForm(Slider slider, double min, double max,
+          double initial, double majorTick, int minorTick)
    {
+    if (mediaPlayer == null) return; // if doesn't exits a media return
+
     // min, max and initial value
     slider.setMin(min);
     slider.setMax(max);
@@ -1359,8 +1537,11 @@ public class PrincipalController implements Initializable
       setEventMarker();
       // setting the playback errors
       setMediaPlayerChangeListener();
-      // Setting the event (Thread) that move the sliderMedia
-      setEventMedia();
+
+      // Starting the Thread media to slider
+      /*-- if (mediaToSlideThread.currentThread().getState().equals(Thread.State.RUNNABLE)) {}
+      mediaToSliderPlay();    */
+
       // setting the playback errors
       setError();
       // Setting the end time of the file and fixing the problem with the freezing media
@@ -1371,37 +1552,26 @@ public class PrincipalController implements Initializable
     }
    }
 
-
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="MediaPlayer events to Slider">
+  //<editor-fold defaultstate="collapsed" desc="Play / Pause / Stop MediaPlayer events to Slider">
 
   /**
    *
    */
-  private void setEventMedia()
+  private synchronized void mediaToSliderPlay()
    {
-    mediaToSlideThread = new Thread(new Runnable()
-     {
+    mediaToSlider = "play";
+    notify();
+   }
 
-      @Override
-      public void run()
-       {
-        try {
-          while (getMediaToSlider()) {
-            mediaToSlideThread.sleep(1000);
-            Platform.runLater(() -> updateValuesMedia());
-          }
-        } catch (InterruptedException e) {
-          message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / mediaToSlidemedia()", e.toString(), e);
-        }
-       }
-
-     });
-    //if (mediaToSlideThread.currentThread().getState().equals(Thread.State.RUNNABLE)) {
-    mediaToSlideThread.start();
-    mediaToSliderPlay();
-    //}
+  /**
+   *
+   */
+  private synchronized void mediaToSliderPause()
+   {
+    mediaToSlider = "pause";
+    notify();
    }
 
   /**
@@ -1409,23 +1579,8 @@ public class PrincipalController implements Initializable
    */
   private synchronized void mediaToSliderStop()
    {
-    this.mediaToSlider = false;
-   }
-
-  /**
-   *
-   */
-  private synchronized void mediaToSliderPlay()
-   {
-    this.mediaToSlider = true;
-   }
-
-  /**
-   *
-   */
-  private synchronized boolean getMediaToSlider()
-   {
-    return this.mediaToSlider;
+    mediaToSlider = "stop";
+    notify();
    }
 
   //</editor-fold>
@@ -1440,7 +1595,6 @@ public class PrincipalController implements Initializable
    {
     try {
 
-      /*/* Status s = mediaPlayer.getStatus(); */
       if (status.equals(Status.PLAYING)) {
         if (originalButton) {
           return "playingOriginal";
@@ -1456,13 +1610,12 @@ public class PrincipalController implements Initializable
         }
       }
     } catch (NullPointerException ex) {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", ex.toString(), ex);
+      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / getMediaStatus()", ex.toString(), ex);
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / getMediaStatus()", e.toString(), e);
     }
     return "stop";
    }
-
 
   //</editor-fold>
 
@@ -1505,149 +1658,80 @@ public class PrincipalController implements Initializable
 //<editor-fold defaultstate="collapsed" desc="Setting the listView">
 
   /**
-   * Set the Handler event for the listview V
-   */
-  private void setListViewV()
-   {
-    try {
-      // Enable the selection mode
-      listViewV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-      //For vertical ListView this is the height, for a horizontal ListView this is the width.  
-      listViewV.setFixedCellSize(40);
-      // Enable the listeners
-      listViewV.setOnMouseClicked(new EventHandler<MouseEvent>()
-       {
-
-        @Override
-        public void handle(MouseEvent event)
-         {
-          // Setting the current node
-          listViewV.requestFocus();
-          setBorder(listViewV);
-          oldNode = tabPanelListViewH;
-          indexItemV = listViewV.getSelectionModel().getSelectedIndex();
-          showListViewH();
-          // if I do double click
-          if (event.getClickCount() == 2) {
-            handlePlayButtonItemOriginal();
-          }
-         }
-
-
-       });
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setListViewV()", e.toString(), e);
-    }
-   }
-
-
-  /**
    * Put the word of itemInicio in listView H
    */
   private void showListViewH()
    {
     try {
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
       // Get the index of the clicked itemInicio
       indexItemV = listViewV.getSelectionModel().getSelectedIndex();
       markerTextOriginal = itemsOriginal[indexItemV].getText();
+
       markerTextTranslation = itemsTranslation[indexItemV].getText();
+
       // Cleanig the phrase
       itemWordsOriginal = swal.cleanWords(markerTextOriginal);
       itemWordsTranslation = swal.cleanWords(markerTextTranslation);
+
       // Filling listViewH01Reading with words
       ObservableList<String> listItemOriginal = FXCollections.observableArrayList();
       ObservableList<String> listItemTranslation = FXCollections.observableArrayList();
+
       // Filling the list
       listItemOriginal.addAll(Arrays.asList(itemWordsOriginal));
       listItemTranslation.addAll(Arrays.asList(itemWordsTranslation));
+
       listViewH01Reading.setItems(listItemOriginal);
       listViewH02Reading.setItems(listItemTranslation);
+
+      listViewH01Reading.getSelectionModel().clearAndSelect(0);
+      listViewH02Reading.getSelectionModel().clearAndSelect(0);
+
+      /*--
       listViewH01Reading.getSelectionModel().select(0);
-      listViewH02Reading.getSelectionModel().select(0);
+      listViewH02Reading.getSelectionModel().select(0);*/
+
     } catch (ArrayIndexOutOfBoundsException ex) {
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);
     }
    }
 
-
-  /**
-   * Set the Handler event for the listview H
-   */
-  private void setListViewH()
-   {
-    try {
-      // Enable the selection mode
-      listViewH01Reading.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-      listViewH02Reading.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-      // Enable the listeners
-      listViewH01Reading.setOnMouseClicked(new EventHandler<MouseEvent>()
-       {
-
-        @Override
-        public void handle(MouseEvent event)
-         {
-          // if I do double click
-          if (event.getClickCount() == 2) {
-            handlePlayButtonItemOriginalMachine();
-          }
-          setBorder(listViewH01Reading);
-          currentTab = leer;
-         }
-
-
-       });
-      listViewH02Reading.setOnMouseClicked(new EventHandler<MouseEvent>()
-       {
-
-        @Override
-        public void handle(MouseEvent event)
-         {
-          // if I do double click
-          if (event.getClickCount() == 2) {
-            handlePlayButtonItemTranslationMachine();
-          }
-          setBorder(listViewH02Reading);
-          currentTab = leer;
-         }
-
-
-       });
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setListViewH()", e.toString(), e);
-    }
-   }
-
-
   /**
    *
    */
   private void changeListviewBySliderMedia()
    {
+    int idInicio = 0, idFinal, contInicio, contFinal, itemInicio, itemFinal, suplenteInicio, suplenteFinal;
     double positionSlider, totalDuration;
+
+    positionSlider = mediaSliderReading.getValue();
+    totalDuration = duration.toMillis();
+    sliderMediaCurrent = (positionSlider * totalDuration) / 100000;
+
+    double inicio, fin;
+    int lonjInicio = itemsOriginal.length - 1;
+    int lonjFinal = 0;
+
+    itemInicio = 0;
+    itemFinal = lonjInicio;
+    suplenteInicio = 0;
+    suplenteFinal = lonjFinal;
+    contInicio = 2;
+    contFinal = 2;
+    int salida = 0;
     try {
-      positionSlider = mediaSliderReading.getValue();
-      totalDuration = duration.toMillis();
-      sliderMediaCurrent = (positionSlider * totalDuration) / 100000;
-      int idInicio, idFinal, contInicio, contFinal, itemInicio, itemFinal, suplenteInicio, suplenteFinal;
-      double inicio, fin;
-      int lonjInicio = itemsOriginal.length - 1;
-      int lonjFinal = 0;
-      itemInicio = 0;
-      itemFinal = lonjInicio;
-      suplenteInicio = 0;
-      suplenteFinal = lonjFinal;
-      contInicio = 2;
-      contFinal = 2;
-      int salida = 0;
+
       do {
         idInicio = itemsOriginal[itemInicio].getId();
         idFinal = itemsOriginal[itemFinal].getId();
         inicio = itemsOriginal[itemInicio].getStart();
-        fin = itemsOriginal[itemFinal].getEnd();
+        fin = itemsOriginal[itemFinal].getStart();
 
-        /*/*System.out.println("item " + itemInicio + " - " + itemFinal +
-                "  lonj " + lonjInicio + " - " + lonjFinal +
+         /*-- System.out.println("item " + itemInicio + " - " + itemFinal +
+                "  lonj " + lonjInicio + " - " + ((itemsOriginal.length - 1) - lonjFinal) +
                 " inicio " + inicio + " " + sliderMediaCurrent + " " + fin +
                 " cont " + contInicio + " - " + contFinal +
                 " itemFinal-itemInicio " + (itemFinal - itemInicio)); */
@@ -1656,7 +1740,7 @@ public class PrincipalController implements Initializable
           contInicio = 2;
           itemInicio = itemInicio + ((lonjInicio - itemInicio) / contInicio);
         } else {
-          contInicio = (contInicio > 15) ? contInicio ++ : 15;
+          contInicio = (contInicio > 15) ? 15 : contInicio ++;
           lonjInicio = itemInicio;
           itemInicio = suplenteInicio + ((lonjInicio - suplenteInicio) / contInicio);
         }
@@ -1665,18 +1749,25 @@ public class PrincipalController implements Initializable
           contFinal = 2;
           itemFinal = itemFinal - ((itemFinal - lonjFinal) / contFinal);
         } else {
-          contFinal = (contFinal >= 15) ? contFinal ++ : 15;
+          contFinal = (contFinal >= 15) ? 15 : contFinal ++;
           lonjFinal = itemFinal;
           itemFinal = suplenteFinal - ((suplenteFinal - lonjFinal) / contFinal);
         }
+
         // Check if the sliderMedia is minor or mayor to the star or end
         if (sliderMediaCurrent < itemsOriginal[0].getStart()) salida = 1;
         if (sliderMediaCurrent > itemsOriginal[itemsOriginal.length - 1].getStart()) salida = 2;
+
       } while ( ! ((sliderMediaCurrent >= inicio && sliderMediaCurrent <= fin) &&
               ((lonjInicio - lonjFinal) <= 3 && (lonjInicio - lonjFinal) >= 0) ||
               ((salida != 0))));
+
+      // System.out.println("idInicio " + idInicio + " idFinal " + idFinal + " salida " + salida);
+
       if (salida == 2 || idFinal < idInicio) idInicio = idFinal;
-      // System.out.println("id " + idInicio);
+
+      // System.out.println("idInicio " + idInicio + " idFinal " + idFinal + " salida " + salida);
+
       // Scrolling the listview
       listViewV.scrollTo(idInicio);
       // Selecting Item of the listViewV
@@ -1923,20 +2014,15 @@ public class PrincipalController implements Initializable
             currentOriginal = Duration.seconds(start);
             mediaPlayer.seek(currentOriginal);
 
-            /*/* Status status = mediaPlayer.getStatus(); */
             if (status.equals(Status.PAUSED) || status.equals(Status.PLAYING)) {
               playedImageButton();
               playedImageButtonOriginal();
             } else {
               playedImageButton();
               playedImageButtonOriginal();
-              /*/*return;*/
             }
           }
           if ( ! originalButton) {
-            /*/*currentOriginal = mediaPlayer.getCurrentTime();
-            mediaPlayer.seek(currentOriginal);
-            mediaPlayerPause();*/
             handleStopButton();
           }
          }
@@ -1959,39 +2045,39 @@ public class PrincipalController implements Initializable
   private void setSliderMedia(Slider sliderMedia)
    {
     //Set the media to change the mediaSliderReading when it´s played
-    /*/* mediaPlayer.currentTimeProperty().addListener(mediaPlayerChangeListener); */
+    /*-- mediaPlayer.currentTimeProperty().addListener(mediaPlayerChangeListener); */
     // Set the slider to change the media when it's moved
-    /*/*sliderMedia.valueProperty().addListener(sliderMeediaChangeListener);*/
+    /*-- sliderMedia.valueProperty().addListener(sliderMeediaChangeListener);*/
     // set the slider blocking the change media when click on the 
+
 
     sliderMedia.setOnMouseClicked(new EventHandler<MouseEvent>()
      {
-
-      @Override
-      public void handle(MouseEvent t)
+      @Override public void handle(MouseEvent t)
        {
         sliderMedia.requestFocus();
         setBorder(sliderMedia);
+        oldNode = sliderMedia;
+
         changeListviewBySliderMedia();
         mediaPlayerSlider = "slider";
         updateValuesSlider();
+        mediaPlayerSlider = "media";
        }
 
-
      });
-    
+
     // Setting the slider when pressing on it
     sliderMedia.setOnMousePressed(new EventHandler<MouseEvent>()
      {
       @Override
       public void handle(MouseEvent t)
        {
-        mediaPlayerSlider = "slider";
-        errorMediaSalir = mediaSliderReading.getValue();
+        mediaPlayerSlider = "neutro";
        }
 
      });
-    
+
     // Setting the slider when I release it.
     sliderMedia.setOnMouseReleased(new EventHandler<MouseEvent>()
      {
@@ -1999,14 +2085,20 @@ public class PrincipalController implements Initializable
       @Override
       public void handle(MouseEvent t)
        {
-        mediaPlayerSlider = "media";
-        System.out.println("media");
+        sliderMedia.requestFocus();
+        setBorder(sliderMedia);
+        oldNode = sliderMedia;
+
+        changeListviewBySliderMedia();
+
+        mediaPlayerSlider = "slider";
         updateValuesSlider();
+        mediaPlayerSlider = "media";
        }
 
      });
-    
-        
+
+
     // Setting the slider when I release it.
     sliderMedia.setOnMouseExited(new EventHandler<MouseEvent>()
      {
@@ -2014,33 +2106,21 @@ public class PrincipalController implements Initializable
       @Override
       public void handle(MouseEvent t)
        {
-        if (mediaPlayerSlider.equals("slider"))
-        System.out.println("mal");
-        
+        if (mediaPlayerSlider.equals("neutro")) {
+          sliderMedia.requestFocus();
+          setBorder(sliderMedia);
+          oldNode = sliderMedia;
+
+          changeListviewBySliderMedia();
+
+          mediaPlayerSlider = "slider";
+          updateValuesSlider();
+          mediaPlayerSlider = "media";
+        }
        }
 
      });
    }
-
-
-  /**
-   * updateValuesMedia
-   *
-   */
-  public void updateValuesMedia()
-   {
-    if (timeLabelReading != null && mediaSliderReading != null && duration != null) {
-      // Extract the current time of the mediaplayer
-      currentTime = mediaPlayer.getCurrentTime();
-
-      double totalDuration = duration.toMillis();
-      double positionMedia = currentTime.toMillis();
-      double positionFinal = ((positionMedia * 100) / totalDuration);
-      if (mediaSliderReading.equals("media")) mediaSliderReading.setValue(positionFinal);
-
-    }
-   }
-
 
   /**
    * updateValuesSlider
@@ -2053,13 +2133,24 @@ public class PrincipalController implements Initializable
     mediaSliderReading.setDisable(duration.isUnknown());
     mediaSliderWriting.setDisable(duration.isUnknown());
     mediaSliderTranslation.setDisable(duration.isUnknown());
+
     try {
+
       if ( ! mediaSliderReading.isDisable() && duration.greaterThan(Duration.ZERO)) {
+
         Status temp = status;
+        double stSeconds = itemsOriginal[indexItemV].getStart(); // in seconds
+        double stMilli = (stSeconds * 1000);
+        double totalDuration = duration.toMillis();
+        double positionFinal = ((stMilli * 100) / totalDuration);
+
         mediaPlayer.stop();
-        mediaPlayer.seek(new Duration(sliderMediaCurrent));
-        mediaPlayer.setStartTime(Duration.seconds(sliderMediaCurrent));
+        mediaPlayer.seek(new Duration(stMilli));
+        mediaPlayer.setStartTime(new Duration(stMilli));
         mediaPlayer.setStopTime(duration);
+
+        mediaSliderReading.setValue(positionFinal);
+
         if (temp.equals(Status.PLAYING)) mediaPlayer.play();
         if (temp.equals(Status.PAUSED)) mediaPlayer.pause();
       }
@@ -2157,18 +2248,30 @@ public class PrincipalController implements Initializable
    */
   private void setTransversalFocus()
    {
+
     //<editor-fold defaultstate="collapsed" desc="listViewV">
-    // ListView V
+
+    //<editor-fold defaultstate="collapsed" desc="Setting">
+    // Enable the selection mode
+    listViewV.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+    //For vertical ListView this is the height, for a horizontal ListView this is the width.  
+    listViewV.setFixedCellSize(40);
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Key Events">
     listViewV.setOnKeyPressed(new EventHandler<KeyEvent>()
      {
-
       @Override
       public void handle(KeyEvent ke)
        {
         try {
+
           indexItemV = listViewV.getSelectionModel().getSelectedIndex();
           switch (ke.getCode()) {
             case UP:
+              if (mediaPlayer == null) return; // if doesn't exits a media return
+
               if (indexItemV > 0) {
                 indexItemV --;
                 listViewV.getSelectionModel().select(indexItemV);
@@ -2178,6 +2281,8 @@ public class PrincipalController implements Initializable
               }
               break;
             case DOWN:
+              if (mediaPlayer == null) return; // if doesn't exits a media return
+
               if (indexItemV < itemsOriginal.length) {
                 indexItemV ++;
                 listViewV.getSelectionModel().select(indexItemV);
@@ -2214,14 +2319,55 @@ public class PrincipalController implements Initializable
         }
        }
 
-
      });
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Mouse Events">
+
+    // Enable the listeners
+    listViewV.setOnMouseClicked(new EventHandler<MouseEvent>()
+     {
+      @Override
+      public void handle(MouseEvent event)
+       {
+
+        // Setting the current node
+        listViewV.requestFocus();
+        setBorder(listViewV);
+        oldNode = tabPanelListViewH;
+        if (mediaPlayer == null) return; // if doesn't exits a media return
+
+        indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+        showListViewH();
+        // if I do double click
+        if (event.getClickCount() == 2) {
+          handlePlayButtonItemOriginal();
+        }
+       }
+     });
+
+    listViewV.setOnMouseReleased((e) -> {
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
+      setBorder(listViewV);
+      oldNode = tabPanelListViewH;
+      indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+      showListViewH();
+    });
+
+    //</editor-fold>
+
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="listViewH">
-    // the event onclick is in Setting the listview
+
+    // Enable the selection mode
+    listViewH01Reading.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    listViewH02Reading.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
     eventListviewH(listViewH01Reading, 3, 5, -1, 0);
     eventListviewH(listViewH02Reading, -1, 3, -1, 0);
+
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Hyperlink youtube">
@@ -2267,7 +2413,8 @@ public class PrincipalController implements Initializable
     );
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Button, sliders, sliderMedia">
+    //<editor-fold defaultstate="collapsed" desc="Button, sliders, mediaSlider">
+
     eventButton(playButtonReading, 4, 11, 6, 0);
     eventButton(backButtonReading, 4, 12, 7, 5);
     eventButton(forwardButtonReading, 4, 13, 8, 6);
@@ -2320,6 +2467,7 @@ public class PrincipalController implements Initializable
     eventFilterSlider(rateSliderTranslation, 46, 1, 55, 0, 0.5, 2, 0.01);
     eventFilterSlider(balanceSliderTranslation, 49, 1, 56, 54,  - 1.0, 1, 0.1);
     eventFilterSlider(volumeSliderTranslation, 52, 1, -1, 55, 0.0, 100, 1);
+
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Tab pane">
@@ -2331,16 +2479,28 @@ public class PrincipalController implements Initializable
               @Override
               public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1)
                {
+
                 if (t1.getText().equals(leer)) {
-                  indexItemV = listViewV.getSelectionModel().getSelectedIndex();
-                  flw.setListView(listViewV, itemsOriginal);
                   oldNode = rateSliderReading;
+                  if (mediaPlayer != null) { // if doesn't exits a media return
+
+                    indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+                    flw.setListView(listViewV, itemsOriginal);
+                  }
+
                 } else if (t1.getText().equals(escribir)) {
-                  flw.setListView(listViewV, itemsTranslation);
                   oldNode = rateSliderWriting;
+                  if (mediaPlayer != null) { // if doesn't exits a media return
+
+                    flw.setListView(listViewV, itemsTranslation);
+                  }
+
                 } else if (t1.getText().equals(traducir)) {
-                  flw.setListView(listViewV, itemsOriginal);
                   oldNode = rateSliderTranslation;
+                  if (mediaPlayer != null) { // if doesn't exits a media return
+
+                    flw.setListView(listViewV, itemsOriginal);
+                  }
                 }
                 listViewV.getSelectionModel().select(indexItemV);
                 currentTab = t1.getText();
@@ -2358,16 +2518,17 @@ public class PrincipalController implements Initializable
                 return super.toString();
                }
 
-             }
-            );
+             });
 
-    tabPanelListViewH.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
+    tabPanelListViewH.addEventFilter(KeyEvent.KEY_PRESSED,
+            new EventHandler<KeyEvent>()
      {
 
       @Override
       public void handle(KeyEvent event
       )
        {
+
         KeyCode key = event.getCode();
         // An triger
         if ( ! event.getTarget().equals(tabPanelListViewH)) return;
@@ -2408,10 +2569,13 @@ public class PrincipalController implements Initializable
      }
     );
 
-    tabPanelListViewH.setOnMouseReleased((MouseEvent) -> {
+    tabPanelListViewH.setOnMouseReleased(
+            (MouseEvent) -> {
 
       setBorder(tabPanelListViewH);
       MouseEvent.consume();
+
+      if (mediaPlayer == null) return; // if doesn't exits a media return
 
       if (currentTab.equals(leer)) {
         flw.setListView(listViewV, itemsOriginal);
@@ -2428,8 +2592,10 @@ public class PrincipalController implements Initializable
     //</editor-fold>   
 
     //<editor-fold defaultstate="collapsed" desc="TextField">
-    eventTextfield(textFieldWriting, 3, 22, 0, -1);
-    eventTextfield(textFieldTranslation, 3, 40, 0, -1);
+    eventTextfield(textFieldWriting,
+            3, 22, 0, -1);
+    eventTextfield(textFieldTranslation,
+            3, 40, 0, -1);
 //</editor-fold>
    }
 
@@ -2479,9 +2645,16 @@ public class PrincipalController implements Initializable
         }
        }
 
-
      });
+
     n.setOnMouseClicked((MouseEvent) -> {
+      n.requestFocus();
+      setBorder(n);
+      oldNode = n;
+      MouseEvent.consume();
+    });
+
+    n.setOnMouseReleased((MouseEvent) -> {
       n.requestFocus();
       setBorder(n);
       oldNode = n;
@@ -2540,6 +2713,7 @@ public class PrincipalController implements Initializable
 
       //</editor-fold>
 
+      //<editor-fold defaultstate="collapsed" desc="Key Events">
       KeyCode code = event.getCode();
       int i = -1;
 
@@ -2589,13 +2763,16 @@ public class PrincipalController implements Initializable
         oldNode = slider;
         event.consume();
       }
+      //</editor-fold>
+
     });
-    // the slider.setOnMouseClicked is in Scroll Bar
+    // the slider.setOnMouseClicked is in ScrollBar
    }
 
 //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Slider">
+
   /**
    * Helper to the filter slider event
    *
@@ -2606,27 +2783,31 @@ public class PrincipalController implements Initializable
    * @param max The max value of the slider
    * @param per The step
    */
-  private void eventFilterSlider(Slider slider, int up, int down, int right, int left, double min, double max,
-          double per)
+  private void eventFilterSlider(Slider slider, int up, int down, int right, int left, double min, double max, double per)
    {
     slider.addEventFilter(KeyEvent.KEY_PRESSED, (event) -> {
+
+      //<editor-fold defaultstate="collapsed" desc="Control + Events">
+      if (kcLeft.match(event)) {
+        if (slider.getValue() > min) {
+          slider.setValue(slider.getValue() - per);
+        }
+        event.consume();
+        return;
+      }
+
+      if (kcRight.match(event)) {
+        if (slider.getValue() < max) {
+          slider.setValue(slider.getValue() + per);
+        }
+        event.consume();
+        return;
+      }
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Key Events">
       KeyCode code = event.getCode();
-      if (kcLeft.match(event) && slider.getValue() > min) {
-        slider.setValue(slider.getValue() - per);
-        event.consume();
-        return;
-      } else if (kcLeft.match(event) && slider.getValue() == min) {
-        event.consume();
-        return;
-      }
-      if (kcRight.match(event) && slider.getValue() < max) {
-        slider.setValue(slider.getValue() + per);
-        event.consume();
-        return;
-      } else if (kcRight.match(event) && slider.getValue() == max) {
-        event.consume();
-        return;
-      }
+
       if (code.equals(KeyCode.UP)) {
         int[] i = new int[]{0, 1, 18, 19, 20, 36, 37, 38, 54, 55, 56};
         boolean salida = false;
@@ -2646,12 +2827,14 @@ public class PrincipalController implements Initializable
           event.consume();
         }
       }
+
       if (code.equals(KeyCode.DOWN)) {
         node[down].requestFocus();
         setBorder(node[down]);
         event.consume();
         return;
       }
+
       if (code.equals(KeyCode.LEFT)) {
         node[left].requestFocus();
         setBorder(node[left]);
@@ -2666,18 +2849,29 @@ public class PrincipalController implements Initializable
       } else {
         event.consume();
       }
-    });
-    slider.setOnMouseClicked(
-            (MouseEvent) -> {
-      slider.requestFocus();
-      setBorder(slider);
-      MouseEvent.consume();
+      //</editor-fold>
+
+      //<editor-fold defaultstate="collapsed" desc="Mouse Events">
+      slider.setOnMouseClicked((MouseEvent) -> {
+        slider.requestFocus();
+        setBorder(slider);
+        MouseEvent.consume();
+      });
+
+      slider.setOnMouseReleased((MouseEvent) -> {
+        slider.requestFocus();
+        setBorder(slider);
+        MouseEvent.consume();
+      });
+      //</editor-fold>
+
     });
    }
 
-//</editor-fold>
+  //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="TextField">
+
   /**
    * Setting the moviment when i'm in a textField
    *
@@ -2689,13 +2883,14 @@ public class PrincipalController implements Initializable
    */
   private void eventTextfield(TextField tf, int up, int down, int left, int right)
    {
+
+    //<editor-fold defaultstate="collapsed" desc="Key Events">
     tf.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
      {
 
       @Override
       public void handle(KeyEvent event)
        {
-        /*/*listViewH02Reading.setVisible(false);*/
         KeyCode ke = event.getCode();
         int i = -1;
         if (ke.equals(KeyCode.UP)) {
@@ -2710,7 +2905,6 @@ public class PrincipalController implements Initializable
           }
         }
         if (ke.equals(KeyCode.LEFT) && tf.getCaretPosition() <= 0) {
-          /*/*i = Integer.rotateLeft(i, subTrans);*/
           i = left;
         }
         if (ke.equals(KeyCode.RIGHT)) {
@@ -2730,23 +2924,28 @@ public class PrincipalController implements Initializable
           event.consume();
         } else listViewH02Reading.setVisible(false);
        }
+     });
+    //</editor-fold>
 
-
-     }
-    );
-    tf.setOnMouseClicked(
-            (e) -> {
+    //<editor-fold defaultstate="collapsed" desc="Mouse Events">
+    tf.setOnMouseClicked((e) -> {
       setBorder(tf);
       oldNode = tf;
       e.consume();
-      /*/*listViewH02Reading.setVisible(true);*/
-    }
-    );
+    });
+
+    tf.setOnMouseReleased((e) -> {
+      setBorder(tf);
+      oldNode = tf;
+      e.consume();
+    });
+    //</editor-fold>
    }
 
 //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="ListviewH">
+
   /**
    * Helper to the play button event
    *
@@ -2756,9 +2955,11 @@ public class PrincipalController implements Initializable
    * @param left the left node
    * @param button The play button
    */
-  private void eventListviewH(Node n, int up, int down, int right, int left)
+  private void eventListviewH(ListView lw, int up, int down, int right, int left)
    {
-    n.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
+
+    //<editor-fold defaultstate="collapsed" desc="Key events">
+    lw.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
      {
 
       @Override
@@ -2768,7 +2969,7 @@ public class PrincipalController implements Initializable
         int i = -1;
         KeyCode ke = event.getCode();
         // This is to the oldnode, listViewH01Reading or listViewH02Reading Writting Translatiion
-        int[] is = (n.equals(listViewH01Reading)) ? new int[]{10, 5, 6, 7, 8, 9} : new int[]{3};
+        int[] is = (lw.equals(listViewH01Reading)) ? new int[]{10, 5, 6, 7, 8, 9} : new int[]{3};
         try {
 
           if (ke.equals(KeyCode.UP)) {
@@ -2785,18 +2986,8 @@ public class PrincipalController implements Initializable
           }
 
           if (ke.equals(KeyCode.LEFT)) {
-            switch (currentNode.getId()) {
-              case "listViewH01Reading":
-                if (listViewH01Reading.getSelectionModel().getSelectedIndex() == 0) {
-                  i = left;
-                }
-                break;
-              case "listViewH02Reading":
-                if (listViewH02Reading.getSelectionModel().getSelectedIndex() == 0) {
-                  i = left;
-                }
-                break;
-              default:
+            if (lw.getSelectionModel().getSelectedIndex() == 0) {
+              i = left;
             }
           }
 
@@ -2805,7 +2996,7 @@ public class PrincipalController implements Initializable
           }
 
           if (ke.equals(KeyCode.SPACE) || ke.equals(KeyCode.ENTER)) {
-            if (currentNode.equals(listViewH01Reading)) {
+            if (lw.equals(listViewH01Reading)) {
               handlePlayButtonItemOriginalMachine();
             } else {
               handlePlayButtonItemTranslationMachine();
@@ -2815,28 +3006,53 @@ public class PrincipalController implements Initializable
           if (i != -1) {
             node[i].requestFocus();
             setBorder(node[i]);
-            oldNode = n;
+            oldNode = lw;
             event.consume();
           }
         } catch (Exception e) {
           message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setTransversalFocus()", e.toString(), e);
         }
        }
-
      ;
+    });
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Mouse Events">
+    lw.setOnMouseClicked(new EventHandler<MouseEvent>()
+     {
+      @Override
+      public void handle(MouseEvent event)
+       {
+        // if I do double click
+        if (event.getClickCount() == 2) {
+          if (lw.equals(listViewH01Reading)) {
+            handlePlayButtonItemOriginalMachine();
+          } else {
+            handlePlayButtonItemTranslationMachine();
+          }
+        }
+        setBorder(lw);
+        currentTab = leer;
+       }
+     });
+
+    lw.setOnMouseReleased((event) -> {
+      lw.requestFocus();
+      setBorder(lw);
+      oldNode = lw;
+      event.consume();
+      currentTab = leer;
+    });
+    //</editor-fold>
+
    }
 
-  );
-
-      // the event onclick is in Setting the listview
-   }
-;
-//</editor-fold>
+  //</editor-fold>
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Setting the borders">
-  
+
   /**
    * Setting the border (cursor) of the node
    *

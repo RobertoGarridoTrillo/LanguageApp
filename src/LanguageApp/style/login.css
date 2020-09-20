@@ -17,12 +17,12 @@
  
 */
 
-.root2 {
+.root {
   -fx-font-family: 'FreeSans';
   -fx-font-size: 12pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
-  -fx-background-color: #004f8a;
+  -fx-background-color: transparent; /*#004f8a;*/
 }
 
 /*------------------------------------------------------------------------*/
@@ -92,25 +92,34 @@
   -fx-font-size: 12pt;
   -fx-font-weight: bold; 
   -jfx-focus-color: coral;
- -fx-padding: 5px 10px 5px 10px;  
+  -fx-padding: 5px 10px 5px 10px;  
   -fx-border-color: transparent;
- -fx-border-width: 2px;
+  -fx-border-width: 2px;
 }
+
+.menu-bar > .container > .menu-button:hover > .label,
+.menu-bar > .container > .menu-button:focused > .label,
+.menu-bar > .container > .menu-button:showing  > .label {
+    -fx-background-color: #404040;
+    -fx-text-fill: #4a9db6;
+}
+
 .menu-item:focused, 
 .menu-item:hover{
- -fx-background-color: #004f8a;
- -fx-border-color: coral;
- -fx-border-width: 2px;
- -fx-padding: 5px 10px 5px 10px;
+  -fx-background-color: #004f8a;
+  -fx-border-color: coral;
+  -fx-border-width: 2px;
+  -fx-padding: 5px 10px 5px 10px;
   -fx-border-radius: 3px;
   -fx-border-insets: 0;
 }
+
 .menu-item:focused > .label, 
 .menu-item:hover > .label{
- -fx-background-color: transparent;
+  -fx-background-color: transparent;
 }
 
-  /*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 
@@ -227,7 +236,7 @@
 .jfx-combo-box,
 .jfx-combo-box:focused,
 .jfx-combo-box:editable,
-.jfx-combo-box:editable:focused {
+.jfx-combo-box:focused {
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
   -fx-background-radius: 3px;
   -fx-background-insets: 0px;
@@ -239,7 +248,7 @@
 
 .jfx-combo-box > .arrow-button,
 .jfx-combo-box:editable > .arrow-button,
-.jfx-combo-box:editable:focused > .arrow-button {
+.jfx-combo-box:focused > .arrow-button {
   -fx-background-color: TRANSPARENT;
 }
 
@@ -277,7 +286,7 @@
 }
 /*
 /* For delete the border of the item that aren't Hbox */
-.initialBorderItems .initialBorderItems:hover, .initialBorderItems:focused,  
+.initialBorderItems, .initialBorderItems:hover, .initialBorderItems:focused,  
 .jfx-button, .jfx-button:hover, .jfx-button:focused {    
   -fx-background-color: #004f8a;
   -fx-background-radius: 0px;
