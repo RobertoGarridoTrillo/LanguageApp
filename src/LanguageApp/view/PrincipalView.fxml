@@ -23,18 +23,18 @@
 
 <AnchorPane fx:id="principalViewAnchorPane" styleClass="root" stylesheets="@../style/principal.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.PrincipalController">
   <children>
-    <SplitPane dividerPositions="0.5150259067357513" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <SplitPane dividerPositions="0.38" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
         <AnchorPane id="anchorListViewV" fx:id="anchorListViewV" styleClass="initialBorder">
           <children>
-            <ListView fx:id="listViewV" styleClass="listViewV" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ListView fx:id="listViewV" minWidth="-Infinity" prefWidth="560.0" styleClass="listViewV" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
         <AnchorPane>
           <children>
             <SplitPane dividerPositions="0.5043630017452007" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
-                <AnchorPane fx:id="anchorMedia" SplitPane.resizableWithParent="false">
+                <AnchorPane fx:id="anchorMedia">
                   <children>
                     <MediaView fx:id="mediaView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  
@@ -70,7 +70,7 @@
                 </AnchorPane>
                 <AnchorPane>
                   <children>
-                    <TabPane fx:id="tabPanelListViewH" nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <TabPane fx:id="tabPanelListViewH" minHeight="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="250.0" side="BOTTOM" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <tabs>
                         <Tab closable="false" text="%Leer">
                           <content>
@@ -103,11 +103,11 @@
                                                                </VBox.margin>
                                                            
                                         </HBox>
-                                        <HBox minHeight="-Infinity" prefHeight="50.0" spacing="20.0" VBox.vgrow="ALWAYS">
+                                        <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="60.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                           <children>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                  <Label text="%Frase original" textAlignment="CENTER" wrapText="true">
+                                                  <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase original" textAlignment="CENTER" wrapText="true">
                                             </Label>
                                                                         <HBox spacing="1.0">
                                                                            <children>
@@ -121,7 +121,7 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                                        <Label text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
+                                                                        <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                                               <Button fx:id="playButtonItemVirtualReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
@@ -214,7 +214,7 @@
                           <content>
                             <AnchorPane>
                               <children>
-                                <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
                                   <top>
                                     <VBox BorderPane.alignment="CENTER">
                                       <children>
@@ -235,11 +235,11 @@
                                                                   <Insets bottom="10.0" />
                                                                </VBox.margin>
                                         </HBox>
-                                        <HBox minHeight="-Infinity" prefHeight="50.0" spacing="20.0" VBox.vgrow="ALWAYS">
+                                        <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="60.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                           <children>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                  <Label text="%Frase original" textAlignment="CENTER" wrapText="true" />
+                                                  <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase original" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                         <Button fx:id="playButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
@@ -252,7 +252,7 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                                        <Label text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
+                                                                        <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                                               <Button fx:id="playButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
@@ -265,11 +265,11 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                  <Label text="%Respuesta" textAlignment="CENTER" wrapText="true" />
+                                                  <Label minHeight="-Infinity" prefHeight="20.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                         <Button fx:id="correctionButtonWriting" mnemonicParsing="false" onAction="#handlecorrectionButtonWriting" styleClass="initialBorder" />
-                                                        <ProgressIndicator fx:id="indicatorSuccessWriting" minWidth="-Infinity" prefWidth="40.0" progress="0.0">
+                                                        <ProgressIndicator fx:id="indicatorSuccessWriting" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" prefWidth="40.0" progress="0.0">
                                                                                  <HBox.margin>
                                                                                     <Insets top="2.0" />
                                                                                  </HBox.margin>
@@ -283,7 +283,7 @@
                                                                   <Insets bottom="20.0" />
                                                                </VBox.margin>
                                         </HBox>
-                                          <GridPane prefHeight="60.0">
+                                          <GridPane minHeight="-Infinity" prefHeight="60.0">
                                             <children>
                                               <AnchorPane prefHeight="40.0">
                                                 <children>
@@ -356,7 +356,7 @@
                           <content>
                             <AnchorPane>
                               <children>
-                                <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
                                   <top>
                                     <VBox BorderPane.alignment="CENTER">
                                       <children>
@@ -377,11 +377,11 @@
                                                                   <Insets bottom="10.0" />
                                                                </VBox.margin>
                                         </HBox>
-                                        <HBox minHeight="-Infinity" prefHeight="50.0" spacing="20.0" VBox.vgrow="ALWAYS">
+                                        <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="60.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                           <children>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                  <Label text="%Frase original" textAlignment="CENTER" wrapText="true" />
+                                                  <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase original" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                         <Button fx:id="playButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
@@ -394,7 +394,7 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                                        <Label text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
+                                                                        <Label minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                                               <Button fx:id="playButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
@@ -407,11 +407,11 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                  <Label text="%Respuesta" textAlignment="CENTER" wrapText="true" />
+                                                  <Label minHeight="-Infinity" prefHeight="20.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                         <Button fx:id="correctionButtonTranslation" mnemonicParsing="false" onAction="#handlecorrectionButtonTranslation" styleClass="initialBorder" />
-                                                        <ProgressIndicator fx:id="indicatorSuccessTranslation" minWidth="-Infinity" prefWidth="40.0" progress="0.0">
+                                                        <ProgressIndicator fx:id="indicatorSuccessTranslation" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" prefWidth="40.0" progress="0.0">
                                                                                  <HBox.margin>
                                                                                     <Insets top="2.0" />
                                                                                  </HBox.margin></ProgressIndicator>

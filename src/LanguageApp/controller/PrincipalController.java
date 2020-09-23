@@ -75,176 +75,316 @@ import javafx.util.Pair;
  */
 public class PrincipalController implements Initializable
  {
+
 //<editor-fold defaultstate="collapsed" desc="fields class">
 
   //<editor-fold defaultstate="collapsed" desc="FXML">
   @FXML private BorderPane MainViewBorderPane;
+
   @FXML private AnchorPane principalViewAnchorPane;
+
   @FXML private AnchorPane dataBaseviewAnchorPane;
+
   @FXML private Button playButtonReading;
+
   @FXML private Button stopButtonReading;
+
   @FXML private Button backButtonReading;
+
   @FXML private Button forwardButtonReading;
+
   @FXML private Button playButtonWriting;
+
   @FXML private Button stopButtonWriting;
+
   @FXML private Button backButtonWriting;
+
   @FXML private Button forwardButtonWriting;
+
   @FXML private Button playButtonTranslation;
+
   @FXML private Button stopButtonTranslation;
+
   @FXML private Button backButtonTranslation;
+
   @FXML private Button forwardButtonTranslation;
+
   @FXML private Button playButtonItemOriginalReading;
+
   @FXML private Button stopButtonItemOriginalReading;
+
   @FXML private Button backButtonItemOriginalReading;
+
   @FXML private Button forwardButtonItemOriginalReading;
+
   @FXML private Button playButtonItemOriginalWriting;
+
   @FXML private Button stopButtonItemOriginalWriting;
+
   @FXML private Button backButtonItemOriginalWriting;
+
   @FXML private Button forwardButtonItemOriginalWriting;
+
   @FXML private Button playButtonItemOriginalTranslation;
+
   @FXML private Button stopButtonItemOriginalTranslation;
+
   @FXML private Button backButtonItemOriginalTranslation;
+
   @FXML private Button forwardButtonItemOriginalTranslation;
+
   @FXML private Button playButtonItemVirtualReading;
+
   @FXML private Button stopButtonItemVirtualReading;
+
   @FXML private Button backButtonItemVirtualReading;
+
   @FXML private Button forwardButtonItemVirtualReading;
+
   @FXML private Button playButtonItemVirtualWriting;
+
   @FXML private Button stopButtonItemVirtualWriting;
+
   @FXML private Button backButtonItemVirtualWriting;
+
   @FXML private Button forwardButtonItemVirtualWriting;
+
   @FXML private Button playButtonItemVirtualTranslation;
+
   @FXML private Button stopButtonItemVirtualTranslation;
+
   @FXML private Button backButtonItemVirtualTranslation;
+
   @FXML private Button forwardButtonItemVirtualTranslation;
+
   @FXML private Button correctionButtonWriting;
+
   @FXML private Button correctionButtonTranslation;
+
   @FXML private ListView<String> listViewV;
+
   @FXML private AnchorPane anchorListViewV;
+
   @FXML private ListView<String> listViewH01Reading;
+
   @FXML private ListView<String> listViewH02Reading;
+
   @FXML private MediaView mediaView;
+
   @FXML private Slider volumeSliderReading;
+
   @FXML private Slider rateSliderReading;
+
   @FXML private Slider balanceSliderReading;
+
   @FXML private Slider volumeSliderWriting;
+
   @FXML private Slider rateSliderWriting;
+
   @FXML private Slider balanceSliderWriting;
+
   @FXML private Slider volumeSliderTranslation;
+
   @FXML private Slider rateSliderTranslation;
+
   @FXML private Slider balanceSliderTranslation;
+
   @FXML private Slider mediaSliderReading;
+
   @FXML private Slider mediaSliderWriting;
+
   @FXML private Slider mediaSliderTranslation;
+
   @FXML private Label volumeLabelReading;
+
   @FXML private Label rateLabelReading;
+
   @FXML private Label balanceLabelReading;
+
   @FXML private Label timeLabelReading;
+
   @FXML private Label volumeLabelWriting;
+
   @FXML private Label rateLabelWriting;
+
   @FXML private Label balanceLabelWriting;
+
   @FXML private Label volumeLabelTranslation;
+
   @FXML private Label rateLabelTranslation;
+
   @FXML private Label balanceLabelTranslation;
+
   @FXML private TextField textFieldWriting;
+
   @FXML private TextField textFieldTranslation;
+
   @FXML private AnchorPane anchorMedia;
+
   @FXML private ProgressIndicator indicatorSuccessWriting;
+
   @FXML private ProgressIndicator indicatorSuccessTranslation;
+
   @FXML private TabPane tabPanelListViewH;
+
   // hyperlink youtube
   @FXML Hyperlink youtubeLink;
   //</editor-fold>
 
   // pop-up messages
   Message message;
+
   // The focused and old node
   Node currentNode, oldNode;
+
   // The tab thar is checkes
   private String currentTab;
+
   // for transversal movements
   Node[] node;
+
   // Reference to the main Stage from the main Scene
   private Stage mainStage;
+
   // Reference to the main Scene
   private MainScene mainScene;
 
-
   // Json
   private Item[] itemsOriginal, itemsTranslation;
-  private Item[][] idiomas;
-  private String[] idiomaSubt;
-  File jsonBinder;
-  String[] listado;
 
+  private Item[][] idiomas;
+
+  private String[] idiomaSubt;
+
+  File jsonBinder;
+
+  String[] listado;
 
 // Player
   private MediaPlayer mediaPlayer;
+
   private Media media;
+
   private URI mediaStringUrl;
+
   private int indexSelected;
+
   private boolean playButtonBoolean; // if i´m touching an Item, don´t scroll
+
   private Duration duration; //  the total lenght of the media
+
   private Duration currentTime; // the actual position of the media
+
   private Status status; // the status of the media
+
   private double sliderMediaCurrent; // the temporal status of the sliderMedia
+
   private ChangeListener<Duration> mediaPlayerChangeListener;
+
   private ChangeListener<Number> sliderMeediaChangeListener;
+
   private Thread mediaToSlideThread;
+
   private String mediaToSlider; // pause stop play the thread media to slider 
 
 // itemInicio
   private double start;
+
   private double end;
+
   private int indexItemV;
+
   // Save as a list of words
   private Set<String>[] wordSet;
+
   private Set<String>[] phraseSet;
+
   // Show ListView 
   private String[] itemWordsOriginal;
+
   private String[] itemWordsTranslation;
+
   // ListView MarkerText
   private String markerTextOriginal;
+
   private String markerTextTranslation;
+
   // AudiClip
   private Map<String, AudioClip>[] audioClipsWords;
+
   private Map<String, AudioClip>[] audioClipsPhrases;
+
   // Subtitle original (listviewH 01) and Subtitle translation (listviewH 02) 
   private int subOrig, subTrans;
+
   private boolean exitLoop;
+
   private int currentPauseItem; // the actual itemInicio when click the original pause 
+
   // slider media, to control if the moviment of the media comes from the slider or the media
   private static String mediaPlayerSlider;
+
   // if I´m stopping from itemInicio original or media
   private boolean originalButton;
+
   // From original itemInicio to pause / play
   private Duration currentOriginal;
+
   // An Array with the image of the buttons
   private ImageView[] imageViews;
+
   // For relative Direcction 
   String se;
+
   String path;
+
   // For KeyCode
   final KeyCombination kcLeft = new KeyCodeCombination(KeyCode.LEFT, KeyCombination.CONTROL_DOWN);
+
   final KeyCombination kcRight = new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.CONTROL_DOWN);
+
   // Extension of the media
   String mp;
+
   // Class instances
   private SelectedFile sf;
+
   private GetJson gj;
+
   private FillListView flw;
+
   private Directory dir;
+
   private AudioClips ac;
+
   private SaveWordsAsList swal;
+
   private FormatTime ft;
+
   private Directorio dire;
+
   private SortPhrase sp;
+
   // Active user
   private int usuario_id;
+
+
+  // ProgressBar
+  private double progressBarStep;
+  private int totalMessages;
+
   // For the bounle of idioms
   ResourceBundle resources;
+
   // Creating multilingual constans
   private String leer, escribir, traducir;
+
+  // Thread handleOpenMenu2Thread
+  private final Thread handleOpenMenu2Thread;
+
+  private String handleOpenMenu2; // Play, pause, stop handleOpenMenu2
+
+  private final Object handleOpenMenu2Lock = new Object();
 
 //</editor-fold>  
 
@@ -290,18 +430,28 @@ public class PrincipalController implements Initializable
 
     //<editor-fold defaultstate="collapsed" desc="Thread that change the slider when the media has changed">
 
+    // syncronized with this
     mediaToSlideThread = new Thread(new Runnable()
      {
-
       @Override
       public void run()
        {
-
         try {
           while ( ! mediaToSlider.equals("stop")) {
+
+            synchronized (PrincipalController.this) {
+              while (mediaToSlider.equals("pause")) {
+                PrincipalController.this.wait();
+                // para saltarnos un ciclo cuando movemos el slider estando en pausa y evitar
+                // el salto 
+                mediaPlayerSlider = "neutro";
+              }
+            }
+
             mediaToSlideThread.sleep(1000);
 
-            if (timeLabelReading != null && mediaSliderReading != null && duration != null) {
+            if (timeLabelReading != null && mediaSliderReading != null &&
+                    duration != null && mediaPlayer != null) {
 
               // Extract the current time of the media and put in in the label
               currentTime = mediaPlayer.getCurrentTime();
@@ -313,20 +463,17 @@ public class PrincipalController implements Initializable
               double positionMedia = currentTime.toMillis();
               double positionFinal = ((positionMedia * 100) / totalDuration);
 
-              synchronized (PrincipalController.this) {
-                while (mediaToSlider.equals("pause")) {
-                  PrincipalController.this.wait();
-                }
-              }
               if (mediaPlayerSlider.equals("media")) {
                 mediaSliderReading.setValue(positionFinal);
               }
+              mediaPlayerSlider = "media";
             }
 
             System.out.println("status " + status +
                     " mediaPlayerSlider " + mediaPlayerSlider +
                     " mediaToSlider " + mediaToSlider +
-                    " nombre del hilo " + mediaToSlideThread.getName());
+                    " nombre del hilo " + mediaToSlideThread.getName() +
+                    " currentTime " + currentTime);
           }
         } catch (InterruptedException e) {
           message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / mediaToSlideThread", e.toString(), e);
@@ -334,9 +481,178 @@ public class PrincipalController implements Initializable
        }
      }
     );
+
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="instances">
+    //<editor-fold defaultstate="collapsed" desc="Thread that prepare the dashboard (handleOpenMenu2)">
+
+    // syncronized with object
+    handleOpenMenu2Thread = new Thread(new Runnable()
+     {
+      @Override
+      public void run()
+       {
+        try {
+
+          while ( ! handleOpenMenu2.equals("stop")) {
+
+            // System.out.println("Entrando " + " " + handleOpenMenu2Thread.getName());
+            // System.out.println("handleOpenMenu2 " + handleOpenMenu2);
+
+            synchronized (handleOpenMenu2Lock) {
+              while (handleOpenMenu2.equals("pause")) {
+                handleOpenMenu2Lock.wait();
+                // System.out.println("Esperando " + " " + handleOpenMenu2Thread.getName());
+                // System.out.println("handleOpenMenu2 " + handleOpenMenu2);
+
+              }
+
+            }
+            if (handleOpenMenu2.equals("stop")) return;
+
+            // System.out.println("Repito ciclo Esperar " + handleOpenMenu2 +
+            //" " + handleOpenMenu2Thread.getName());
+
+            //<editor-fold defaultstate="collapsed" desc="Creando Matrices">
+
+            handleCloseMenu("handleOpenMenu2");
+            // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
+            jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
+
+
+            listado = jsonBinder.list();
+            idiomas = new Item[listado.length][];
+            wordSet = (Set<String>[]) new Set[listado.length];
+            phraseSet = (Set<String>[]) new Set[listado.length];
+
+
+            totalMessages = 7 + (listado.length * 5);
+
+            setProgressBar(totalMessages, "Creando Matrices");
+
+            audioClipsWords = (Map<String, AudioClip>[]) new Map[listado.length];
+            audioClipsPhrases = (Map<String, AudioClip>[]) new Map[listado.length];
+
+            //</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Comenzando a crear los audios">
+
+            setProgressBar(totalMessages, "Comenzando a crear los audios");
+            for (int x = 0; x < listado.length; x ++) {
+
+              setProgressBar(totalMessages, "Leyendo Json en " + listado[x].replaceAll(".json", ""));
+
+              // Read a json ,call a read JSON, return an array of Item class objects
+              File file = new File(dire.getLastDirectory() + "Json\\\\" + listado[x]);
+
+              if (file.exists()) {
+                // Read the Json witn the Item[]
+                idiomas[x] = gj.getJson(file);
+                // Extract the languages from the last row of the any itemInicio
+                idiomaSubt = idiomas[0][idiomas[0].length - 1].getText().split(" ");
+
+                setProgressBar(totalMessages, "Creando palabras en " + idiomaSubt[x].replaceAll(".json", ""));
+                wordSet[x] = swal.saveWordsAsList(idiomas[x]);
+
+                setProgressBar(totalMessages, "Creando frases en " + idiomaSubt[x].replaceAll(".json", ""));
+                phraseSet[x] = sp.sortPhrases(idiomas[x]);
+              }
+            }
+
+            //</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Llenando tablas">
+            setProgressBar(totalMessages, "Llenando tablas");
+
+            // fill a ListView with the phrases of the Items array
+            itemsOriginal = idiomas[0];
+            itemsTranslation = idiomas[1];
+
+            flw.setListView(listViewV, itemsOriginal);
+            // Creating the path to the media
+            mediaStringUrl = new File(dire.getLastDirectory() + dire.getLastFile()).toURI();
+
+
+            //</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Configurando los archivos de medios">
+            setProgressBar(totalMessages, "Configurando los archivos de medios");
+
+            // Set the MediaPlayer
+            setMediaPlayer();
+
+            // Setting audiclips
+            for (int x = 0; x < listado.length; x ++) {
+
+              setProgressBar(totalMessages, "Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
+
+              audioClipsWords[x] = ac.setAudioClip(wordSet[x],
+                      dire.getLastDirectory() + listado[x]
+                      .replaceAll(".json", "") + "Dictionary\\Words",
+                      rateSliderReading, balanceSliderReading, volumeSliderReading);
+
+              setProgressBar(totalMessages, "Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
+              audioClipsPhrases[x] = ac.setAudioClip(phraseSet[x],
+                      dire.getLastDirectory() + listado[x]
+                      .replaceAll(".json", "") + "Dictionary\\Phrases",
+                      rateSliderReading, balanceSliderReading, volumeSliderReading);
+            }
+
+
+            //</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Configurando los deslizadores">
+
+            setProgressBar(totalMessages, "Configurando los deslizadores");
+            Platform.runLater(() -> {
+              // Setting the sliderMedia
+              setSliderMedia(mediaSliderReading);
+              setSliderMedia(mediaSliderWriting);
+              setSliderMedia(mediaSliderTranslation);
+              setTicksSliderMedia(mediaSliderReading, 100);
+              setTicksSliderMedia(mediaSliderWriting, 100);
+              setTicksSliderMedia(mediaSliderTranslation, 100);
+            });
+
+            //</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Configuración final">
+
+            setProgressBar(totalMessages, "Configuración final");
+            // The first lap of the slider
+            mediaPlayerSlider = "media"; // to the first lap
+            // Setting the first itemInicio
+            indexItemV = 0;
+            listViewV.scrollTo(0);
+            listViewV.getSelectionModel().select(0);
+
+            showListViewH();
+
+            // Setting the initial pause
+            indexItemV = 0;
+            currentOriginal = new Duration(itemsOriginal[indexItemV].getStart());
+            // Setting the binding beetwen Writer Tab and Reader Tab
+            setBinding();
+            // Initial call that return the total duration of the file 
+            //and set it in  the label textLabel  
+            setEndTimefile();
+
+            // Pause the Thread
+            setProgressBar(totalMessages, "Finalizado");
+            handleOpenMenu2Pause();
+            //</editor-fold>
+          }
+        } catch (Exception e) {
+          Platform.runLater(() -> {
+            message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu2Thread()", e.toString(), e);
+          });
+        }
+       }
+     });
+
+//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Instances">
     sf = new SelectedFile();
     gj = new GetJson();
     flw = new FillListView();
@@ -346,8 +662,10 @@ public class PrincipalController implements Initializable
     ft = new FormatTime();
     sp = new SortPhrase();
     //</editor-fold>
+
    }
-  //</editor-fold>
+
+//</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="setMainScene">
 
@@ -373,14 +691,18 @@ public class PrincipalController implements Initializable
    {
     try {
       this.resources = resources;
+
       // References to mainScene
       mainStage = MainScene.getMainStage();
+
       // Creating multilingual constans
       Locale loc = new Locale(Locale.getDefault().getLanguage());
       ResourceBundle rs = ResourceBundle.getBundle("LanguageApp.resources.bundles.LanguageApp", loc);
+
       leer = rs.getString("Leer");
       escribir = rs.getString("Escribir");
       traducir = rs.getString("Traducir");
+
       // Create the locale for the pop up messages
       HandleLocale01.handleLocale01();
       message = new Message(resources);
@@ -388,14 +710,19 @@ public class PrincipalController implements Initializable
       path = System.getProperty("user.dir");
       se = System.getProperty("file.separator");
       //se = "/";
+
       // if it playing an itemInicio, doesn´t scroll
-      playButtonBoolean = true;
+      playButtonBoolean = false;
+
       // Setting the sliders of the Volumen, balance, rate
       setSlider();
+
       // Settion the images of the butttons
       setImageButton();
+
       // Setting Hyperlink youtube
       setHyperlink();
+
       //<editor-fold defaultstate="collapsed" desc="nodos">
       node = new Node[]{
         listViewV,
@@ -429,41 +756,55 @@ public class PrincipalController implements Initializable
         correctionButtonTranslation,
         rateSliderTranslation, balanceSliderTranslation, volumeSliderTranslation};
       //</editor-fold>
-      // Setting the listViewH and textField invisible or disabled
+      // Setting the listViewH and textField invisible or disable
       listViewH01Reading.setVisible(true);
       textFieldWriting.setVisible(false);
       textFieldTranslation.setVisible(false);
+
       // Setting the transversal focus of the nodes
       setTransversalFocus();
+
       // The initial tab
       currentTab = leer;
+      tabPanelListViewH.getSelectionModel().select(0);
       // Setting the current node
       currentNode = listViewV;
       oldNode = listViewH01Reading;
+
       listViewV.requestFocus();
+
       // Settiong the intial border
       setBorder(listViewV);
+
       // Setting if the stop is from original button or media (true idInicio original)
       originalButton = false;
+
       // The index of the listviewV when click in the pause Button
       currentPauseItem = 0;
+
       // Setting the status of the media and the sliderMedia
       status = Status.STOPPED;
-      // Setting the event that move the slider media by the media
-      mediaToSlider = "play";
+
       // Setting initial user
       usuario_id = mainScene.getUsuario_id();
+
       // Setting the subtitle that I'm going to put in listview H01 y H02
       subOrig = 0;
       subTrans = 1;
 
-      // Starting (once time) the Thread the change the slider for media
-      mediaToSlideThread.start();
+      // Setting the event handleOpenMenu2Thread
+      //handleOpenMenu2Lock = new Object();
+      handleOpenMenu2 = "pause";
+      handleOpenMenu2Thread.start();
+
+
+      // Setting the event that move the slider media by the media
       mediaToSliderPause();
-      
+      mediaToSlideThread.start();
+
       // Check if there´s an initial file
       if (dire.checkIni(usuario_id)) {
-        handleOpenMenu2();
+        handleOpenMenu2Play();
       }
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / initialize()", e.toString(), e);
@@ -473,6 +814,9 @@ public class PrincipalController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Menu + inicio">
+
+  //<editor-fold defaultstate="collapsed" desc="handleOpenMenu">
+
   /**
    * Open a SelectFile and seek a json to load the phrases (Part 1)
    */
@@ -482,12 +826,14 @@ public class PrincipalController implements Initializable
     usuario_id = mainScene.getUsuario_id();
     try {
       File file = sf.getSelectedFile(mainStage, dire.getLastDirectory());
+      if (file == null) return;
+
       // Setting the globlal directory
       String lastDirectory = file.getParent() + se;//el que acabo de abrir con el filechooser
       String name = file.getName();
       // Checking if exists some equal
       dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
-      handleOpenMenu2();
+      handleOpenMenu2Play();
 
     } catch (NullPointerException ex) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", ex.toString(), ex);
@@ -496,138 +842,69 @@ public class PrincipalController implements Initializable
     }
    }
 
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Play / Pause / Stop handleOpenMenu2Thread">
+
   /**
-   * Open a SelectFile and seek a json to load the phrases (Part2)
+   *
    */
-  public void handleOpenMenu2()
+  private void handleOpenMenu2Play()
    {
-    try {
-
-      //<editor-fold defaultstate="collapsed" desc="Creando Matrices">
-
-      System.out.println("Creando Matrices");
-      handleCloseMenu("handleOpenMenu2");
-      // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
-      jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
-
-
-      listado = jsonBinder.list();
-      idiomas = new Item[listado.length][];
-      wordSet = (Set<String>[]) new Set[listado.length];
-      phraseSet = (Set<String>[]) new Set[listado.length];
-
-      audioClipsWords = (Map<String, AudioClip>[]) new Map[listado.length];
-      audioClipsPhrases = (Map<String, AudioClip>[]) new Map[listado.length];
-
-      //</editor-fold>
-
-      //<editor-fold defaultstate="collapsed" desc="Comenzando a crear los audios">
-
-      System.out.println("Comenzando a crear los audios");
-      for (int x = 0; x < listado.length; x ++) {
-
-        System.out.println("Leyendo Json en " + listado[x].replaceAll(".json", ""));
-
-        // Read a json ,call a read JSON, return an array of Item class objects
-        File file = new File(dire.getLastDirectory() + "Json\\\\" + listado[x]);
-
-        if (file.exists()) {
-          // Read the Json witn the Item[]
-          idiomas[x] = gj.getJson(file);
-          // Extract the languages from the last row of the any itemInicio
-          idiomaSubt = idiomas[0][idiomas[0].length - 1].getText().split(" ");
-
-          System.out.println("Creando palabras en " + idiomaSubt[x].replaceAll(".json", ""));
-          wordSet[x] = swal.saveWordsAsList(idiomas[x]);
-
-          System.out.println("Creando frases en " + idiomaSubt[x].replaceAll(".json", ""));
-          phraseSet[x] = sp.sortPhrases(idiomas[x]);
-        }
-      }
-
-      //</editor-fold>
-
-      //<editor-fold defaultstate="collapsed" desc="Llenando tablas">
-      System.out.println("Llenando tablas");
-
-      // fill a ListView with the phrases of the Items array
-      itemsOriginal = idiomas[0];
-      itemsTranslation = idiomas[1];
-      flw.setListView(listViewV, itemsOriginal);
-      // Creating the path to the media
-      mediaStringUrl = new File(dire.getLastDirectory() + dire.getLastFile()).toURI();
-
-
-      //</editor-fold>
-
-      //<editor-fold defaultstate="collapsed" desc="Configurando los archivos de medios">
-      System.out.println("Configurando los archivos de medios");
-
-      // Set the MediaPlayer
-      setMediaPlayer();
-
-      // Setting audiclips
-      for (int x = 0; x < listado.length; x ++) {
-
-        System.out.println("Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
-
-        audioClipsWords[x] = ac.setAudioClip(wordSet[x],
-                dire.getLastDirectory() + listado[x]
-                .replaceAll(".json", "") + "Dictionary\\Words",
-                rateSliderReading, balanceSliderReading, volumeSliderReading);
-
-        System.out.println("Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
-        audioClipsPhrases[x] = ac.setAudioClip(phraseSet[x],
-                dire.getLastDirectory() + listado[x]
-                .replaceAll(".json", "") + "Dictionary\\Phrases",
-                rateSliderReading, balanceSliderReading, volumeSliderReading);
-      }
-
-
-      //</editor-fold>
-
-      //<editor-fold defaultstate="collapsed" desc="Configurando los deslizadores">
-
-      System.out.println("Configurando los deslizadores");
-      // Setting the sliderMedia
-      setSliderMedia(mediaSliderReading);
-      setSliderMedia(mediaSliderWriting);
-      setSliderMedia(mediaSliderTranslation);
-      setTicksSliderMedia(mediaSliderReading, 100);
-      setTicksSliderMedia(mediaSliderWriting, 100);
-      setTicksSliderMedia(mediaSliderTranslation, 100);
-
-      //</editor-fold>
-
-      //<editor-fold defaultstate="collapsed" desc="Configuración final">
-
-      System.out.println("Configuración final");
-      // The first lap of the slider
-      mediaPlayerSlider = "media"; // to the first lap
-      // Setting the first itemInicio
-      indexItemV = 0;
-      listViewV.scrollTo( - 0);
-      listViewV.getSelectionModel().select(0);
-      showListViewH();
-      // Setting the initial pause
-      indexItemV = 0;
-      currentOriginal = new Duration(itemsOriginal[indexItemV].getStart());
-      // Setting the binding beetwen Writer Tab and Reader Tab
-      setBinding();
-      // Initial call that return the total duration of the file and set it in  the label textLabel  
-      setEndTimefile();
-
-      //</editor-fold>
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu2()", e.toString(), e);
+    synchronized (handleOpenMenu2Lock) {
+      handleOpenMenu2 = "play";
+      handleOpenMenu2Lock.notify();
     }
    }
 
   /**
+   *
+   */
+  private void handleOpenMenu2Pause()
+   {
+    synchronized (handleOpenMenu2Lock) {
+      handleOpenMenu2 = "pause";
+      handleOpenMenu2Lock.notify();
+    }
+   }
+
+  /**
+   *
+   */
+  private void handleOpenMenu2Salir()
+   {
+    synchronized (handleOpenMenu2Lock) {
+
+      handleOpenMenu2 = "stop";
+      handleOpenMenu2Lock.notify();
+    }
+   }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Helper ProgressBar">
+
+  /**
+   *
+   * @param longitud double. El número de veces que voy a llamar la función, para que calcule la lonjitud
+   * @param text String. The text to show.
+   */
+  private void setProgressBar(double longitud, String text)
+   {
+    progressBarStep = Math.round((1 / longitud)*100.0)/100.0;
+    
+    mainScene.setLabelText(text);
+    mainScene.setProgressBarValue(progressBarStep);
+   }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="handleCloseMenu">
+
+  /**
    * When click on the close menu
    *
-   * @param origen Only when the origen is handleOpenMenu2 I create an empty inicial file is not, only close all.
+   * @param origen Only when the origen is handleOpenMenu2Thread I create an empty inicial file is not, only close all.
    */
   public void handleCloseMenu(String origen)
    {
@@ -638,6 +915,7 @@ public class PrincipalController implements Initializable
       handleStopButton();
 
       mediaPlayer.dispose();
+      mediaPlayer = null;
       audioClipsWords = null;
 
       itemsOriginal = new Item[1];
@@ -652,6 +930,7 @@ public class PrincipalController implements Initializable
       textFieldWriting.setText("");
       textFieldTranslation.setText("");
 
+      tabPanelListViewH.getSelectionModel().select(0);
 
       // Delete and create and empty initial file
       usuario_id = mainScene.getUsuario_id();
@@ -660,9 +939,12 @@ public class PrincipalController implements Initializable
         case "handleCloseMenu":
           dire.createIni(usuario_id);
           break;
-        case "buttonUnloginMenu":
         case "buttonLoginMenu":
+        case "buttonUnloginMenu":
+          System.out.println("mediaToSliderStop");
           mediaToSliderStop();
+          handleOpenMenu2Salir();
+          handleOpenMenu2Play();
           break;
         default:
           break;
@@ -670,13 +952,18 @@ public class PrincipalController implements Initializable
 
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
+      Platform.runLater(() -> {
+        message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
+      });
     }
    }
+
+  //</editor-fold>
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Play, stop, pause Button...">
+
   /**
    * Setting the image int the buttons
    */
@@ -756,31 +1043,46 @@ public class PrincipalController implements Initializable
   /**
    * Controller for slider media play button
    */
-  @FXML public void handlePlayButton()
+  @FXML
+  public void handlePlayButton()
    {
     try {
-      if (mediaPlayer == null) return; // if doesn't exits a media return
+      if (mediaPlayer == null) return; // if doesn't exits a media return 
 
       mediaSliderReading.setDisable(false);
       mediaSliderWriting.setDisable(false);
       mediaSliderTranslation.setDisable(false);
 
-//<editor-fold defaultstate="collapsed" desc="if "in pause"  drag the slidermedia it doesn´t detect the end of file">
+      //<editor-fold defaultstate="collapsed" desc="if "in pause"  drag the slidermedia it doesn´t detect the end of file">
+
       if (mediaPlayer.getCurrentTime().equals(mediaPlayer.getStopTime())) {
         handleStopButton();
+
+        helperPlayButton(false, true,
+                "play", "play", "play",
+                "play");
+        //<editor-fold defaultstate="collapsed" desc="comment">
+/*/*
+        // Securing (unnecessary, cut and paste) the scroll to markers
+        originalButton = false;
+        // Enable the scroll to markers
+        playButtonBoolean = true;
+
         mediaPlayerPlay();
 
         playedImageButton();
         playedImageButtonOriginal();
 
-        mediaToSliderPlay(); // thread media to slider
+        mediaToSliderPlay(); // thread media to slider*/
+//</editor-fold>
         return;
       }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="if I push the normal play in "normal mode" (It's stopped)">
+      //<editor-fold defaultstate="collapsed" desc="if I push the normal play in "normal mode" (It's stopped)">
+
       if ((status == Status.STOPPED || status == Status.READY) &&  ! originalButton) {
-        //handleStopButton();
+
         indexItemV = listViewV.getSelectionModel().getSelectedIndex();
         if (indexItemV != 0) {
           start = itemsOriginal[indexItemV].getStart();
@@ -788,71 +1090,116 @@ public class PrincipalController implements Initializable
           mediaPlayer.setStopTime(duration);
         }
         mediaPlayerStop();
+
+        helperPlayButton(false, true,
+                "play", "pause", "play",
+                "play");
+        //<editor-fold defaultstate="collapsed" desc="comment">
+        /*/*
         mediaPlayerPlay();
         pausedImageButton();
 
-        mediaToSliderPlay(); // thread media to slider
-
+        mediaToSliderPlay(); // thread media to slider */
+//</editor-fold>
         return;
       }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="if I push the play button in "pause mode" (i's paused)">
+      //<editor-fold defaultstate="collapsed" desc="if I push the play button in "pause mode" (i's paused)">
       if (status == Status.PAUSED &&  ! originalButton) {
-        // Re-start the media
+
         mediaPlayer.setStartTime(mediaPlayer.getCurrentTime());
         mediaPlayer.setStopTime(mediaPlayer.getMedia().getDuration());
-        // Stoping the original pause button
+
+        helperPlayButton(false, true,
+                "play", "pause", "play",
+                "play");
+        //<editor-fold defaultstate="collapsed" desc="comment">
+/*/* // Securing (unnecessary, cut and paste) the original pause button
         originalButton = false;
+        // Enable the scroll to markers
+        playButtonBoolean = true;
+
         mediaPlayerPlay();
         pausedImageButton();
 
-        mediaToSliderPlay(); // thread media to slider
+        mediaToSliderPlay(); // thread media to slider*/
+//</editor-fold>
         return;
       }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="if I push the play button in "original mode" (it continues until the end)">
+      //<editor-fold defaultstate="collapsed" desc="if I push the play button in "original mode" (it continues until the end)">
       if ((status == Status.PAUSED || status == Status.STOPPED || status == Status.READY) && originalButton) {
         mediaPlayer.setStartTime(mediaPlayer.getCurrentTime());
         mediaPlayer.setStopTime(mediaPlayer.getMedia().getDuration());
-        // Stoping the original pause button
+
+        helperPlayButton(false, true,
+                "play", "pause", "play",
+                "play");
+        //<editor-fold defaultstate="collapsed" desc="comment">
+        /*/*
+        // Stopping the original pause button
         originalButton = false;
         // Enable the scroll to markers
         playButtonBoolean = true;
+
         mediaPlayerPlay();
+
         pausedImageButton();
         playedImageButtonOriginal();
 
-        mediaToSliderPlay(); // thread media to slider
+        mediaToSliderPlay(); // thread media to slider*/
+//</editor-fold>
         return;
       }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="if I push the play button in "original mode" (it continues until the end)">
+      //<editor-fold defaultstate="collapsed" desc="if I push the play button in "original mode" (it continues until the end)">
       if ((status == Status.PLAYING) && originalButton) {
         mediaPlayer.setStartTime(mediaPlayer.getCurrentTime());
         mediaPlayer.setStopTime(mediaPlayer.getMedia().getDuration());
-        // Stoping the original pause button
-        originalButton = false;
+
+        helperPlayButton(true, true,
+                "play", "pause", "play",
+                "play");
+        //<editor-fold defaultstate="collapsed" desc="comment">
+/*/*
+        // Securing (unnecessary, cut and paste) the scroll to markers
+        originalButton = true;
         // Enable the scroll to markers
         playButtonBoolean = true;
+
         mediaPlayerPlay();
+        
         pausedImageButton();
         playedImageButtonOriginal();
 
-        mediaToSliderPlay(); // thread media to slider
+        mediaToSliderPlay(); // thread media to slider*/
+        //</editor-fold>
         return;
       }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="By default">
+      //<editor-fold defaultstate="collapsed" desc="By default">
       if (status == Status.PLAYING &&  ! originalButton) {
+
+        helperPlayButton(false, true,
+                "pause", "play", "play",
+                "pause");
+        //<editor-fold defaultstate="collapsed" desc="comment">
+/*/*
+        //  Stopping the original pause button mode
+        originalButton = false;
+        // Enable the scroll to markers
+        playButtonBoolean = true;
+
         mediaPlayerPause();
         playedImageButton();
         playedImageButtonOriginal();
 
-        mediaToSliderPause(); // thread media to slider
+        mediaToSliderPause(); // thread media to slider*/
+        //</editor-fold>
       }
 //</editor-fold>
 
@@ -863,9 +1210,60 @@ public class PrincipalController implements Initializable
 
 
   /**
+   *
+   * @param botonOriginal Stop false / Play true - The original pause button mode
+   * @param scrollToMarkers Stop false / Play true - Enable the scroll to markers
+   * @param AccionMedia "play", "stop", "pause" the media
+   * @param ImageButton Play true, Pause false - Image of the play button
+   * @param ImageButtonOriginal Play true, Pause false - Image of the play button original
+   * @param threadMediaToSlider Play true, Pause false - Thread media to slider
+   */
+  private void helperPlayButton(boolean botonOriginal,
+          boolean scrollToMarkers, String AccionMedia,
+          String ImageButton, String ImageButtonOriginal,
+          String threadMediaToSlider)
+   {
+    //  Stopping / Playing the original pause button mode
+    originalButton = botonOriginal;
+
+    // Enable the scroll to markers
+    playButtonBoolean = scrollToMarkers;
+
+    // Play, stop, pause the media
+    switch (AccionMedia) {
+      case "play": {
+        mediaPlayerPlay();
+        break;
+      }
+      case "pause": {
+        mediaPlayerPause();
+        break;
+      }
+      default:
+        mediaPlayerStop();
+        break;
+    }
+
+    // Image play / pause button
+    if (ImageButton.equals("play")) playedImageButton();
+    else pausedImageButton();
+
+    // Image play / pause button
+    if (ImageButtonOriginal.equals("play")) playedImageButtonOriginal();
+    else pausedImageButtonOriginal();
+
+    // Thread media to slider
+    if (threadMediaToSlider.equals("play")) {
+      mediaToSliderPlay();
+    } else mediaToSliderPause();
+   }
+
+
+  /**
    * Controller for the stop button
    */
-  @FXML public void handleStopButton()
+  @FXML
+  public void handleStopButton()
    {
     try {
       if (mediaPlayer == null) return; // if doesn't exits a media return
@@ -910,7 +1308,8 @@ public class PrincipalController implements Initializable
   /**
    * Handle of the Play Button Item
    */
-  @FXML public void handlePlayButtonItemOriginal()
+  @FXML
+  public void handlePlayButtonItemOriginal()
    {
     try {
 
@@ -924,18 +1323,22 @@ public class PrincipalController implements Initializable
       end = itemsOriginal[indexItemV].getEnd();
       mediaPlayer.setStartTime(Duration.seconds(start));
       mediaPlayer.setStopTime(Duration.seconds(end));
-      // if (!originalButton) Duration.seconds(start);
+
       // it´s used for don´t scroll when it´s playing an itemInicio
       playButtonBoolean = false;
+      //Thread media to slider
+      mediaToSliderPlay();
+
       // Si le doy al play frase pero ya está reproduciendo en normal
       if ( ! originalButton) {
+        originalButton = true;
         pausedImageButtonOriginal();
         playedImageButton();
         mediaPlayerPlay();
-        originalButton = true;
+        mediaToSliderPlay();
         return;
       }
-      originalButton = true;
+      // originalButton = true;
       if (currentPauseItem == indexItemV) {
         switch (status) {
           case PAUSED:
@@ -945,6 +1348,7 @@ public class PrincipalController implements Initializable
             mediaPlayer.seek(currentOriginal);
             mediaPlayer.setStopTime(Duration.seconds(end));
             mediaPlayerPlay();
+
             break;
           case PLAYING:
             playedImageButtonOriginal();
@@ -952,7 +1356,6 @@ public class PrincipalController implements Initializable
             currentOriginal = mediaPlayer.getCurrentTime();
             mediaPlayer.seek(currentOriginal);
             mediaPlayerPause();
-            currentOriginal = mediaPlayer.getCurrentTime();
             break;
           case STOPPED:
           case READY:
@@ -981,7 +1384,8 @@ public class PrincipalController implements Initializable
   /**
    * Handle of the Button Stop Item Original
    */
-  @FXML private void handleStopButtonItemOriginal()
+  @FXML
+  private void handleStopButtonItemOriginal()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -990,6 +1394,8 @@ public class PrincipalController implements Initializable
       // Change the image buttons to play
       playedImageButton();
       playedImageButtonOriginal();
+      //Thread media to slider
+      mediaToSliderPlay();
     }
    }
 
@@ -1144,7 +1550,8 @@ public class PrincipalController implements Initializable
   /**
    * handle of the
    */
-  @FXML private void handleForwardButton()
+  @FXML
+  private void handleForwardButton()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1166,7 +1573,6 @@ public class PrincipalController implements Initializable
    */
   private void backForward()
    {
-    if (mediaPlayer == null) return; // if doesn't exits a media return
 
     // index of listview to zero
     listViewV.scrollTo(indexItemV);
@@ -1182,12 +1588,13 @@ public class PrincipalController implements Initializable
     // Label time to cero
     duration = mediaPlayer.getMedia().getDuration();
     timeLabelReading.setText(ft.formatting(Duration.seconds(start), duration));
+
     // Enable the scroll to markers
     playButtonBoolean = true;
     // Stoping the original pause button
     originalButton = false;
-    // The first lap of the slider
-    mediaPlayerSlider = "media"; // to the first lap
+    //Thread media to slider
+    mediaToSliderPlay();
 
     mediaPlayerSlider = "slider";
     updateValuesSlider();
@@ -1198,7 +1605,8 @@ public class PrincipalController implements Initializable
   /**
    * handle of the
    */
-  @FXML private void handleBackButtonItemOriginal()
+  @FXML
+  private void handleBackButtonItemOriginal()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1217,7 +1625,8 @@ public class PrincipalController implements Initializable
   /**
    * handle of the
    */
-  @FXML private void handleForwardPlayButtonItemOriginal()
+  @FXML
+  private void handleForwardPlayButtonItemOriginal()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1236,7 +1645,8 @@ public class PrincipalController implements Initializable
   /**
    * Setting the Correction button
    */
-  @FXML private void handlecorrectionButtonWriting()
+  @FXML
+  private void handlecorrectionButtonWriting()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1463,7 +1873,6 @@ public class PrincipalController implements Initializable
   private void setSliderForm(Slider slider, double min, double max,
           double initial, double majorTick, int minorTick)
    {
-    if (mediaPlayer == null) return; // if doesn't exits a media return
 
     // min, max and initial value
     slider.setMin(min);
@@ -1480,24 +1889,28 @@ public class PrincipalController implements Initializable
     slider.setMajorTickUnit(majorTick);
     // Setting the numbers of minor ticks between two major tick
     slider.setMinorTickCount(minorTick);
+
     // Setting the event listener
     slider.valueProperty().addListener((Observable, oldValue, newValue) ->
     {
       try {
+        if (mediaPlayer == null) return; // if doesn't exits a media return
+
         Double doubleValue = newValue.doubleValue();// Number to Double
         String value = String.valueOf(doubleValue);// Double to string
         value = value.format("%.2f", newValue);// to String.format
+
+
         if (slider == volumeSliderReading) {
           volumeLabelReading.setText(value);
-          // Configuring the rate
           mediaPlayer.setVolume((Double) newValue / 100);
+
         } else if (slider == rateSliderReading) {
           rateLabelReading.setText(value);
-          // Configuring the rate
           mediaPlayer.setRate((Double) newValue);
+
         } else if (slider == balanceSliderReading) {
           balanceLabelReading.setText(value);
-          // Configuring the rate
           mediaPlayer.setBalance((Double) newValue);
         }
       } catch (Exception e) {
@@ -1682,16 +2095,16 @@ public class PrincipalController implements Initializable
       // Filling the list
       listItemOriginal.addAll(Arrays.asList(itemWordsOriginal));
       listItemTranslation.addAll(Arrays.asList(itemWordsTranslation));
+      Platform.runLater(() -> {
+        listViewH01Reading.setItems(listItemOriginal);
+        listViewH02Reading.setItems(listItemTranslation);
 
-      listViewH01Reading.setItems(listItemOriginal);
-      listViewH02Reading.setItems(listItemTranslation);
+        listViewH01Reading.getSelectionModel().clearSelection();
+        listViewH02Reading.getSelectionModel().clearSelection();
 
-      listViewH01Reading.getSelectionModel().clearAndSelect(0);
-      listViewH02Reading.getSelectionModel().clearAndSelect(0);
-
-      /*--
-      listViewH01Reading.getSelectionModel().select(0);
-      listViewH02Reading.getSelectionModel().select(0);*/
+        listViewH01Reading.getSelectionModel().select(0);
+        listViewH02Reading.getSelectionModel().select(0);
+      });
 
     } catch (ArrayIndexOutOfBoundsException ex) {
     } catch (Exception e) {
@@ -1730,7 +2143,7 @@ public class PrincipalController implements Initializable
         inicio = itemsOriginal[itemInicio].getStart();
         fin = itemsOriginal[itemFinal].getStart();
 
-         /*-- System.out.println("item " + itemInicio + " - " + itemFinal +
+        /*-- System.out.println("item " + itemInicio + " - " + itemFinal +
                 "  lonj " + lonjInicio + " - " + ((itemsOriginal.length - 1) - lonjFinal) +
                 " inicio " + inicio + " " + sliderMediaCurrent + " " + fin +
                 " cont " + contInicio + " - " + contFinal +
@@ -2053,18 +2466,19 @@ public class PrincipalController implements Initializable
 
     sliderMedia.setOnMouseClicked(new EventHandler<MouseEvent>()
      {
-      @Override public void handle(MouseEvent t)
+      @Override
+      public void handle(MouseEvent t)
        {
         sliderMedia.requestFocus();
         setBorder(sliderMedia);
         oldNode = sliderMedia;
-
-        changeListviewBySliderMedia();
-        mediaPlayerSlider = "slider";
-        updateValuesSlider();
-        mediaPlayerSlider = "media";
+        if (mediaPlayer != null) {
+          changeListviewBySliderMedia();
+          mediaPlayerSlider = "slider";
+          updateValuesSlider();
+          mediaPlayerSlider = "media";
+        }
        }
-
      });
 
     // Setting the slider when pressing on it
@@ -2085,15 +2499,18 @@ public class PrincipalController implements Initializable
       @Override
       public void handle(MouseEvent t)
        {
-        sliderMedia.requestFocus();
-        setBorder(sliderMedia);
-        oldNode = sliderMedia;
+        if ( ! sliderMedia.isDisable()) {
+          sliderMedia.requestFocus();
+          setBorder(sliderMedia);
+          oldNode = sliderMedia;
+        }
+        if (mediaPlayer != null) {
+          changeListviewBySliderMedia();
 
-        changeListviewBySliderMedia();
-
-        mediaPlayerSlider = "slider";
-        updateValuesSlider();
-        mediaPlayerSlider = "media";
+          mediaPlayerSlider = "slider";
+          updateValuesSlider();
+          mediaPlayerSlider = "media";
+        }
        }
 
      });
@@ -2106,11 +2523,12 @@ public class PrincipalController implements Initializable
       @Override
       public void handle(MouseEvent t)
        {
-        if (mediaPlayerSlider.equals("neutro")) {
+        if (mediaPlayerSlider.equals("neutro") &&  ! sliderMedia.isDisable()) {
           sliderMedia.requestFocus();
           setBorder(sliderMedia);
           oldNode = sliderMedia;
-
+        }
+        if (mediaPlayer != null) {
           changeListviewBySliderMedia();
 
           mediaPlayerSlider = "slider";
@@ -2149,8 +2567,9 @@ public class PrincipalController implements Initializable
         mediaPlayer.setStartTime(new Duration(stMilli));
         mediaPlayer.setStopTime(duration);
 
-        mediaSliderReading.setValue(positionFinal);
-
+        Platform.runLater(() -> {
+          mediaSliderReading.setValue(positionFinal);
+        });
         if (temp.equals(Status.PLAYING)) mediaPlayer.play();
         if (temp.equals(Status.PAUSED)) mediaPlayer.pause();
       }
@@ -2202,7 +2621,7 @@ public class PrincipalController implements Initializable
     sliderMedia.setShowTickLabels(true);
     sliderMedia.setShowTickMarks(true);
     sliderMedia.setMajorTickUnit(10);
-    sliderMedia.setMinorTickCount(10);
+    sliderMedia.setMinorTickCount(1);
    }
 
 //</editor-fold>    
@@ -2329,13 +2748,14 @@ public class PrincipalController implements Initializable
      {
       @Override
       public void handle(MouseEvent event)
+
        {
 
         // Setting the current node
         listViewV.requestFocus();
         setBorder(listViewV);
         oldNode = tabPanelListViewH;
-        if (mediaPlayer == null) return; // if doesn't exits a media return
+        ////////if (mediaPlayer == null)return; // if doesn't exits a media return
 
         indexItemV = listViewV.getSelectionModel().getSelectedIndex();
         showListViewH();
@@ -2347,7 +2767,7 @@ public class PrincipalController implements Initializable
      });
 
     listViewV.setOnMouseReleased((e) -> {
-      if (mediaPlayer == null) return; // if doesn't exits a media return
+      ////////if (mediaPlayer == null)return; // if doesn't exits a media return
 
       setBorder(listViewV);
       oldNode = tabPanelListViewH;
@@ -2468,7 +2888,7 @@ public class PrincipalController implements Initializable
     eventFilterSlider(balanceSliderTranslation, 49, 1, 56, 54,  - 1.0, 1, 0.1);
     eventFilterSlider(volumeSliderTranslation, 52, 1, -1, 55, 0.0, 100, 1);
 
-//</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Tab pane">
 
@@ -2637,7 +3057,7 @@ public class PrincipalController implements Initializable
         if (key.equals(KeyCode.LEFT)) {
           i = left;
         }
-        if (i != -1) {
+        if (i != -1 &&  ! node[i].isDisable()) {
           node[i].requestFocus();
           setBorder(node[i]);
           oldNode = n;
@@ -2648,6 +3068,7 @@ public class PrincipalController implements Initializable
      });
 
     n.setOnMouseClicked((MouseEvent) -> {
+      mainScene.setLabelText(n.getId());
       n.requestFocus();
       setBorder(n);
       oldNode = n;
@@ -2680,37 +3101,39 @@ public class PrincipalController implements Initializable
     slider.addEventFilter(KeyEvent.KEY_PRESSED, (event) -> {
 
       //<editor-fold defaultstate="collapsed" desc="Teclas combinadas con Control">
+      if (mediaPlayer != null) {
+        if (kcLeft.match(event) && slider.getValue() > 0) {
+          /*/*slider.setValue(slider.getValue() - 1); 
 
-      if (kcLeft.match(event) && slider.getValue() > 0) {
-        slider.setValue(slider.getValue() - 1);
+          changeListviewBySliderMedia(); */
+          handleBackButton();
 
-        changeListviewBySliderMedia();
+          mediaPlayerSlider = "slider";
+          updateValuesSlider();
+          event.consume();
+          return;
+        }
+        if (kcLeft.match(event) && slider.getValue() <= 0) {
+          event.consume();
+          return;
+        }
+        if (kcRight.match(event) && slider.getValue() < duration.toMillis()) {
+          /*/*slider.setValue(slider.getValue() + 1);
 
-        mediaPlayerSlider = "slider";
-        updateValuesSlider();
-        event.consume();
-        return;
+          changeListviewBySliderMedia(); */
+          handleForwardButton();
+
+          mediaPlayerSlider = "slider";
+          updateValuesSlider();
+          event.consume();
+          return;
+        }
+        if (kcRight.match(event) && slider.getValue() >= duration.toMillis()) {
+          handleStopButton();
+          event.consume();
+          return;
+        }
       }
-      if (kcLeft.match(event) && slider.getValue() <= 0) {
-        event.consume();
-        return;
-      }
-      if (kcRight.match(event) && slider.getValue() < duration.toMillis()) {
-        slider.setValue(slider.getValue() + 1);
-
-        changeListviewBySliderMedia();
-
-        mediaPlayerSlider = "slider";
-        updateValuesSlider();
-        event.consume();
-        return;
-      }
-      if (kcRight.match(event) && slider.getValue() >= duration.toMillis()) {
-        handleStopButton();
-        event.consume();
-        return;
-      }
-
       //</editor-fold>
 
       //<editor-fold defaultstate="collapsed" desc="Key Events">
@@ -2742,7 +3165,7 @@ public class PrincipalController implements Initializable
         event.consume(); // Fix the slider
       }
 
-      if (code.equals(KeyCode.SPACE) || code.equals(KeyCode.ENTER)) {
+      if ((code.equals(KeyCode.SPACE) || code.equals(KeyCode.ENTER)) && mediaPlayer != null) {
         switch (status) {
           case STOPPED:
           case PAUSED:

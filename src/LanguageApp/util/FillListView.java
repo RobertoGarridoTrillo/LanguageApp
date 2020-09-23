@@ -1,6 +1,7 @@
 package LanguageApp.util;
 
 import LanguageApp.model.Item;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -35,10 +36,14 @@ public class FillListView {
             listItem.add((it[i].getId() + 1) + " " + it[i].getText());
          }
          // 
+         Platform.runLater(() -> {
          listView.setItems(listItem);
+         });
 
       } catch (Exception e) {
+         Platform.runLater(() -> {
          message.message(Alert.AlertType.ERROR, "Error message", "FillListView.java / setListView()", e.toString(), e); 
+         });
          return "";
       }
       

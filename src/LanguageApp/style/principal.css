@@ -8,8 +8,7 @@
   -fx-font-size: 10pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
-  -fx-background-color: #333333;
-  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0 );
+  -fx-background-color: #252525;
 }
 
 .listViewV{
@@ -17,6 +16,7 @@
   -fx-font-size: 11pt;
   -fx-font-weight: bold;
   -fx-font-style: normal;
+  -fx-background-color: #252525;
 
 }
 /* borro el borde por defecto de los botones y de los slider*/
@@ -52,10 +52,10 @@
 
 
 /* para las pestañas del tab */
-.tab-pane {
+/*.tab-pane {
   -fx-tab-min-height: 1.8333em; 
   -fx-tab-max-height: 1.8333em; 
-}
+}*/
 
 .tab-pane > .tab-header-area > .tab-header-background {
   -fx-background-color: #252525;
@@ -91,8 +91,6 @@
 }
 
 
-
-
 /*  listView */
 .listViewH{
   -fx-font-size: 10pt;
@@ -107,3 +105,8 @@
   -fx-font-weight: 900 ;
   -fx-font-style: normal
 }
+
+/*  TableView   */
+.table-view{
+  -fx-background-color:#252525;
+}/*tableViewDataBase*/

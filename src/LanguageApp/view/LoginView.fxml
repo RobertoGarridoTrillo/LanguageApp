@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="loginViewAnchorPane" alignment="CENTER_LEFT" prefHeight="660.0" prefWidth="1215.0" styleClass="roo2" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.LoginController">
+<HBox fx:id="loginViewAnchorPane" alignment="CENTER_LEFT" prefHeight="660.0" prefWidth="1215.0" styleClass="roo" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.LoginController">
    <children>
       <AnchorPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="585.0">
          <children>

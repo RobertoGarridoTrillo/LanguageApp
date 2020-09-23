@@ -23,6 +23,10 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -86,9 +90,21 @@ public class MainScene extends Application
   // Savepoint
   Savepoint sp;
 
+  // progressbar value and label
+  // private static double progressBarValue;
+  // private static String labelText;  
+
+  // Value  and text of the progress
+  private DoubleProperty progressBarValue;
+  private StringProperty labelText;
+  
+  // Thread progressBar
+  Thread threadProgressBar;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
+
   /**
    * load the initial configuration before all the other things loads
    *
@@ -105,7 +121,24 @@ public class MainScene extends Application
     // Setting the welcome user
     usuario_activo = 0;
     welcomeScreen = true;
+    
+    // setting progressbar. I use a doubleProperty (it's a class wrapper) instead double.
+    progressBarValue = new SimpleDoubleProperty();
+    labelText = new SimpleStringProperty();
+
+    progressBarValue.setValue(0);
+    labelText.setValue("");
+
+    /*/*
+    progressBarValue.addListener((observable) -> {
+      mainController.setProgressBarValue(progressBarValue.getValue());
+    });
+      labelText.addListener((observable) -> {
+      mainController.setLabelText(labelText.getValue());
+    });
+*/
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="start">
@@ -144,6 +177,7 @@ public class MainScene extends Application
     forgetView();
     loginView();
 
+
     // Checking if there's some active user
     Object nombre = handleCheckNombre().getValue();
     Object id = handleCheckNombre().getKey();
@@ -155,13 +189,13 @@ public class MainScene extends Application
     welcomeController.handlePutName(usuario_nombre);
 
     this.mainStage.setResizable(false);
-    this.mainStage.setWidth(1215);
-    this.mainStage.setHeight(660);
+    //this.mainStage.setWidth(1215);
+    //this.mainStage.setHeight(710);
     this.mainStage.show();
 
     principalView();
-    
    }
+
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="DataBaseView">
@@ -435,12 +469,16 @@ public class MainScene extends Application
 
       if ( ! usuario_last) {
         // First I close the thead media to slider
-        principalController.handleCloseMenu("buttonUnloginMenu");
-        
+        principalController.handleCloseMenu("buttonLoginMenu");
+
         principalView();
       }
+      // change the center
       welcomeScreen = false;
       buttonDashBoardMenu();
+
+      // change the color of the anchor panel bottom
+      mainController.checkCenter();
 
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
@@ -692,7 +730,7 @@ public class MainScene extends Application
     loginView.getChildren().add(formView);
    }
 
-  /* there is two methods of close*/
+  /* there are two methods of close*/
   /**
    *
    */
@@ -724,7 +762,6 @@ public class MainScene extends Application
     }
    }
 
-
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
@@ -748,18 +785,47 @@ public class MainScene extends Application
     return MainScene.usuario_id;
    }
 
+  /**
+   *
+   * @return
+   */
+  public double getProgressBarValue()
+   {
+    return progressBarValue.getValue();
+   }
+
+  /**
+   *
+   * @param value
+   */
+  public void setProgressBarValue(double value)
+   {
+    progressBarValue.set(value);
+    mainController.setProgressBarValue(value);
+   }
+
+  /**
+   *
+   * @return
+   */
+  public String getLabelText()
+   {
+    return labelText.getValue();
+   }
+
+  /**
+   *
+   * @param text
+   */
+  public void setLabelText(String text)
+   {
+    labelText.setValue(text);
+    mainController.setLabelText(text);
+   }
+
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Menu Buttons">
-  /**
-   * Returns the main stage, if you need it, for example to use it with the filechooser in the mainController class
-   *
-   * @return An object of type Stage
-   */
-  public static Stage getMainStage()
-   {
-    return mainStage;
-   }
 
   /**
    * it's called by mainController when i click in the open menu
@@ -771,7 +837,9 @@ public class MainScene extends Application
       if (welcomeScreen) {
         return;
       }
+     
       principalController.handleOpenMenu();
+      
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonOpenMenu()", e.toString(), e);
     }
@@ -847,6 +915,7 @@ public class MainScene extends Application
       welcomeScreen = true;
 
       String result = principalController.getMediaStatus();
+
       if (result.equals("playing")) {
         principalController.handlePlayButton();
       } else if (result.equals("playingOriginal")) {
@@ -975,6 +1044,19 @@ public class MainScene extends Application
 
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="getMainStage">
+
+  /**
+   * Returns the main stage, if you need it, for example to use it with the filechooser in the mainController class
+   *
+   * @return An object of type Stage
+   */
+  public static Stage getMainStage()
+   {
+    return mainStage;
+   }
+  
+//</editor-fold>
 
   /**
    * public static void main
