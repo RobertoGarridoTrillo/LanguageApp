@@ -8,18 +8,22 @@ import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -56,7 +60,7 @@ public class ForgetController implements Initializable
   @FXML private JFXButton recuperarButtonForget;
 
   @FXML private HBox HBoxErrorPassword;
-  @FXML private JFXTextField errorPasswordLabelForget;
+  @FXML private JFXTextField errorPasswordLabel;
 
   @FXML private HBox HBoxAntiguoUsuarioForget;
   @FXML private JFXButton oldUserButtonForget;
@@ -75,11 +79,13 @@ public class ForgetController implements Initializable
   // Reference to the main Scene
   private MainScene mainScene;
 
-  // The string fields
-  String usuarioString, passwordString, preguntaString, respuestaString;
+  // The Login or not Login
+  Node[] fieldsChecked;
+  String[] fieldString;
 
   // The Login or not Login
-  boolean registro, registroUser, registroPassword, registroPregunta, registroRespuesta;
+  private Boolean[] registro;
+  private int fieldsNumber;
 
   // For the bounle of idioms
   ResourceBundle resources;
@@ -87,9 +93,13 @@ public class ForgetController implements Initializable
   // For the answers of control
   Map<Integer, String> preguntasRegistro;
 
+  // The value of the progressBar in mainScene
+  DoubleProperty progressBarValue = new SimpleDoubleProperty(0.0);
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
+
   /**
    *
    * @param aThis
@@ -98,9 +108,11 @@ public class ForgetController implements Initializable
    {
     mainScene = aThis;
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
+
   /**
    * When the method is initialize
    *
@@ -114,15 +126,12 @@ public class ForgetController implements Initializable
 
       this.resources = resources;
 
-// References to mainStage
+      // References to mainStage
       mainStage = MainScene.getMainStage();
 
       // Create the locale for the pop up messages
       HandleLocale01.handleLocale01();
       message = new Message(resources);
-
-      // For the answers of control
-      preguntasRegistro = PreguntasRegistro.preguntas();
 
       node = new Node[]{
         usuarioTextFieldForget,
@@ -158,13 +167,34 @@ public class ForgetController implements Initializable
 
       // HBoxError disabled
       handleEraseError();
+
+      // Validation fieldsNumber
+      fieldsChecked = new Node[]{
+        usuarioTextFieldForget,
+        preguntaComboBoxForget, respuestaTextFieldForget
+      };
+      fieldsNumber = fieldsChecked.length; // the numbers of field to check
+      fieldString = new String[fieldsNumber];
+      Arrays.fill(fieldString, "");
+
+      // The Login or not Login
+      fieldsNumber = 3; // the numbers of field to check      
+      registro = new Boolean[fieldsNumber];
+      Arrays.fill(registro, false);
+
+      progressBarValue.addListener((observable, oldValue, newValue) -> {
+        recuperarButtonForget.setDisable(progressBarValue.lessThan(1).get());
+      });
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "ForgetController / initialize()", e.toString(), e);
     }
    }
+
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
+
   /**
    *
    */
@@ -175,13 +205,14 @@ public class ForgetController implements Initializable
     eventButton(respuestaTextFieldForget, 1, 3);
     eventButton(recuperarButtonForget, 2, 4);
     eventButton(oldUserButtonForget, 3, 0);
-
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
-//<editor-fold defaultstate="collapsed" desc="Button">
+  //<editor-fold defaultstate="collapsed" desc="Button">
+
   /**
    * Helper to the play button event
    *
@@ -198,10 +229,8 @@ public class ForgetController implements Initializable
       // setting onFocus (USe of Tab)
       n.focusedProperty().addListener((o, oldVal, newVal) ->
       {
-        if (newVal) {
-          handleEraseError();
-          setBorder(n);
-        }
+        handleEraseError();
+        setBorder(n);
       });
 
       // setting setOnKeyPressed
@@ -212,40 +241,39 @@ public class ForgetController implements Initializable
         public void handle(KeyEvent ke)
          {
           handleEraseError();
+
           int i = -1;
 
-          if (ke.getCode().equals(KeyCode.UP)) {
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+          
+          if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
             i = up;
+            ke.consume();
           }
-          if (ke.getCode().equals(KeyCode.DOWN)) {
+          if (ke.getCode().equals(KeyCode.DOWN) && !node[down].isDisable()) {
             i = down;
+            ke.consume();
           }
+
           if (ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
               case "usuarioTextFieldForget":
-                handleValidationUser();
+                i = handleValidation(usuarioTextFieldForget);
                 break;
               case "preguntaComboBoxForget":
-                handlePregunta();
+                i = handleValidation(preguntaComboBoxForget);
                 break;
               case "respuestaTextFieldForget":
-                handleValidationRespuesta();
-                break;
-              case "recuperarButtonForget":
-                handleEnviar();
-                break;
-              case "oldUserButtonForget":
-                handleAntiguoUsuario();
+                i = handleValidation(respuestaTextFieldForget);
                 break;
               default:
                 break;
             }
+            ke.consume();
           }
-          if (ke.getCode().equals(KeyCode.SPACE)) {
+
+          if (ke.getCode().equals(KeyCode.SPACE) || ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
-              case "preguntaComboBoxForget":
-                handlePregunta();
-                break;
               case "recuperarButtonForget":
                 handleEnviar();
                 break;
@@ -255,20 +283,27 @@ public class ForgetController implements Initializable
               default:
                 break;
             }
+            ke.consume();
           }
+
+          if (ke.getCode().equals(KeyCode.SPACE) && n.getId().equals("preguntaComboBoxForget")) {
+            preguntaComboBoxForget.show();
+            ke.consume();
+          }
+
           if (i != -1) {
             node[i].requestFocus();
             setBorder(node[i]);
-            //oldNode = n;
             ke.consume();
+            //oldNode = n;
 
           }
          }
-       }
-      );
+       });
 
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
+        if (n.isDisable()) return;
         // HBoxError disabled
         handleEraseError();
 
@@ -293,9 +328,28 @@ public class ForgetController implements Initializable
       message.message(Alert.AlertType.ERROR, "Error message", "ForgetController / eventButton()", e.toString(), e);
     }
    }
-//</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="setBorder">
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="EraseError">
+
+  /**
+   *
+   */
+  private void handleEraseError()
+   {
+    errorUserLabel.setManaged(false);
+    errorUserLabel.setText(null);
+    errorPasswordLabel.setManaged(false);
+    errorPasswordLabel.setText(null);
+    errorRespuestaLabel.setManaged(false);
+    errorRespuestaLabel.setText(null);
+   }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="setBorder">
+
   /**
    * Setting the border (cursor) of the node
    *
@@ -303,7 +357,22 @@ public class ForgetController implements Initializable
    */
   private void setBorder(Node n)
    {
-    if (n.equals(usuarioTextFieldForget)) {
+    HashMap<Node, Node> m = new HashMap<>();
+    m.put(usuarioTextFieldForget, HBoxUsuarioForget);
+    m.put(preguntaComboBoxForget, HBoxPreguntaForget);
+    m.put(respuestaTextFieldForget, HBoxRespuestaForget);
+    m.put(recuperarButtonForget, HBoxRecuperarForget);
+    m.put(oldUserButtonForget, HBoxAntiguoUsuarioForget);
+
+    try {
+      eraserBorder();
+      m.get(n).getStyleClass().add("borderLoginVisible");
+      /*/*HboxPasswordLogin.getStyleClass().add("borderLoginVisible"); */
+      oldNode = currentNode;
+      currentNode = n;
+
+      /*/*    
+      if (n.equals(usuarioTextFieldForget)) {
       eraserBorder();
       HBoxUsuarioForget.getStyleClass().add("borderLoginVisible");
       oldNode = currentNode;
@@ -345,9 +414,16 @@ public class ForgetController implements Initializable
     eraserBorder();
     n.getStyleClass().add("borderLoginVisible");
     oldNode = currentNode;
-    currentNode = n;
+    currentNode = n; */
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "ForgetController / setBorder()", e.toString(), e);
+    }
 
    }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="eraserBorder">
 
   /**
    * Helper to setting Color Border
@@ -367,82 +443,95 @@ public class ForgetController implements Initializable
     HBoxAntiguoUsuarioForget.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
-//</editor-fold>
+
+  //</editor-fold>
+
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handlers">
+ 
   /**
    *
+   * @param n
+   * @return
    */
-  private void handleValidationUser()
+  private int handleValidation(Node n)
    {
-    usuarioString = usuarioTextFieldForget.getText().trim();
-    registroUser = true;
+    try {
+      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+      
+      handleValidation02(n, true);
+      if (registro[indNode] == false) return indNode;
+      
+      for (int i = 0; i < fieldsNumber; i++) {
+        if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i], false);
 
-    if (usuarioString.isEmpty() || usuarioString.length() == 0) {
-      showErrorUser("No puede estar vacío");
-    }
-    if (usuarioString.length() > 100) {
-      showErrorUser("No puede tener mas de 100 letras");
-    }
+        if (registro[i] == false) return i;
+      }
 
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "ForgetController / handleValidation()", e.toString(), e);
+    }
+    return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
 
   /**
    *
-   * @param text
+   * @param n
+   * @param indNode
+   * @param show
    */
-  private void showErrorUser(String text)
+  private void handleValidation02(Node n, boolean show)
    {
-    errorUserLabel.setManaged(true);
-    errorUserLabel.setText(resources.getString(text));
-    registroUser = false;
-   }
+    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+    String instance = "";
+    Object preguntaObject = null;
 
-  /**
-   *
-   */
-  private void handlePregunta()
-   {
-    preguntaComboBoxForget.show();
-   }
+    HashMap<Integer, Node> errorLabelMap = new HashMap<>();
+    errorLabelMap.put(0, errorUserLabel);
+    errorLabelMap.put(1, errorUserLabel);
+    errorLabelMap.put(2, errorRespuestaLabel);
+    
 
-  /**
-   *
-   */
-  private void handleValidationRespuesta()
-   {
-    Object preguntaObject = preguntaComboBoxForget.getValue();
-    respuestaString = respuestaTextFieldForget.getText().trim();
-    registroPregunta = true;
-    registroRespuesta = true;
-
-    if (preguntaObject == null) {
-      showErrorRespuesta("Elige una pregunta de seguridad");
-      return;
-    } else {
-      preguntaString = preguntaObject.toString();
+    if (n instanceof JFXTextField) {
+      fieldString[indNode] = ((JFXTextField) n).getText().trim();
+      instance = "JFXTextField";
     }
-
-    if (respuestaString.isEmpty() || respuestaString.length() == 0) {
-      showErrorRespuesta("No puede estar vacío");
+    if (n instanceof JFXPasswordField) {
+      fieldString[indNode] = ((JFXPasswordField) n).getText().trim();
+      instance = "JFXPasswordField";
     }
-    if (respuestaString.length() > 100) {
-      showErrorRespuesta("No puede tener mas de 100 letras");
+    if (n instanceof JFXComboBox) {
+      preguntaObject = ((JFXComboBox) n).getValue();
+      if (preguntaObject  != null) fieldString[indNode] = preguntaObject.toString();
+      instance = "JFXComboBox";
     }
-   }
+    String text = "";
+    registro[indNode] = true;
 
-  /**
-   *
-   * @param text
-   */
-  private void showErrorRespuesta(String text)
-   {
-    errorRespuestaLabel.setManaged(true);
-    errorRespuestaLabel.setText(resources.getString(text));
-    registroPregunta = false;
-    registroRespuesta = false;
+    if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
+      text = "No puede estar vacío";
+    }
+    if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
+      text = "No puede tener mas de 100 letras";
+    }
+    if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
+      text = "No puede tener mas de 20 letras";
+    }
+    if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
+             instance.equals("JFXComboBox")) {
+      text = "Elige una pregunta de seguridad";
+    }
+    if (!text.equals("")) {
+      registro[indNode] = false;
+
+      if (show) {
+        Label tempLabel = (Label) errorLabelMap.get(indNode);
+        tempLabel.setManaged(true);
+        tempLabel.setText(resources.getString(text));
+      }
+    }
    }
 
   /**
@@ -450,26 +539,27 @@ public class ForgetController implements Initializable
    */
   private void handleEnviar()
    {
-    handleValidationUser();
-    handleValidationRespuesta();
+    handleValidation(usuarioTextFieldForget);
+    handleValidation(preguntaComboBoxForget);
+    handleValidation(respuestaTextFieldForget);
 
     //boolean activoBoolean = activoCheckBox.isSelected();
-    if (registroUser == true && registroPregunta == true && registroRespuesta == true) {
+    if (registro[0] == true && registro[1] == true && registro[2] == true) {
 
       String result = null;
       int preguntaInt = 0;
       String[] languages = HandleLocale01.getLanguages();
       ResourceBundle rs = null;
-      String res = null;
+      String pregunta = null;
       Locale locale;
 
-      //
+      // Comparing in all the languages the answers of the combobox
       for (Map.Entry<Integer, String> pr : preguntasRegistro.entrySet()) {
 
         Integer key = pr.getKey();
         String value = resources.getString(pr.getValue());
 
-        if (value.equals(preguntaString)) {
+        if (value.equals(fieldString[1])) {
           preguntaInt = key;
         }
 
@@ -479,15 +569,18 @@ public class ForgetController implements Initializable
 
         locale = new Locale(language);
         rs = ResourceBundle.getBundle("LanguageApp.resources.bundles.LanguageApp", locale);
-        res = rs.getString(preguntasRegistro.get(preguntaInt));
+        pregunta = rs.getString(preguntasRegistro.get(preguntaInt));
 
-        result = mainScene.handleRecordar(usuarioString, res, respuestaString);
+        result = mainScene.handleRecordar(fieldString[0], pregunta, fieldString[2]);
 
         if (result != null) {
-          showErrorPassword(resources.getString("Contraseña") + ": " + result);
+          errorPasswordLabel.setManaged(true);
+          errorPasswordLabel.setText(resources.getString("Contraseña") + ": " + result);
           break;
         } else {
-          showErrorPassword(resources.getString("El usuario no existe"));
+          errorPasswordLabel.setManaged(true);
+          errorPasswordLabel.setText(resources.getString("El usuario no existe"));
+
         }
       }
     }
@@ -495,39 +588,19 @@ public class ForgetController implements Initializable
 
   /**
    *
-   * @param text
-   */
-  private void showErrorPassword(String text)
-   {
-    errorPasswordLabelForget.setManaged(true);
-    errorPasswordLabelForget.setText(text);
-    registroPregunta = false;
-    registroRespuesta = false;
-   }
-
-  /**
-   *
    */
   private void handleAntiguoUsuario()
    {
-    mainScene.handleAntiguoUsuarioForget();
+    mainScene.buttonRegistro();
    }
-
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="EraseError">
 
   /**
    *
+   * @param progressBarValue
    */
-  private void handleEraseError()
+  public void setProgressBarValue(DoubleProperty progressBarValue)
    {
-    errorUserLabel.setManaged(false);
-    errorUserLabel.setText(null);
-    errorPasswordLabelForget.setManaged(false);
-    errorPasswordLabelForget.setText(null);
-    errorRespuestaLabel.setManaged(false);
-    errorRespuestaLabel.setText(null);
+    this.progressBarValue.setValue(progressBarValue.getValue());
    }
 
 //</editor-fold>

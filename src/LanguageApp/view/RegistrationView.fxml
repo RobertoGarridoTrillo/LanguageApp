@@ -14,13 +14,13 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="anchorRight" minWidth="-Infinity" prefWidth="640.0" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.RegistrationController">
+<AnchorPane fx:id="registrationViewanchorRight" minWidth="-Infinity" prefWidth="640.0" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.RegistrationController">
   <styleClass>
     <String fx:value="root" />
     <String fx:value="textFieldLogin" />
   </styleClass>
    <children>
-      <VBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" styleClass="textFieldLogin" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label alignment="CENTER" styleClass="titleLogin" text="%Crear cuenta" textFill="WHITE">
                <VBox.margin>
@@ -253,11 +253,14 @@
                   <Insets top="15.0" />
                </VBox.margin>
             </HBox>
-            <Pane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" />
          </children>
          <padding>
             <Insets right="40.0" />
          </padding>
+         <styleClass>
+            <String fx:value="textFieldLogin" />
+            <String fx:value="vboxLoginRight" />
+         </styleClass>
       </VBox>
    </children>
 </AnchorPane>

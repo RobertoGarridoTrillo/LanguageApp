@@ -24,9 +24,7 @@
   -fx-font-style: normal;
   -fx-background-color: #004f8a;
 }
-#mainViewBorderPane{
-    -fx-effect: dropshadow( gaussian, rgba(255, 255, 255, 1), 2, 1, 0.0, 0.0 );
-}
+
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
@@ -105,7 +103,7 @@
   -fx-background-color: #404040;
   -fx-text-fill: #4a9db6;
 }
-
+/*
 .menu-item:focused, 
 .menu-item:hover{
   -fx-background-color: #004f8a;
@@ -115,9 +113,21 @@
   -fx-border-radius: 3px;
   -fx-border-insets: 0;
 }
+*/
+
+.menu-item > .graphic-container {
+  /*-fx-graphic: url("media/open.png"); */
+  -fx-width : 30px;
+  -fx-height : 20px;
+  
+}
+
+.menu-item > .accelerator-text{
+    /* -fx-graphic: none; */
+}
 
 .menu-item:focused > .label, 
-.menu-item:hover > .label{
+.menu-item:hover > .label {
   -fx-background-color: transparent;
 }
 
@@ -260,7 +270,7 @@
 }
 
 .jfx-combo-box .error-label {
-  -fx-text-fill:#ffffff #D34336;
+  -fx-text-fill:#D34336;
 
 }
 

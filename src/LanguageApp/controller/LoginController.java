@@ -17,53 +17,56 @@ import javafx.stage.Stage;
  *
  * @author Roberto Garrido Trillo
  */
-public class LoginController implements Initializable {
+public class LoginController implements Initializable
+ {
 
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
-   @FXML public HBox loginViewAnchorPane;
+  @FXML public HBox loginViewHbox;
 
-   
-   // Reference to the main Stage from the main Scene
-   private Stage mainStage;
-   // Reference to the main Scene
-   private MainScene mainScene;
-   
-   // pop-up messages
-   Message message;   
-   
-   // For the bounle of idioms
-   ResourceBundle resources;
-   
+
+  // Reference to the main Stage from the main Scene
+  private Stage mainStage;
+  // Reference to the main Scene
+  private MainScene mainScene;
+
+  // pop-up messages
+  Message message;
+
+  // For the bounle of idioms
+  ResourceBundle resources;
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-   /**
-    *
-    * @param aThis
-    */
-   public void setMainScene (MainScene aThis)
+  /**
+   *
+   * @param aThis
+   */
+  public void setMainScene(MainScene aThis)
    {
-      mainScene = aThis;
+    mainScene = aThis;
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
-   /**
-    * When the method is initialize
-    */
-   @Override
-   public void initialize (URL location, ResourceBundle resources)
+
+  /**
+   * When the method is initialize
+   */
+  @Override
+  public void initialize(URL location, ResourceBundle resources)
    {
-try {
+    try {
       // References to mainStage
       mainStage = MainScene.getMainStage();
-} catch (Exception e) {
-            message.message(Alert.AlertType.ERROR, "Error message", "LoginController / initialize()", e.toString(), e);
-}
+
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "LoginController / initialize()", e.toString(), e);
+    }
    }
 
-
 //</editor-fold>  
-   
-}
+
+
+ }

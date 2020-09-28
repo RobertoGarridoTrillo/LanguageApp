@@ -19,23 +19,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
@@ -90,16 +99,21 @@ public class MainScene extends Application
   // Savepoint
   Savepoint sp;
 
-  // progressbar value and label
-  // private static double progressBarValue;
-  // private static String labelText;  
-
   // Value  and text of the progress
   private DoubleProperty progressBarValue;
   private StringProperty labelText;
-  
-  // Thread progressBar
-  Thread threadProgressBar;
+
+  // Flags of the menu item
+  private String[] idiomaSubt;
+
+  // Fade in / out
+  private String centerString;
+  private Node centerNode;
+
+  FadeTransition fIn, fadeLoginIn;
+  FadeTransition fOut, fadeLoginOut;
+
+  ChangeListener mainChangeListener;
 
 //</editor-fold>
 
@@ -121,22 +135,13 @@ public class MainScene extends Application
     // Setting the welcome user
     usuario_activo = 0;
     welcomeScreen = true;
-    
+
     // setting progressbar. I use a doubleProperty (it's a class wrapper) instead double.
     progressBarValue = new SimpleDoubleProperty();
     labelText = new SimpleStringProperty();
 
-    progressBarValue.setValue(0);
+    progressBarValue.setValue(0.0);
     labelText.setValue("");
-
-    /*/*
-    progressBarValue.addListener((observable) -> {
-      mainController.setProgressBarValue(progressBarValue.getValue());
-    });
-      labelText.addListener((observable) -> {
-      mainController.setLabelText(labelText.getValue());
-    });
-*/
    }
 
 //</editor-fold>
@@ -160,17 +165,16 @@ public class MainScene extends Application
 
     // Set the Title to the Stage
     this.mainStage.setTitle("LanguagesApp");
+
     // Set the application icon.
     this.mainStage.getIcons().add(new Image(getClass()
             .getResourceAsStream("/LanguageApp/resources/images/languages_128.png")));
 
     // Setting the close button
     handleClose();
-    // 
+
     dataBaseView();
-    // 
     mainView();
-    //
     welcomeView();
     formView();
     registrationView();
@@ -185,12 +189,19 @@ public class MainScene extends Application
     usuario_nombre = (nombre != null) ? nombre.toString() : null;
     usuario_id = (id != null) ? (Integer) id : 0;
 
+
+    // Checking the colour of the back progress bar
+    centerNode = mainController.checkCenter();
+    centerString = centerNode.getId();
+
     // Put the name in the welcome label
     welcomeController.handlePutName(usuario_nombre);
 
     this.mainStage.setResizable(false);
     //this.mainStage.setWidth(1215);
     //this.mainStage.setHeight(710);
+
+    this.mainStage.centerOnScreen();
     this.mainStage.show();
 
     principalView();
@@ -198,116 +209,8 @@ public class MainScene extends Application
 
 //</editor-fold> 
 
-//<editor-fold defaultstate="collapsed" desc="DataBaseView">
-  private void dataBaseView()
-   {
-
-    try {
-      // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
-      handleLocale02("DataBaseView");
-
-      dataBaseView = (AnchorPane) loader.load();
-
-      // Give the mainController access to the main app (It´s like a instance)
-      dataBaseController = loader.getController();
-      dataBaseController.setMainScene(this);
-
-    } catch (IOException e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / dataBaseView()", e.toString(), e);
-    }
-   }
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="mainView">
-
-  /**
-   * It managed the load of the main fxml into the border panel that I use it like root.
-   *
-   * i can also create a "link" to the controller, in case I need to send data.
-   */
-  private void mainView()
-   {
-    try {
-      // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
-      handleLocale02("MainView");
-
-      mainView = (BorderPane) loader.load();
-
-      // Set the Scene to the Stage (It the main wiew)
-      mainScene = new Scene(mainView);
-      mainStage.setScene(mainScene);
-
-      // Give the mainController access to the main app (It´s like a instance)
-      mainController = loader.getController();
-      mainController.setMainScene(this);
-
-      // Adding dark style
-      JMetro jMetro = new JMetro(Style.DARK);
-      jMetro.setScene(mainScene);
-
-    } catch (IOException e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / mainView()", e.toString(), e);
-    }
-   }
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="pricipalView">
-
-  /**
-   *
-   */
-  private void principalView()
-   {
-
-    try {
-      // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
-      handleLocale02("PrincipalView");
-
-      principalView = (AnchorPane) loader.load();
-
-      // Give the mainController access to the main app (It´s like a instance)
-      principalController = loader.getController();
-      principalController.setMainScene(this);
-
-    } catch (IOException e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / principalView()", e.toString(), e);
-    }
-   }
-
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="LoginView">
-  private void loginView()
-   {
-
-    try {
-      // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
-      handleLocale02("LoginView");
-
-      loginView = (HBox) loader.load();
-
-      // Give the mainController access to the main app (It´s like a instance)
-      loginController = loader.getController();
-      loginController.setMainScene(this);
-
-      // Put the welcome in the main (It's the initial view)
-      loginController.loginViewAnchorPane.getChildren().add(welcomeView);
-
-      // Create the Scene and put it in the center or the borderLayout
-      mainView.setCenter(loginView);
-
-    } catch (IOException e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / loginView()", e.toString(), e);
-    }
-   }
-
-//</editor-fold>
-
 //<editor-fold defaultstate="collapsed" desc="Welcome">
+
   /**
    *
    */
@@ -324,6 +227,7 @@ public class MainScene extends Application
       // Give the mainController access to the main app (It´s like a instance)
       welcomeController = loader.getController();
       welcomeController.setMainScene(this);
+
 
     } catch (IOException e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / welcomeView()", e.toString(), e);
@@ -398,6 +302,124 @@ public class MainScene extends Application
    }
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="LoginView">
+
+  private void loginView()
+   {
+
+    try {
+      // Create the FXMLLoader
+      HandleLocale01.handleLocale01();
+      handleLocale02("LoginView");
+
+      loginView = (HBox) loader.load();
+
+      // Give the mainController access to the main app (It´s like a instance)
+      loginController = loader.getController();
+      loginController.setMainScene(this);
+
+      // Put the welcome in the main (It's the initial view)
+      loginController.loginViewHbox.getChildren().add(welcomeView);
+
+      // Create the Scene and put it in the center or the borderLayout
+      mainView.setCenter(loginView);
+
+    } catch (IOException e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / loginView()", e.toString(), e);
+    }
+   }
+
+//</editor-fold>  
+
+//<editor-fold defaultstate="collapsed" desc="mainView">
+
+  /**
+   * It managed the load of the main fxml into the border panel that I use it like root.
+   *
+   * i can also create a "link" to the controller, in case I need to send data.
+   */
+  private void mainView()
+
+   {
+    try {
+      // Create the FXMLLoader
+      HandleLocale01.handleLocale01();
+      handleLocale02("MainView");
+
+      mainView = (BorderPane) loader.load();
+
+      // Set the Scene to the Stage (It the main wiew)
+      mainScene = new Scene(mainView);
+      mainStage.setScene(mainScene);
+
+      // Default color
+      //mainScene.setFill(Color.rgb(0, 79, 138));
+      mainScene.setFill(Color.rgb(37, 37, 37));
+
+      // Give the mainController access to the main app (It´s like a instance)
+      mainController = loader.getController();
+      mainController.setMainScene(this);
+
+      // Adding dark style
+      JMetro jMetro = new JMetro(Style.DARK);
+      jMetro.setScene(mainScene);
+
+    } catch (IOException e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / mainView()", e.toString(), e);
+    }
+   }
+
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="pricipalView">
+
+  /**
+   *
+   */
+  private void principalView()
+   {
+
+    try {
+      // Create the FXMLLoader
+      HandleLocale01.handleLocale01();
+      handleLocale02("PrincipalView");
+
+      principalView = (AnchorPane) loader.load();
+
+      // Give the mainController access to the main app (It´s like a instance)
+      principalController = loader.getController();
+      principalController.setMainScene(this);
+
+    } catch (IOException e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / principalView()", e.toString(), e);
+    }
+   }
+
+//</editor-fold>  
+
+//<editor-fold defaultstate="collapsed" desc="DataBaseView">
+
+  private void dataBaseView()
+   {
+
+    try {
+      // Create the FXMLLoader
+      HandleLocale01.handleLocale01();
+      handleLocale02("DataBaseView");
+
+      dataBaseView = (AnchorPane) loader.load();
+
+      // Give the mainController access to the main app (It´s like a instance)
+      dataBaseController = loader.getController();
+      dataBaseController.setMainScene(this);
+
+    } catch (IOException e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / dataBaseView()", e.toString(), e);
+    }
+   }
+
+//</editor-fold>  
+
 //<editor-fold defaultstate="collapsed" desc="Handles">
 
   /**
@@ -467,12 +489,13 @@ public class MainScene extends Application
 
       handlBorrarMarcar(activoBoolean);
 
-      if ( ! usuario_last) {
+      if (!usuario_last) {
         // First I close the thead media to slider
         principalController.handleCloseMenu("buttonLoginMenu");
 
         principalView();
       }
+
       // change the center
       welcomeScreen = false;
       buttonDashBoardMenu();
@@ -714,35 +737,30 @@ public class MainScene extends Application
    */
   public void handleForgetUsuario()
    {
-    // Create the Scene forgetView
-    loginView.getChildren().remove(formView);
-    loginView.getChildren().add(forgetView);
+
+    setFadeLogin("forget");
+
    }
 
-  /**
-   * Change the scene from forgetView to formView
-   *
-   */
-  public void handleAntiguoUsuarioForget()
-   {
-    // Create the Scene formView
-    loginView.getChildren().remove(forgetView);
-    loginView.getChildren().add(formView);
-   }
-
-  /* there are two methods of close*/
+  /* ------------------------there are two methods of close*/
   /**
    *
    */
-  public void handleClose()
+  public void handleClose() // the close button
    {
     mainStage.setOnCloseRequest(e -> {
       e.consume();
-      if ( ! message.message(Alert.AlertType.CONFIRMATION, "Salir", "¿Quieres salir de la aplicación?", "", null)) {
-      } else {
-        Platform.exit();
-        System.exit(0);
+
+      fadeOldOut();
+
+      if (!message.message(Alert.AlertType.CONFIRMATION, "Salir", "¿Quieres salir de la aplicación?", "", null)) {
+        fadeNewIn();
+        fadeOldIn();
+        return;
       }
+      Platform.exit();
+      System.exit(0);
+
     });
    }
 
@@ -765,6 +783,7 @@ public class MainScene extends Application
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
+
   /**
    *
    * @param usuario_id
@@ -796,12 +815,22 @@ public class MainScene extends Application
 
   /**
    *
-   * @param value
+   * @param longitud
    */
-  public void setProgressBarValue(double value)
+  public void setProgressBarValue(double longitud)
    {
-    progressBarValue.set(value);
-    mainController.setProgressBarValue(value);
+    double oldValue = Math.round(getProgressBarValue() * 100.0) / 100.0;
+    double newvalue = Math.round((1 / longitud) * 100.0) / 100.0;
+    progressBarValue.set(oldValue + newvalue);
+
+    mainController.setProgressBarValue(progressBarValue);
+    welcomeController.setProgressBarValue(progressBarValue);
+    formController.setProgressBarValue(progressBarValue);
+    registrationController.setProgressBarValue(progressBarValue);
+    forgetController.setProgressBarValue(progressBarValue);
+    //System.out.println("mainScene " + progressBarValue.getValue());
+
+    if (progressBarValue.getValue() >= 1) progressBarValue.set(0.0);
    }
 
   /**
@@ -823,6 +852,17 @@ public class MainScene extends Application
     mainController.setLabelText(text);
    }
 
+  public void setFlagMenu(String[] s)
+   {
+
+    idiomaSubt = new String[s.length];
+    for (String string : s) {
+      idiomaSubt = s;
+      mainController.setEraserFlags(s);
+    }
+
+   }
+
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Menu Buttons">
@@ -837,9 +877,25 @@ public class MainScene extends Application
       if (welcomeScreen) {
         return;
       }
-     
-      principalController.handleOpenMenu();
-      
+
+      fadeOldOut();
+
+      if (principalController.handleOpenMenu()) {
+
+        mainView.getChildren().removeAll(loginView, principalView, dataBaseView);
+        loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+
+        loginView.getChildren().add(welcomeView);
+        mainView.setCenter(principalView);
+
+        loginView.setOpacity(1.0);
+        welcomeScreen = false;
+        fadeNewIn();
+        fadeOldIn();
+      } else {
+        fadeOldIn();
+      }
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonOpenMenu()", e.toString(), e);
     }
@@ -855,19 +911,36 @@ public class MainScene extends Application
       if (welcomeScreen) {
         return;
       }
+
+      fadeOldOut();
+
+      if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
+              "¿Quieres cerrar el archivo?", "", null)) {
+        fadeOldIn();
+        return;
+      } else {
+        fadeOldIn();
+        fadeNewIn();
+      }
       principalController.handleCloseMenu("handleCloseMenu");
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonCloseMenu()", e.toString(), e);
     }
    }
 
+  /* ------------------------there are two methods of close*/
   /**
    * it's called by mainController when i click in the close menu
    */
   public void buttonExitMenu()
    {
-    if ( ! message.message(Alert.AlertType.CONFIRMATION, "Salir",
+
+    fadeOldOut();
+
+    if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
             "¿Quieres salir de la aplicación?", "", null)) {
+
+      fadeOldIn();
       return;
     }
 
@@ -880,6 +953,7 @@ public class MainScene extends Application
    */
   public void buttonControlesMenu()
    {
+    fadeOldOut();
     message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
             "Controles: \n\n" +
             "Cursores:  para desplazarte por los diferentes " +
@@ -890,6 +964,8 @@ public class MainScene extends Application
             ", Balance, velocidad y control de la película.\n\n" +
             "Control o Shift: para seleccionar mas de una palabra al " +
             "reproducirla.\n\n", null);
+
+    fadeOldIn();
    }
 
   /**
@@ -897,7 +973,11 @@ public class MainScene extends Application
    */
   public void buttonAboutMenu()
    {
+    fadeOldOut();
+
     message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:", "Autor: Roberto Garrido Trillo", null);
+    fadeNewIn();
+    fadeOldIn();
    }
 
   /**
@@ -907,20 +987,12 @@ public class MainScene extends Application
    {
 
     try {
-      // Create the Scene and put it in the center or the borderLayout
-      mainView.getChildren().removeAll(principalView, dataBaseView);
-      loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
-      loginView.getChildren().add(formView);
-      mainView.setCenter(loginView);
-      welcomeScreen = true;
+      centerNode = mainController.checkCenter();
+      if (centerNode.getId().equals("loginViewHbox") &&
+              loginView.getChildren().get(1).getId().equals("loginViewHbox")) return;
 
-      String result = principalController.getMediaStatus();
 
-      if (result.equals("playing")) {
-        principalController.handlePlayButton();
-      } else if (result.equals("playingOriginal")) {
-        principalController.handlePlayButtonItemOriginal();
-      }
+      setFadeLogin("login");
 
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonLoginMenu()", e.toString(), e);
@@ -936,8 +1008,13 @@ public class MainScene extends Application
     if (welcomeScreen && usuario_id == 0) {
       return;
     }
+
+    fadeOldOut();
+
     boolean salida = message.message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "¿Quieres cerrar la sesión?", "", null);
-    if ( ! salida) {
+    if (!salida) {
+      fadeOldIn();
+      fadeNewIn();
       return;
     }
 
@@ -945,7 +1022,7 @@ public class MainScene extends Application
       principalController.handleCloseMenu("buttonUnloginMenu");
 
       // Create the Scene and put it in the center or the borderLayout
-      mainView.getChildren().removeAll(principalView, dataBaseView);
+      mainView.getChildren().removeAll(principalView, dataBaseView, loginView);
       loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
       loginView.getChildren().add(welcomeView);
       mainView.setCenter(loginView);
@@ -961,6 +1038,8 @@ public class MainScene extends Application
 
       welcomeController.handlePutName(usuario_nombre); //null
 
+      fadeNewIn();
+      fadeOldIn();
 
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonUnloginMenu()", e.toString(), e);
@@ -970,27 +1049,30 @@ public class MainScene extends Application
   /**
    * it's called by Welcome when i click in the Crear cuenta
    */
-  public void buttorRegistro()
+  public void buttonRegistro()
    {
 
     try {
-      // Create the Scene and put it in the center or the borderLayout
-      mainView.getChildren().removeAll(principalView, dataBaseView);
-      loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
-      loginView.getChildren().add(registrationView);
-      mainView.setCenter(loginView);
-      welcomeScreen = true;
-
-      String result = principalController.getMediaStatus();
-      if (result.equals("playing")) {
-        principalController.handlePlayButton();
-      } else if (result.equals("playingOriginal")) {
-        principalController.handlePlayButtonItemOriginal();
-      }
+      centerNode = mainController.checkCenter();
+      if (centerNode.getId().equals("loginViewHbox") &&
+              loginView.getChildren().get(1).getId().equals("registrationViewanchorRight")) return;
+      
+      setFadeLogin("registro");
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttorRegistro()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonRegistro()", e.toString(), e);
     }
+   }
+
+  /**
+   * it's called by Welcome when i click in the subtitle menu
+   */
+  public void buttonSubtitle()
+   {
+    // if doesn't be user, return
+    if (welcomeScreen && usuario_id == 0) {
+    }
+
    }
 
   /**
@@ -999,19 +1081,14 @@ public class MainScene extends Application
   public void buttonDashBoardMenu()
    {
     // if doesn't be user, return
-    if (usuario_id == 0) {
+    if (usuario_id == 0 || welcomeScreen || mainController.checkCenter().getId().equals("principalViewAnchorPane")) {
       return;
     }
-    try {
-      mainView.getChildren().removeAll(principalView, dataBaseView, loginView);
-      mainView.setCenter(principalView);
 
-      String result = principalController.getMediaStatus();
-      if (result.equals("pause")) {
-        principalController.handlePlayButton();
-      } else if (result.equals("originalPause")) {
-        principalController.handlePlayButtonItemOriginal();
-      }
+    try {
+
+      setFadeLogin("dashboard");
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDashBoardMenu()", e.toString(), e);
     }
@@ -1023,24 +1100,174 @@ public class MainScene extends Application
   public void buttonDatabaseMenu()
    {
     // if doesn't be user, return
-    if (usuario_id == 0) {
+    if (usuario_id == 0 || welcomeScreen || mainController.checkCenter().getId().equals("dataBaseViewAnchorPane")) {
       return;
     }
     try {
-      // Create the Scene and put it in the center or the borderLayout
-      mainView.getChildren().removeAll(principalView, dataBaseView, loginView);
-      mainView.setCenter(dataBaseView);
 
-      String result = principalController.getMediaStatus();
-      if (result.equals("playing")) {
-        principalController.handlePlayButton();
-      } else if (result.equals("playingOriginal")) {
-        principalController.handlePlayButtonItemOriginal();
-      }
+      setFadeLogin("database");
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDatabaseMenu()", e.toString(), e);
     }
    }
+
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Total Fade In / Out">
+
+  //<editor-fold defaultstate="collapsed" desc="Setting fade without filechooser">
+
+  public void setFadeLogin(String destiny)
+   {
+
+    try {
+
+      mainChangeListener = new ChangeListener<Double>()
+       {
+        @Override
+        public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
+         {
+          //System.out.println("newValue " + newValue);
+          if (newValue <= 0) {
+
+            centerNode = mainView.getCenter();
+            centerNode.opacityProperty().removeListener(mainChangeListener);
+
+            mainView.getChildren().removeAll(loginView, principalView, dataBaseView);
+            loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+
+
+            // Temporal nodes
+            Node loginNode = null;
+            Node mainNode = null;
+
+            switch (destiny) {
+
+              case "login":
+                loginNode = formView;
+                mainNode = loginView;
+                /*/*principalView.setOpacity(1.0);*/
+                welcomeScreen = true;
+                break;
+
+              case "registro":
+                loginNode = registrationView;
+                mainNode = loginView;
+                /*/*principalView.setOpacity(1.0);*/
+                welcomeScreen = true;
+                break;
+
+              case "forget":
+                loginNode = forgetView;
+                mainNode = loginView;
+                /*/*principalView.setOpacity(1.0);*/
+                welcomeScreen = true;
+                break;
+
+              case "dashboard":
+                loginNode = welcomeView;
+                mainNode = principalView;
+                /*/*loginView.setOpacity(1.0);*/
+                welcomeScreen = false;
+                break;
+
+              case "database":
+                loginNode = welcomeView;
+                mainNode = dataBaseView;
+                /*/*loginView.setOpacity(1.0);*/
+                welcomeScreen = false;
+                break;
+
+              default:
+                loginNode = welcomeView;
+                mainNode = loginView;
+                /*/*loginView.setOpacity(1.0);*/
+                principalView.setOpacity(1.0);
+                welcomeScreen = true;
+                break;
+            }
+
+            loginView.getChildren().add(loginNode);
+            mainView.setCenter(mainNode);
+
+            fadeLoginIn = handleSetFadeIn();
+            fadeLoginOut.stop();
+            fadeLoginIn.play();
+
+            String result = principalController.getMediaStatus();
+            if (result.equals("playing")) {
+              principalController.handlePlayButton();
+            } else if (result.equals("playingOriginal")) {
+              principalController.handlePlayButtonItemOriginal();
+            }
+          }
+         }
+       };
+
+      //centerNode = mainController.checkCenter();
+      fadeLoginOut = handleSetFadeOut();
+
+      fadeLoginOut.play();
+
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDatabaseMenusetFadeLogin()", e.toString(), e);
+    }
+   }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Fade in / out of the scene with filechooser">
+
+  /**
+   *
+   */
+  public void fadeOldIn()
+   {
+    mainController.mainFadeOldIn();
+   }
+
+  /**
+   *
+   */
+  public void fadeOldOut()
+   {
+    mainController.mainFadeOldOut();
+   }
+
+  /**
+   *
+   */
+  public void fadeNewIn()
+   {
+    mainController.mainFadeNewIn();
+   }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Fade in / out of the scene without filechooser">
+
+  private FadeTransition handleSetFadeIn()
+   {
+    centerNode = mainController.checkCenter();
+
+    fIn = new FadeTransition(Duration.millis(250), centerNode);
+    //fIn.setFromValue(0.0);
+    fIn.setToValue(1.0);
+    return fIn;
+   }
+
+  private FadeTransition handleSetFadeOut()
+   {
+    centerNode = mainController.checkCenter();
+    centerNode.opacityProperty().addListener(mainChangeListener);
+
+    fOut = new FadeTransition(Duration.millis(250), centerNode);
+    fOut.setFromValue(1.0);
+    fOut.setToValue(0.0);
+    return fOut;
+   }
+
+  //</editor-fold>
 
 //</editor-fold>
 
@@ -1055,7 +1282,7 @@ public class MainScene extends Application
    {
     return mainStage;
    }
-  
+
 //</editor-fold>
 
   /**

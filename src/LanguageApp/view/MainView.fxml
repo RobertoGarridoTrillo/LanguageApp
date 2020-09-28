@@ -11,7 +11,7 @@
 
 <BorderPane fx:id="mainViewBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="670.0" prefWidth="1215.0" styleClass="root" stylesheets="@../style/login.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.MainController">
   <top>
-<MenuBar id="mainViewBorderPane" fx:id="menuBar" maxHeight="35.0" minHeight="35.0" prefHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<MenuBar fx:id="menuBar" maxHeight="35.0" minHeight="35.0" prefHeight="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     <menus>
       <Menu fx:id="fileMenu" mnemonicParsing="false" text="%Archivo">
         <items>
@@ -26,6 +26,15 @@
                   <MenuItem fx:id="UnloginMenu" mnemonicParsing="false" onAction="#handleUnloginMenu" text="%Cerrar sesión" />
                   <MenuItem fx:id="RegistroMenu" mnemonicParsing="false" onAction="#handleNuevoUsuario" text="%Crear cuenta" />
               </items>
+            </Menu>
+            <Menu fx:id="flagsMenu" mnemonicParsing="false" text="%Subtítulos">
+               <items>
+                  <MenuItem fx:id="EnglishMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Inglés" />
+                  <MenuItem fx:id="SpanishMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Español" />
+                  <MenuItem fx:id="FrenchMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Francés" />
+                  <MenuItem fx:id="ItalianMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Italiano" />
+                  <MenuItem fx:id="JapaneseMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Japonés" />
+               </items>
             </Menu>
             <Menu fx:id="goMenu" mnemonicParsing="false" text="%Ir a">
               <items>
@@ -56,8 +65,8 @@
    <bottom>
       <AnchorPane fx:id="mainViewAnchorPaneBottom" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="mainLabelBottom" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
-            <ProgressBar fx:id="mainProgressBarBottom" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="200.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+            <Label fx:id="mainLabelBottom" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="580.0" />
+            <ProgressBar fx:id="mainProgressBarBottom" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="200.0" progress="0.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
          </children>
       </AnchorPane>
    </bottom>

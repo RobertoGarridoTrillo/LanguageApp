@@ -39,9 +39,6 @@
                     <MediaView fx:id="mediaView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  
         <ListView fx:id="listViewH01Reading" orientation="HORIZONTAL" prefHeight="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
                                  <styleClass>
                                     <String fx:value="listViewH" />
                                     <String fx:value="initialBorder" />
@@ -478,10 +475,7 @@
                                               <RowConstraints minHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
                                               <RowConstraints minHeight="20.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
                                             </rowConstraints>
-                                                               <VBox.margin>
-                                                                  <Insets />
-                                                               </VBox.margin>
-                                          </GridPane>
+                                           </GridPane>
                                       </children>
                                     </VBox>
                                   </top>
@@ -494,9 +488,6 @@
                           </content>
                         </Tab>
                       </tabs>
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
                     </TabPane>
                   </children>
                 </AnchorPane>

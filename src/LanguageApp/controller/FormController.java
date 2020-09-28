@@ -6,17 +6,21 @@ import LanguageApp.main.MainScene;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.ResourceBundle;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -74,10 +78,18 @@ public class FormController implements Initializable
   private MainScene mainScene;
 
   // The Login or not Login
-  boolean login, loginUser, loginPassword;
+  Node[] fieldsChecked;
+  String[] fieldString;
+
+  // The Login or not Login
+  private Boolean[] registro;
+  private int fieldsNumber;
 
   // For the bounle of idioms
   ResourceBundle resources;
+
+  // The value of the progressBar in mainScene
+  DoubleProperty progressBarValue = new SimpleDoubleProperty(0.0);
 
 //</editor-fold>
 
@@ -93,6 +105,7 @@ public class FormController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
+
   /**
    * When the method is initialize
    */
@@ -127,15 +140,31 @@ public class FormController implements Initializable
 
       // HBoxError disabled
       handleEraseError();
+
+      // Validation fieldsNumber
+      fieldsChecked = new Node[]{
+        usuarioTextFieldLogin, passwordTextFieldLogin
+      };
+      fieldsNumber = fieldsChecked.length; // the numbers of field to check
+      fieldString = new String[fieldsNumber];
+      Arrays.fill(fieldString, "");
+
+      // The Login or not Login
+      registro = new Boolean[fieldsNumber];
+      Arrays.fill(registro, false);
+
+      progressBarValue.addListener((observable, oldValue, newValue) -> {
+        loginButtonLogin.setDisable(progressBarValue.lessThan(1).get());
+      });
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "FormController / initialize()", e.toString(), e);
     }
    }
 
-
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
+
   /**
    *
    */
@@ -148,11 +177,13 @@ public class FormController implements Initializable
     eventButton(recuperarButtonLogin, 3, 5);
     eventButton(newUserButtonLogin, 4, 0);
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
-//<editor-fold defaultstate="collapsed" desc="Button">
+  //<editor-fold defaultstate="collapsed" desc="Button">
+
   /**
    * Helper to the play button event
    *
@@ -169,13 +200,11 @@ public class FormController implements Initializable
       // setting onFocus (USe of Tab)
       n.focusedProperty().addListener((o, oldVal, newVal) ->
       {
-        if (newVal) {
-          handleEraseError();
-          setBorder(n);
-        }
+        handleEraseError();
+        setBorder(n);
       });
 
-      // setting onClick
+      // setting onKey
       n.setOnKeyPressed(new EventHandler<KeyEvent>()
        {
         @Override
@@ -185,25 +214,38 @@ public class FormController implements Initializable
 
           int i = -1;
 
-          if (ke.getCode().equals(KeyCode.UP)) {
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+
+          if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
+            ke.consume();
             i = up;
           }
-          if (ke.getCode().equals(KeyCode.DOWN)) {
+          if (ke.getCode().equals(KeyCode.DOWN) && !node[down].isDisable()) {
+            ke.consume();
             i = down;
           }
+
           if (ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
               case "usuarioTextFieldLogin":
-                handleValidationUser();
+                i = handleValidation(usuarioTextFieldLogin);
                 break;
               case "passwordTextFieldLogin":
-                handleValidationPassword();
+                i = handleValidation(passwordTextFieldLogin);
                 break;
+              default:
+                break;
+            }
+          }
+
+          if (ke.getCode().equals(KeyCode.SPACE) || ke.getCode().equals(KeyCode.ENTER)) {
+            switch (n.getId()) {
               case "loginButtonLogin":
                 handlelogin();
                 break;
               case "activoCheckBoxLogin":
-                activoCheckBoxLogin.setSelected( ! activoCheckBoxLogin.isSelected());
+                activoCheckBoxLogin.setSelected(!activoCheckBoxLogin.isSelected());
+                ke.consume();
                 break;
               case "recuperarButtonLogin":
                 handleForget();
@@ -215,34 +257,21 @@ public class FormController implements Initializable
                 break;
             }
           }
-          if (ke.getCode().equals(KeyCode.SPACE)) {
-            switch (n.getId()) {
-              case "loginButtonLogin":
-                handlelogin();
-                break;
-              case "recuperarButtonLogin":
-                handleForget();
-                break;
-              case "newUserButtonLogin":
-                handleNuevoUsuario();
-                break;
-              default:
-                break;
-            }
-          }
+
           if (i != -1) {
             node[i].requestFocus();
             setBorder(node[i]);
-            //oldNode = n;
             ke.consume();
+            //oldNode = n;
 
           }
          }
-
        });
 
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
+        if (n.isDisable()) return;
+        
         // HBoxError disabled
         handleEraseError();
 
@@ -250,6 +279,7 @@ public class FormController implements Initializable
         setBorder(n);
         oldNode = n;
         MouseEvent.consume();
+
         switch (n.getId()) {
           case "loginButtonLogin":
             handlelogin();
@@ -271,9 +301,10 @@ public class FormController implements Initializable
       message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);
     }
    }
-//</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="EraseError">
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Erase Error">
 
   /**
    *
@@ -286,9 +317,10 @@ public class FormController implements Initializable
     errorPasswordLabel.setText(null);
    }
 
-//</editor-fold>
+  //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="setBorder">
+  //<editor-fold defaultstate="collapsed" desc="setBorder">
+
   /**
    * Setting the border (cursor) of the node
    *
@@ -296,7 +328,22 @@ public class FormController implements Initializable
    */
   private void setBorder(Node n)
    {
+    HashMap<Node, Node> m = new HashMap<>();
+    m.put(usuarioTextFieldLogin, HBoxUsuarioLogin);
+    m.put(passwordTextFieldLogin, HboxPasswordLogin);
+    m.put(loginButtonLogin, HBoxLoginLogin);
+    m.put(activoCheckBoxLogin, HBoxActivoLogin);
+    m.put(recuperarButtonLogin, HBoxRecuperarLogin);
+    m.put(newUserButtonLogin, HBoxNuevoUsuarioLogin);
+
     try {
+      eraserBorder();
+      m.get(n).getStyleClass().add("borderLoginVisible");
+      /*/*HboxPasswordLogin.getStyleClass().add("borderLoginVisible"); */
+      oldNode = currentNode;
+      currentNode = n;
+
+      /*/*
       if (n.equals(usuarioTextFieldLogin)) {
         eraserBorder();
         HBoxUsuarioLogin.getStyleClass().add("borderLoginVisible");
@@ -305,13 +352,7 @@ public class FormController implements Initializable
         return;
       }
 
-      if (n.equals(passwordTextFieldLogin)) {
-        eraserBorder();
-        HboxPasswordLogin.getStyleClass().add("borderLoginVisible");
-        oldNode = currentNode;
-        currentNode = n;
-        return;
-      }
+    
 
       if (n.equals(loginButtonLogin)) {
         eraserBorder();
@@ -346,12 +387,16 @@ public class FormController implements Initializable
       eraserBorder();
       n.getStyleClass().add("borderLoginVisible");
       oldNode = currentNode;
-      currentNode = n;
+      currentNode = n; */
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "FormController / setBorder()", e.toString(), e);
     }
 
    }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="eraserBorder">
 
   /**
    * Helper to setting Color Border
@@ -373,11 +418,13 @@ public class FormController implements Initializable
     HBoxNuevoUsuarioLogin.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
-//</editor-fold>
+
+  //</editor-fold>
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handles">   
+
   /**
    *
    */
@@ -388,62 +435,84 @@ public class FormController implements Initializable
 
   /**
    *
+   * @param n
+   * @return
    */
-  private String handleValidationUser()
+  private int handleValidation(Node n)
    {
-    String usuarioString = usuarioTextFieldLogin.getText().trim();
-    loginUser = true;
+    try {
+      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+      
+      handleValidation02(n, true);
+      if (registro[indNode] == false) return indNode;
+      
+      for (int i = 0; i < fieldsNumber; i++) {
+        if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i], false);
 
-    if (usuarioString.isEmpty() || usuarioString.length() == 0) {
-      showErrorUser("No puede estar vacío");
-      return null;
+        if (registro[i] == false) return i;
+      }
+
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "FormController / handleValidation()", e.toString(), e);
     }
-    if (usuarioString.length() > 100) {
-      showErrorUser("No puede tener mas de 100 letras");
-      return null;
-    }
-    return usuarioString;
+    return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
 
   /**
    *
-   * @param text
+   * @param n
+   * @param indNode
+   * @param show
    */
-  private void showErrorUser(String text)
+  private void handleValidation02(Node n, boolean show)
    {
-    errorUserLabel.setManaged(true);
-    errorUserLabel.setText(resources.getString(text));
-    loginUser = false;
-   }
+    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+    String instance = "";
+    Object preguntaObject = null;
 
-  /**
-   *
-   */
-  private String handleValidationPassword()
-   {
-    String passwordString = passwordTextFieldLogin.getText().trim();
-    loginPassword = true;
+    HashMap<Integer, Node> errorLabelMap = new HashMap<>();
+    errorLabelMap.put(0, errorUserLabel);
+    errorLabelMap.put(1, errorPasswordLabel);
 
-    if (passwordString.isEmpty() || passwordString.length() == 0) {
-      showErrorPassword("No puede estar vacío");
-      return null;
+    if (n instanceof JFXTextField) {
+      fieldString[indNode] = ((JFXTextField) n).getText().trim();
+      instance = "JFXTextField";
     }
-    if (passwordString.length() > 20) {
-      showErrorPassword("No puede tener mas de 20 letras");
-      return null;
+    if (n instanceof JFXPasswordField) {
+      fieldString[indNode] = ((JFXPasswordField) n).getText().trim();
+      instance = "JFXPasswordField";
     }
-    return passwordString;
-   }
+    if (n instanceof JFXComboBox) {
+      preguntaObject = ((JFXComboBox) n).getValue();
+      if (!preguntaObject.equals("")) fieldString[indNode] = preguntaObject.toString();
+      instance = "JFXComboBox";
+    }
+    String text = "";
+    registro[indNode] = true;
 
-  /**
-   *
-   * @param text
-   */
-  private void showErrorPassword(String text)
-   {
-    errorPasswordLabel.setManaged(true);
-    errorPasswordLabel.setText(resources.getString(text));
-    loginPassword = false;
+    if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
+      text = "No puede estar vacío";
+    }
+    if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
+      text = "No puede tener mas de 100 letras";
+    }
+    if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
+      text = "No puede tener mas de 20 letras";
+    }
+    if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
+            instance.equals("JFXComboBox")) {
+      text = "Elige una pregunta de seguridad" +
+              "";
+    }
+    if (!text.equals("")) {
+      registro[indNode] = false;
+
+      if (show) {
+        Label tempLabel = (Label) errorLabelMap.get(indNode);
+        tempLabel.setManaged(true);
+        tempLabel.setText(resources.getString(text));
+      }
+    }
    }
 
   /**
@@ -451,16 +520,18 @@ public class FormController implements Initializable
    */
   private void handlelogin()
    {
-
-    String usuarioString = handleValidationUser();
-    String passwordString = handleValidationPassword();
+    handleValidation(usuarioTextFieldLogin);
+    handleValidation(passwordTextFieldLogin);    
+    /*/*handleValidationUser(true);
+    handleValidationPassword(true);*/
     boolean activoBoolean = activoCheckBoxLogin.isSelected();
 
     // If user and password are valid
-    if (loginUser == true && loginPassword == true) {
+    if (registro[0] == true && registro[1] == true) {
 
       // Check if that user exits (One or more  exits, 0 doesn't exit)
-      int usuario_id = (Integer) mainScene.handleCheckUser(usuarioString, passwordString).getKey();
+      int usuario_id = (Integer) mainScene.handleCheckUser(fieldString[0], fieldString[1]).getKey();
+      /*/* int usuario_id = (Integer) mainScene.handleCheckUser(usuarioString, passwordString).getKey(); */
 
       // Put the number of user, just in case there was not active user
       // Check if the new user and (assumig there was) the active user of the data base were the
@@ -472,7 +543,8 @@ public class FormController implements Initializable
         mainScene.handleEntrar(activoBoolean, (usuario_id == usuario_last));
 
       } else {
-        showErrorUser("El usuario no existe");
+        errorUserLabel.setManaged(true);
+        errorUserLabel.setText(resources.getString("El usuario no existe"));
       }
     }
    }
@@ -482,9 +554,19 @@ public class FormController implements Initializable
    */
   private void handleNuevoUsuario()
    {
-    mainScene.buttorRegistro();
+    mainScene.buttonRegistro();
 
    }
+
+  /**
+   *
+   * @param progressBarValue
+   */
+  public void setProgressBarValue(DoubleProperty progressBarValue)
+   {
+    this.progressBarValue.setValue(progressBarValue.getValue());
+   }
+
 //</editor-fold>
 
  }

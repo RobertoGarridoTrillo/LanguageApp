@@ -23,12 +23,12 @@
 .button:hover, .button:focused,
 .hyperlink:hover, .hyperlink:focused,
 .slider:hover, .slider:focused, 
-.listViewH:hover, 
+.listViewH:hover, .listViewH:focused,
 .textFieldH:hover,
 .tab-pane:hover, .tab-pane:focused,
 #anchorListViewV:hover{
   -fx-border-color: coral;
-  /*-fx-background-color: transparent; */
+  -fx-background-color: #252525;
   -fx-border-width: 2;
   -fx-border-radius: 2;
   -fx-border-insets: 0;
@@ -38,9 +38,9 @@
 
 /* borde transparente inicial para luego cambiarlo de color*/
 .initialBorder, .button, .hyperlink, .listViewH, 
-.textFieldH, .tab-pane{  
-  -fx-border-color: transparent;
-  -fx-background-color: transparent;  
+.textFieldH, .tab-pane, .listViewV, .principalViewAnchorPane{  
+  -fx-border-color: #252525;
+  -fx-background-color: #252525;  
   -fx-border-width: 2;
   -fx-border-radius: 2;
   -fx-border-insets: 0;  
@@ -77,8 +77,9 @@
 }
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
   -fx-alignment: CENTER;
-  -fx-background-color: transparent;  
+  -fx-background-color: #252525;  
   -fx-text-fill: white;
+  -fx-font-weight: bold;
 }
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label:selected {
   -fx-alignment: CENTER;
@@ -109,4 +110,5 @@
 /*  TableView   */
 .table-view{
   -fx-background-color:#252525;
+  
 }/*tableViewDataBase*/

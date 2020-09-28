@@ -12,18 +12,12 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ResourceBundle;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 //</editor-fold>
 
 /**
@@ -72,6 +66,7 @@ public class DataBaseController implements Initializable
    {
     mainScene = aThis;
    }
+  
   //</editor-fold>  
 
   //<editor-fold defaultstate="collapsed" desc="Initialize">
@@ -101,6 +96,7 @@ public class DataBaseController implements Initializable
     conn = null;
     stmt = null;
 
+    dataBaseViewAnchorPane.getId();
     // checking the initial database
     createDatabase(connect());
     //insertData(connect()); // Only for testing purpose
