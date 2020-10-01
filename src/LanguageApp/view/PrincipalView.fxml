@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -69,7 +68,7 @@
                   <children>
                     <TabPane fx:id="tabPanelListViewH" minHeight="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="250.0" side="BOTTOM" styleClass="initialBorder" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <tabs>
-                        <Tab closable="false" text="%Leer">
+                        <Tab fx:id="tabLeerListViewH" closable="false" text="%Leer">
                           <content>
                             <AnchorPane>
                               <children>
@@ -125,6 +124,19 @@
                                                                               <Button fx:id="backButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
                                                                               <Button fx:id="forwardButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
                                                                               <Button fx:id="stopButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox alignment="TOP_CENTER">
+                                                                     <children>
+                                                                        <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase traducida virtual" textAlignment="CENTER" wrapText="true" />
+                                                                        <HBox spacing="1.0">
+                                                                           <children>
+                                                                              <Button fx:id="playButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -207,7 +219,7 @@
                             </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab closable="false" text="%Escribir">
+                        <Tab fx:id="tabEscribirListViewH" closable="false" text="%Escribir">
                           <content>
                             <AnchorPane>
                               <children>
@@ -262,15 +274,23 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
+                                                                        <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase traducida virtual" textAlignment="CENTER" wrapText="true" />
+                                                                        <HBox spacing="1.0">
+                                                                           <children>
+                                                                              <Button fx:id="playButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox alignment="TOP_CENTER">
+                                                                     <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                         <Button fx:id="correctionButtonWriting" mnemonicParsing="false" onAction="#handlecorrectionButtonWriting" styleClass="initialBorder" />
-                                                        <ProgressIndicator fx:id="indicatorSuccessWriting" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" prefWidth="40.0" progress="0.0">
-                                                                                 <HBox.margin>
-                                                                                    <Insets top="2.0" />
-                                                                                 </HBox.margin>
-                                                                              </ProgressIndicator>
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -349,7 +369,7 @@
                             </AnchorPane>
                           </content>
                         </Tab>
-                        <Tab closable="false" text="%Traducir">
+                        <Tab fx:id="tabTraducirListViewH" closable="false" text="%Traducir">
                           <content>
                             <AnchorPane>
                               <children>
@@ -404,14 +424,23 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
+                                                                        <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase traducida virtual" textAlignment="CENTER" wrapText="true" />
+                                                                        <HBox spacing="1.0">
+                                                                           <children>
+                                                                              <Button fx:id="playButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox alignment="TOP_CENTER">
+                                                                     <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
                                                                         <HBox spacing="1.0">
                                                                            <children>
                                                         <Button fx:id="correctionButtonTranslation" mnemonicParsing="false" onAction="#handlecorrectionButtonTranslation" styleClass="initialBorder" />
-                                                        <ProgressIndicator fx:id="indicatorSuccessTranslation" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" prefWidth="40.0" progress="0.0">
-                                                                                 <HBox.margin>
-                                                                                    <Insets top="2.0" />
-                                                                                 </HBox.margin></ProgressIndicator>
                                                                            </children>
                                                                         </HBox>
                                                                      </children>

@@ -36,9 +36,9 @@ public class FillListView {
             listItem.add((it[i].getId() + 1) + " " + it[i].getText());
          }
          // 
-         Platform.runLater(() -> {
+         //Platform.runLater(() -> {
          listView.setItems(listItem);
-         });
+         //});
 
       } catch (Exception e) {
          Platform.runLater(() -> {

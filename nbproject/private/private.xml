@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="175">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="189">
         <file>
-            <url>src/LanguageApp/main/MainScene.java</url>
-            <bookmark id="175">
+            <url>src/LanguageApp/controller/PrincipalController.java</url>
+            <bookmark id="188">
                 <name/>
-                <line>1246</line>
+                <line>2136</line>
+                <key/>
+            </bookmark>
+            <bookmark id="186">
+                <name/>
+                <line>2151</line>
+                <key/>
+            </bookmark>
+            <bookmark id="187">
+                <name/>
+                <line>3000</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="Desarrollo de interfaces">
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/MainController.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/resources/bundles/LanguageApp_en.properties</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/main/MainScene.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/PrincipalController.java</file>
         </group>
     </open-files>
 </project-private>

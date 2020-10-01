@@ -19,10 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -33,7 +31,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -104,7 +101,7 @@ public class MainScene extends Application
   private StringProperty labelText;
 
   // Flags of the menu item
-  private String[] idiomaSubt;
+  private String[] subtitle;
 
   // Fade in / out
   private String centerString;
@@ -261,6 +258,7 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="RegisterView">
+
   private void registrationView()
    {
 
@@ -282,6 +280,7 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="RecordarView">
+
   private void forgetView()
    {
 
@@ -468,6 +467,7 @@ public class MainScene extends Application
     return new Pair(usuario_id, usuario_nombre);
    }
 
+
   /**
    *
    * @param activoBoolean
@@ -516,6 +516,7 @@ public class MainScene extends Application
     }
    }
 
+
   /**
    *
    * @param activoBoolean If only wants to delete, put it false
@@ -562,6 +563,7 @@ public class MainScene extends Application
       }
     }
    }
+
 
   /**
    *
@@ -614,6 +616,7 @@ public class MainScene extends Application
     }
     return new Pair(usuario_id, usuario_nombre);
    }
+
 
   /**
    * @param usuarioString
@@ -683,6 +686,7 @@ public class MainScene extends Application
     return 0;
    }
 
+
   public String handleRecordar(String usuarioString, String preguntaString, String respuestaString)
    {
 
@@ -731,6 +735,7 @@ public class MainScene extends Application
     return password;
    }
 
+
   /**
    * Change the scene from formView to forgetView
    *
@@ -741,6 +746,7 @@ public class MainScene extends Application
     setFadeLogin("forget");
 
    }
+
 
   /* ------------------------there are two methods of close*/
   /**
@@ -763,6 +769,7 @@ public class MainScene extends Application
 
     });
    }
+
 
   /**
    *
@@ -794,6 +801,7 @@ public class MainScene extends Application
     MainScene.usuario_id = usuario_id;
    }
 
+
   /**
    *
    * @return
@@ -804,6 +812,7 @@ public class MainScene extends Application
     return MainScene.usuario_id;
    }
 
+
   /**
    *
    * @return
@@ -813,14 +822,17 @@ public class MainScene extends Application
     return progressBarValue.getValue();
    }
 
+
   /**
    *
    * @param longitud
    */
   public void setProgressBarValue(double longitud)
    {
-    double oldValue = Math.round(getProgressBarValue() * 100.0) / 100.0;
-    double newvalue = Math.round((1 / longitud) * 100.0) / 100.0;
+    /*/*double oldValue = Math.ceil(getProgressBarValue() * 100.0) / 100.0;
+    double newvalue = Math.ceil((1 / longitud) * 100.0) / 100.0; o Math.round */
+    double oldValue = (getProgressBarValue() * 100.0) / 100.0;
+    double newvalue = (((1 / longitud) * 100.0) / 100.0) + 0.0001; // +0.0001 to ensure bettewen 1 and 1.99
     progressBarValue.set(oldValue + newvalue);
 
     mainController.setProgressBarValue(progressBarValue);
@@ -833,6 +845,7 @@ public class MainScene extends Application
     if (progressBarValue.getValue() >= 1) progressBarValue.set(0.0);
    }
 
+
   /**
    *
    * @return
@@ -841,6 +854,7 @@ public class MainScene extends Application
    {
     return labelText.getValue();
    }
+
 
   /**
    *
@@ -852,16 +866,22 @@ public class MainScene extends Application
     mainController.setLabelText(text);
    }
 
-  public void setFlagMenu(String[] s)
+
+  
+  /**
+   *
+   * @param subtitle String[] Array of String with the name of the subtitles in the media
+   * @param subtitleAudio The audio subtitle of the media
+   */
+  public void setVisibleFlagMenu(String[] subtitle, String subtitleAudio)
    {
-
-    idiomaSubt = new String[s.length];
-    for (String string : s) {
-      idiomaSubt = s;
-      mainController.setEraserFlags(s);
-    }
-
+    this.subtitle = subtitle;
+    mainController.setVisibleFlagMenu(this.subtitle, subtitleAudio);
    }
+  
+  public void setButtonSubtitle(String flag){
+    principalController.changeListViewByFlag(flag);
+  }
 
 //</editor-fold> 
 
@@ -901,6 +921,7 @@ public class MainScene extends Application
     }
    }
 
+
   /**
    * it's called by mainController when i click in the close menu
    */
@@ -928,6 +949,7 @@ public class MainScene extends Application
     }
    }
 
+
   /* ------------------------there are two methods of close*/
   /**
    * it's called by mainController when i click in the close menu
@@ -947,6 +969,7 @@ public class MainScene extends Application
     Platform.exit();
     System.exit(0);
    }
+
 
   /**
    * it's called by mainController when i click in the Controles menu
@@ -968,6 +991,7 @@ public class MainScene extends Application
     fadeOldIn();
    }
 
+
   /**
    * it's called by mainController when i click in the About menu
    */
@@ -980,6 +1004,7 @@ public class MainScene extends Application
     fadeOldIn();
    }
 
+
   /**
    * it's called by mainController when i click in the Login menu
    */
@@ -989,7 +1014,7 @@ public class MainScene extends Application
     try {
       centerNode = mainController.checkCenter();
       if (centerNode.getId().equals("loginViewHbox") &&
-              loginView.getChildren().get(1).getId().equals("loginViewHbox")) return;
+              loginView.getChildren().get(1).getId().equals("anchorRightLogin")) return;
 
 
       setFadeLogin("login");
@@ -998,6 +1023,7 @@ public class MainScene extends Application
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonLoginMenu()", e.toString(), e);
     }
    }
+
 
   /**
    * it's called by mainController when i click in the Login menu
@@ -1046,6 +1072,7 @@ public class MainScene extends Application
     }
    }
 
+
   /**
    * it's called by Welcome when i click in the Crear cuenta
    */
@@ -1056,7 +1083,7 @@ public class MainScene extends Application
       centerNode = mainController.checkCenter();
       if (centerNode.getId().equals("loginViewHbox") &&
               loginView.getChildren().get(1).getId().equals("registrationViewanchorRight")) return;
-      
+
       setFadeLogin("registro");
 
     } catch (Exception e) {
@@ -1064,16 +1091,6 @@ public class MainScene extends Application
     }
    }
 
-  /**
-   * it's called by Welcome when i click in the subtitle menu
-   */
-  public void buttonSubtitle()
-   {
-    // if doesn't be user, return
-    if (welcomeScreen && usuario_id == 0) {
-    }
-
-   }
 
   /**
    * it's called by mainController when i click in the Dashboard menu
@@ -1093,6 +1110,7 @@ public class MainScene extends Application
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDashBoardMenu()", e.toString(), e);
     }
    }
+
 
   /**
    * it's called by mainController when i click in the Resultados menu
@@ -1203,6 +1221,7 @@ public class MainScene extends Application
             }
           }
          }
+
        };
 
       //centerNode = mainController.checkCenter();
@@ -1227,6 +1246,7 @@ public class MainScene extends Application
     mainController.mainFadeOldIn();
    }
 
+
   /**
    *
    */
@@ -1234,6 +1254,7 @@ public class MainScene extends Application
    {
     mainController.mainFadeOldOut();
    }
+
 
   /**
    *
@@ -1255,6 +1276,7 @@ public class MainScene extends Application
     fIn.setToValue(1.0);
     return fIn;
    }
+
 
   private FadeTransition handleSetFadeOut()
    {
@@ -1285,13 +1307,9 @@ public class MainScene extends Application
 
 //</editor-fold>
 
-  /**
-   * public static void main
-   *
-   * @param args
-   */
   public static void main(String[] args)
    {
     launch(args);
    }
+
  }

@@ -30,6 +30,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -85,80 +86,69 @@ public class PrincipalController implements Initializable
   @FXML private AnchorPane dataBaseviewAnchorPane;
 
   @FXML private Button playButtonReading;
-
   @FXML private Button stopButtonReading;
-
   @FXML private Button backButtonReading;
-
   @FXML private Button forwardButtonReading;
 
   @FXML private Button playButtonWriting;
-
   @FXML private Button stopButtonWriting;
-
   @FXML private Button backButtonWriting;
-
   @FXML private Button forwardButtonWriting;
 
   @FXML private Button playButtonTranslation;
-
   @FXML private Button stopButtonTranslation;
-
   @FXML private Button backButtonTranslation;
-
   @FXML private Button forwardButtonTranslation;
 
   @FXML private Button playButtonItemOriginalReading;
-
   @FXML private Button stopButtonItemOriginalReading;
-
   @FXML private Button backButtonItemOriginalReading;
-
   @FXML private Button forwardButtonItemOriginalReading;
 
   @FXML private Button playButtonItemOriginalWriting;
-
   @FXML private Button stopButtonItemOriginalWriting;
-
   @FXML private Button backButtonItemOriginalWriting;
-
   @FXML private Button forwardButtonItemOriginalWriting;
 
   @FXML private Button playButtonItemOriginalTranslation;
-
   @FXML private Button stopButtonItemOriginalTranslation;
-
   @FXML private Button backButtonItemOriginalTranslation;
-
   @FXML private Button forwardButtonItemOriginalTranslation;
 
   @FXML private Button playButtonItemVirtualReading;
-
   @FXML private Button stopButtonItemVirtualReading;
-
   @FXML private Button backButtonItemVirtualReading;
-
   @FXML private Button forwardButtonItemVirtualReading;
 
   @FXML private Button playButtonItemVirtualWriting;
-
   @FXML private Button stopButtonItemVirtualWriting;
-
   @FXML private Button backButtonItemVirtualWriting;
-
   @FXML private Button forwardButtonItemVirtualWriting;
 
   @FXML private Button playButtonItemVirtualTranslation;
-
   @FXML private Button stopButtonItemVirtualTranslation;
-
   @FXML private Button backButtonItemVirtualTranslation;
-
   @FXML private Button forwardButtonItemVirtualTranslation;
 
-  @FXML private Button correctionButtonWriting;
+  @FXML private Button playButtonItemVirtualTranslatedReading;
+  @FXML private Button stopButtonItemVirtualTranslatedReading;
+  @FXML private Button backButtonItemVirtualTranslatedReading;
+  @FXML private Button forwardButtonItemVirtualTranslatedReading;
 
+  @FXML private Button playButtonItemVirtualTranslatedWriting;
+  @FXML private Button stopButtonItemVirtualTranslatedWriting;
+  @FXML private Button backButtonItemVirtualTranslatedWriting;
+  @FXML private Button forwardButtonItemVirtualTranslatedWriting;
+
+  @FXML private Button playButtonItemVirtualTranslatedTranslation;
+  @FXML private Button stopButtonItemVirtualTranslatedTranslation;
+  @FXML private Button backButtonItemVirtualTranslatedTranslation;
+  @FXML private Button forwardButtonItemVirtualTranslatedTranslation;
+
+  @FXML private Button correctionButtonWriting;
   @FXML private Button correctionButtonTranslation;
+
+
 
   @FXML private ListView<String> listViewV;
 
@@ -171,60 +161,44 @@ public class PrincipalController implements Initializable
   @FXML private MediaView mediaView;
 
   @FXML private Slider volumeSliderReading;
-
   @FXML private Slider rateSliderReading;
-
   @FXML private Slider balanceSliderReading;
 
   @FXML private Slider volumeSliderWriting;
-
   @FXML private Slider rateSliderWriting;
-
   @FXML private Slider balanceSliderWriting;
 
   @FXML private Slider volumeSliderTranslation;
-
   @FXML private Slider rateSliderTranslation;
-
   @FXML private Slider balanceSliderTranslation;
 
   @FXML private Slider mediaSliderReading;
-
   @FXML private Slider mediaSliderWriting;
-
   @FXML private Slider mediaSliderTranslation;
 
   @FXML private Label volumeLabelReading;
-
   @FXML private Label rateLabelReading;
-
   @FXML private Label balanceLabelReading;
 
   @FXML private Label timeLabelReading;
 
   @FXML private Label volumeLabelWriting;
-
   @FXML private Label rateLabelWriting;
-
   @FXML private Label balanceLabelWriting;
 
   @FXML private Label volumeLabelTranslation;
-
   @FXML private Label rateLabelTranslation;
-
   @FXML private Label balanceLabelTranslation;
 
   @FXML private TextField textFieldWriting;
-
   @FXML private TextField textFieldTranslation;
 
   @FXML private AnchorPane anchorMedia;
 
-  @FXML private ProgressIndicator indicatorSuccessWriting;
-
-  @FXML private ProgressIndicator indicatorSuccessTranslation;
-
   @FXML private TabPane tabPanelListViewH;
+  @FXML private Tab tabLeerListViewH;
+  @FXML private Tab tabEscribirListViewH;
+  @FXML private Tab tabTraducirListViewH;
 
   // hyperlink youtube
   @FXML Hyperlink youtubeLink;
@@ -253,11 +227,11 @@ public class PrincipalController implements Initializable
 
   private Item[][] idiomas;
 
-  private String[] idiomaSubt;
+  private String subtitleAudio;
 
   File jsonBinder;
 
-  String[] listado;
+  String[] subtitle;
 
 // Player
   private MediaPlayer mediaPlayer;
@@ -369,6 +343,7 @@ public class PrincipalController implements Initializable
   // ProgressBar
   private double progressBarStep;
   private int totalMessages;
+  private int cont;
 
   // For the bounle of idioms
   ResourceBundle resources;
@@ -420,6 +395,7 @@ public class PrincipalController implements Initializable
           updateValuesSlider();
         }
        }
+
      };
     //</editor-fold>
 
@@ -476,6 +452,7 @@ public class PrincipalController implements Initializable
           message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / mediaToSlideThread", e.toString(), e);
         }
        }
+
      }
     );
 
@@ -512,66 +489,82 @@ public class PrincipalController implements Initializable
 
             //<editor-fold defaultstate="collapsed" desc="Creando Matrices">
 
+            cont = 1;
+
             handleCloseMenu("handleOpenMenu2");
             // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
             jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
 
+            // el subtitle suele salir ordenado, pero no es seguro, solo para ir cargango jsons
+            subtitle = jsonBinder.list(); // Name of the carpets into Json (Englis, Spanish...)
 
-            listado = jsonBinder.list(); // Name of the carpets into Json (Englis, Spanish...)
-            idiomas = new Item[listado.length][]; // Array of items[] -> idiomas[][]
-            wordSet = (Set<String>[]) new Set[listado.length]; // set of words
-            phraseSet = (Set<String>[]) new Set[listado.length]; // set of phrases
+            // Problemas with the generic array - fixed
+            idiomas = new Item[subtitle.length][]; // Array of items[] -> idiomas[][]
+
+            wordSet = (Set<String>[]) new Set[subtitle.length]; // set of words
+
+            phraseSet = (Set<String>[]) new Set[subtitle.length]; // set of phrases
 
 
-            totalMessages = 7 + (listado.length * 5);
+            totalMessages = 7 + (subtitle.length * 5);
 
             setProgressBar(totalMessages, "Creando Matrices");
 
-            audioClipsWords = (Map<String, AudioClip>[]) new Map[listado.length]; // Array of Map <String, Audiocips> of words
-            audioClipsPhrases = (Map<String, AudioClip>[]) new Map[listado.length]; // Array of Map <String, Audiocips> of phrases
+            // Array of Map <String, Audiocips> of words
+            audioClipsWords = (Map<String, AudioClip>[]) new Map[subtitle.length];
+            // Array of Map <String, Audiocips> of phrases
+            audioClipsPhrases = (Map<String, AudioClip>[]) new Map[subtitle.length];
 
             //</editor-fold>
 
             //<editor-fold defaultstate="collapsed" desc="Comenzando a crear los audios">
 
             setProgressBar(totalMessages, "Comenzando a crear los audios");
-            for (int x = 0; x < listado.length; x++) {
 
-              setProgressBar(totalMessages, "Leyendo Json en " + listado[x].replaceAll(".json", ""));
+
+            for (int x = 0; x < subtitle.length; x++) {
+              setProgressBar(totalMessages, "Leyendo Json en " + subtitle[x].replaceAll(".json", ""));
 
               // Read a json ,call a read JSON, return an array of Item class objects
-              File file = new File(dire.getLastDirectory() + "Json\\\\" + listado[x]);
+              File file = new File(dire.getLastDirectory() + "Json\\\\" + subtitle[x]);
 
               if (file.exists()) {
                 // Read the Json witn the Item[]
                 idiomas[x] = gj.getJson(file);
-                
-                // Extract the languages from the last row of the any itemInicio
-                idiomaSubt = idiomas[0][idiomas[0].length - 1].getText().split(" ");                
-                
-                setProgressBar(totalMessages, "Creando palabras en " + idiomaSubt[x].replaceAll(".json", ""));
-                
+                subtitle[x] = subtitle[x].replaceAll(".json", "");
+
+                // Extract the languages of the media, the rest from subtitle[]
+                subtitleAudio = idiomas[x][idiomas[x].length - 1].getText();
+
+                setProgressBar(totalMessages, "Creando palabras en " + subtitle[x]);
+
                 wordSet[x] = swal.saveWordsAsList(idiomas[x]);
 
-                setProgressBar(totalMessages, "Creando frases en " + idiomaSubt[x].replaceAll(".json", ""));
-                
+                setProgressBar(totalMessages, "Creando frases en " + subtitle[x]);
+
                 phraseSet[x] = sp.sortPhrases(idiomas[x]);
               }
             }
 
-            // Creating the menu with flags
-            mainScene.setFlagMenu(idiomaSubt);
+            // Creating the menu with flags (deleting the useless flag )
+            mainScene.setVisibleFlagMenu(subtitle, subtitleAudio);
 
             //</editor-fold>
 
             //<editor-fold defaultstate="collapsed" desc="Llenando tablas">
             setProgressBar(totalMessages, "Llenando tablas");
 
-            // fill a ListView with the phrases of the Items array
-            itemsOriginal = idiomas[0];
-            itemsTranslation = idiomas[1];
+            // Fill itemOriginal with the first language of the subtitleAudio[0]
+            itemsOriginal = idiomas[Tools.getIndex(subtitle, subtitleAudio)];
+            // Fill translation with the default language of the machine, if it's equal to the
+            // first then put spanis by default
+            String languageDefault = Tools.getLanguageDefault();
+            String trans = (!subtitleAudio.equals(languageDefault)) ? languageDefault : "Spanish";
+            itemsTranslation = idiomas[Tools.getIndex(subtitle, trans)];
 
+            // fill a ListView with the phrases of the Items array
             flw.setListView(listViewV, itemsOriginal);
+
             // Creating the path to the media
             mediaStringUrl = new File(dire.getLastDirectory() + dire.getLastFile()).toURI();
 
@@ -585,22 +578,18 @@ public class PrincipalController implements Initializable
             setMediaPlayer();
 
             // Setting audiclips
-            for (int x = 0; x < listado.length; x++) {
+            for (int x = 0; x < subtitle.length; x++) {
 
-              setProgressBar(totalMessages, "Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
-
+              setProgressBar(totalMessages, "Creando tablas de palabras en " + subtitle[x]);
               audioClipsWords[x] = ac.setAudioClip(wordSet[x],
-                      dire.getLastDirectory() + listado[x]
-                      .replaceAll(".json", "") + "Dictionary\\Words",
+                      dire.getLastDirectory() + subtitle[x] + "Dictionary\\Words",
                       rateSliderReading, balanceSliderReading, volumeSliderReading);
 
-              setProgressBar(totalMessages, "Creando tablas de palabras en " + listado[x].replaceAll(".json", ""));
+              setProgressBar(totalMessages, "Creando tablas de frases en " + subtitle[x]);
               audioClipsPhrases[x] = ac.setAudioClip(phraseSet[x],
-                      dire.getLastDirectory() + listado[x]
-                      .replaceAll(".json", "") + "Dictionary\\Phrases",
+                      dire.getLastDirectory() + subtitle[x] + "Dictionary\\Phrases",
                       rateSliderReading, balanceSliderReading, volumeSliderReading);
             }
-
 
             //</editor-fold>
 
@@ -624,6 +613,7 @@ public class PrincipalController implements Initializable
             setProgressBar(totalMessages, "Configuración final");
             // The first lap of the slider
             mediaPlayerSlider = "media"; // to the first lap
+
             // Setting the first itemInicio
             indexItemV = 0;
             listViewV.scrollTo(0);
@@ -632,8 +622,8 @@ public class PrincipalController implements Initializable
             showListViewH();
 
             // Setting the initial pause
-            indexItemV = 0;
             currentOriginal = new Duration(itemsOriginal[indexItemV].getStart());
+
             // Setting the binding beetwen Writer Tab and Reader Tab
             setBinding();
             // Initial call that return the total duration of the file 
@@ -652,6 +642,7 @@ public class PrincipalController implements Initializable
           });
         }
        }
+
      });
 
 //</editor-fold>
@@ -823,6 +814,8 @@ public class PrincipalController implements Initializable
 
   /**
    * Open a SelectFile and seek a json to load the phrases (Part 1)
+   *
+   * @return
    */
   public boolean handleOpenMenu()
    {
@@ -845,7 +838,7 @@ public class PrincipalController implements Initializable
 
       handleOpenMenu2Play();
 
-    /*/*} catch (NullPointerException ex) {
+      /*/*} catch (NullPointerException ex) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", ex.toString(), ex); */
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleOpenMenu()", e.toString(), e);
@@ -868,6 +861,7 @@ public class PrincipalController implements Initializable
     }
    }
 
+
   /**
    *
    */
@@ -878,6 +872,7 @@ public class PrincipalController implements Initializable
       handleOpenMenu2Lock.notify();
     }
    }
+
 
   /**
    *
@@ -902,6 +897,7 @@ public class PrincipalController implements Initializable
    */
   private void setProgressBar(double longitud, String text) throws InterruptedException
    {
+    //System.out.println("cont " + cont++ + " " + text);
     progressBarStep = longitud;
     mainScene.setLabelText(text);
     mainScene.setProgressBarValue(progressBarStep);
@@ -1085,6 +1081,12 @@ public class PrincipalController implements Initializable
       if ((status == Status.STOPPED || status == Status.READY) && !originalButton) {
 
         indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+              // just in case doesn't exit.
+        if (indexItemV < 0) {
+          indexItemV = 0;
+          listViewV.getSelectionModel().clearAndSelect(indexItemV);
+        }
+
         if (indexItemV != 0) {
           start = itemsOriginal[indexItemV].getStart();
           mediaPlayer.setStartTime(Duration.seconds(start));
@@ -1263,6 +1265,12 @@ public class PrincipalController implements Initializable
       mediaSliderWriting.setDisable(true);
       mediaSliderTranslation.setDisable(true);
       indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+            // just in case doesn't exit.
+      if (indexItemV < 0) {
+        indexItemV = 0;
+        listViewV.getSelectionModel().clearAndSelect(indexItemV);
+      }
+
       start = itemsOriginal[indexItemV].getStart();
       end = itemsOriginal[indexItemV].getEnd();
       mediaPlayer.setStartTime(Duration.seconds(start));
@@ -1316,6 +1324,11 @@ public class PrincipalController implements Initializable
         pausedImageButtonOriginal();
         playedImageButton();
         indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+              // just in case doesn't exit.
+        if (indexItemV < 0) {
+          indexItemV = 0;
+          listViewV.getSelectionModel().clearAndSelect(indexItemV);
+        }
         currentOriginal = new Duration(itemsOriginal[indexItemV].getStart());
         mediaPlayerPlay();
       }
@@ -1697,6 +1710,11 @@ public class PrincipalController implements Initializable
 
       listViewH02Reading.setVisible(true);
       indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+            // just in case doesn't exit.
+      if (indexItemV < 0) {
+        indexItemV = 0;
+        listViewV.getSelectionModel().clearAndSelect(indexItemV);
+      }
       markerTextOriginal = itemsOriginal[indexItemV].getText();
       markerTextTranslation = itemsTranslation[indexItemV].getText();
       // Extract the orignial text and the answer
@@ -1775,9 +1793,9 @@ public class PrincipalController implements Initializable
       // put the result in the progress indicator
       success /= 100;
       if (currentTab.equals(escribir)) {
-        indicatorSuccessWriting.setProgress(success);
+        mainScene.setProgressBarValue(success);
       } else if (currentTab.equals(traducir)) {
-        indicatorSuccessTranslation.setProgress(success);
+        mainScene.setProgressBarValue(success);
       }
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleCorrectionButton()", e.toString(), e);
@@ -1934,6 +1952,7 @@ public class PrincipalController implements Initializable
     notify();
    }
 
+
   /**
    *
    */
@@ -1942,6 +1961,7 @@ public class PrincipalController implements Initializable
     mediaToSlider = "pause";
     notify();
    }
+
 
   /**
    *
@@ -2027,48 +2047,6 @@ public class PrincipalController implements Initializable
 //<editor-fold defaultstate="collapsed" desc="Setting the listView">
 
   /**
-   * Put the word of itemInicio in listView H
-   */
-  private void showListViewH()
-   {
-    try {
-      if (mediaPlayer == null) return; // if doesn't exits a media return
-
-      // Get the index of the clicked itemInicio
-      indexItemV = listViewV.getSelectionModel().getSelectedIndex();
-      markerTextOriginal = itemsOriginal[indexItemV].getText();
-
-      markerTextTranslation = itemsTranslation[indexItemV].getText();
-
-      // Cleanig the phrase
-      itemWordsOriginal = swal.cleanWords(markerTextOriginal);
-      itemWordsTranslation = swal.cleanWords(markerTextTranslation);
-
-      // Filling listViewH01Reading with words
-      ObservableList<String> listItemOriginal = FXCollections.observableArrayList();
-      ObservableList<String> listItemTranslation = FXCollections.observableArrayList();
-
-      // Filling the list
-      listItemOriginal.addAll(Arrays.asList(itemWordsOriginal));
-      listItemTranslation.addAll(Arrays.asList(itemWordsTranslation));
-      Platform.runLater(() -> {
-        listViewH01Reading.setItems(listItemOriginal);
-        listViewH02Reading.setItems(listItemTranslation);
-
-        listViewH01Reading.getSelectionModel().clearSelection();
-        listViewH02Reading.getSelectionModel().clearSelection();
-
-        listViewH01Reading.getSelectionModel().select(0);
-        listViewH02Reading.getSelectionModel().select(0);
-      });
-
-    } catch (ArrayIndexOutOfBoundsException ex) {
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);
-    }
-   }
-
-  /**
    *
    */
   private void changeListviewBySliderMedia()
@@ -2149,6 +2127,125 @@ public class PrincipalController implements Initializable
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / changeListviewBySliderMedia()", e.toString(), e);
     }
+   }
+
+
+  /**
+   *
+   * @param flag String, the button subtitle clicked
+   */
+  public void changeListViewByFlag(String flag)
+   {
+
+    flag = flag.replaceAll("Menu", "");
+    // itemsOriginal = idiomas[0];
+    itemsTranslation = idiomas[Tools.getIndex(subtitle, flag)];
+    changeListview(flag); // Reuse changeListView to show itemTranslation
+   }
+
+
+  /**
+   * This method is use to change the listViewV depend the text (leee, escribir, traducir)
+   *
+   * @param text
+   */
+  private void changeListview(String text)
+   {
+    indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+          // just in case doesn't exit.
+    if (indexItemV < 0) {
+      indexItemV = 0;
+      listViewV.getSelectionModel().clearAndSelect(indexItemV);
+    }
+
+    if (text.equals(leer)) {
+      oldNode = rateSliderReading;
+      if (mediaPlayer != null) { // if doesn't exits a media return
+        currentTab = leer;
+        flw.setListView(listViewV, itemsOriginal);
+      }
+
+    } else if (text.equals(escribir) || Arrays.asList(subtitle).contains(text)) {
+      oldNode = rateSliderWriting;
+      if (mediaPlayer != null) { // if doesn't exits a media return
+        currentTab = escribir;
+        // Setting the listViewH itemInicio
+        flw.setListView(listViewV, itemsTranslation);
+
+        tabPanelListViewH.getSelectionModel().clearAndSelect(1);// if comes from flag menuItem
+        tabPanelListViewH.requestFocus();
+      }
+
+    } else if (text.equals(traducir)) {
+      oldNode = rateSliderTranslation;
+      if (mediaPlayer != null) { // if doesn't exits a media return
+        currentTab = traducir;
+        flw.setListView(listViewV, itemsOriginal);
+      }
+    }
+
+
+      // Fill showListViewH01(original) and H2(translation)
+      listViewV.getSelectionModel().clearAndSelect(indexItemV);
+      listViewV.scrollTo(indexItemV);
+      showListViewH();
+
+
+
+    // Put visible and invisible the textfield and listviews
+    listViewH01Reading.setVisible(currentTab.equals(leer));
+    textFieldWriting.setVisible(currentTab.equals(escribir));
+    textFieldTranslation.setVisible(currentTab.equals(traducir));
+    listViewH02Reading.setVisible(currentTab.equals(leer));
+   }
+
+
+  /**
+   * Put the word of itemInicio in listView H
+   */
+  private void showListViewH()
+   {
+    try {
+      if (mediaPlayer == null) return; // if doesn't exits a media return
+
+      // Get the index of the clicked itemInicio
+      indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+            // just in case doesn't exit.
+      if (indexItemV < 0) {
+        indexItemV = 0;
+        listViewV.getSelectionModel().clearAndSelect(indexItemV);
+      }
+      markerTextOriginal = itemsOriginal[indexItemV].getText();
+
+      markerTextTranslation = itemsTranslation[indexItemV].getText();
+
+      // Cleanig the phrase
+      itemWordsOriginal = swal.cleanWords(markerTextOriginal);
+      itemWordsTranslation = swal.cleanWords(markerTextTranslation);
+
+      // Filling listViewH01Reading with words
+      ObservableList<String> listItemOriginal = FXCollections.observableArrayList();
+      ObservableList<String> listItemTranslation = FXCollections.observableArrayList();
+
+      // Filling the list
+      listItemOriginal.addAll(Arrays.asList(itemWordsOriginal));
+      listItemTranslation.addAll(Arrays.asList(itemWordsTranslation));
+      Platform.runLater(() -> {
+        listViewH01Reading.setItems(listItemOriginal);
+        listViewH02Reading.setItems(listItemTranslation);
+
+        listViewH01Reading.getSelectionModel().clearSelection();
+        listViewH02Reading.getSelectionModel().clearSelection();
+
+        listViewH01Reading.getSelectionModel().select(0);
+        listViewH02Reading.getSelectionModel().select(0);
+      });
+
+    } catch (ArrayIndexOutOfBoundsException ex) {
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);
+    }
+
    }
 
 //</editor-fold>
@@ -2435,6 +2532,7 @@ public class PrincipalController implements Initializable
           mediaPlayerSlider = "media";
         }
        }
+
      });
 
     // Setting the slider when pressing on it
@@ -2496,6 +2594,7 @@ public class PrincipalController implements Initializable
 
      });
    }
+
 
   /**
    * updateValuesSlider
@@ -2602,6 +2701,7 @@ public class PrincipalController implements Initializable
 //</editor-fold>    
 
 //<editor-fold defaultstate="collapsed" desc="Helper to the Binding">
+
   /**
    * Helper to the binding
    *
@@ -2615,6 +2715,7 @@ public class PrincipalController implements Initializable
     s1.valueProperty().bindBidirectional(s2.valueProperty());
     l1.textProperty().bindBidirectional(l2.textProperty());
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Seting TransversalFocus ">
@@ -2647,6 +2748,11 @@ public class PrincipalController implements Initializable
         try {
 
           indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+                // just in case doesn't exit.
+          if (indexItemV < 0) {
+            indexItemV = 0;
+            listViewV.getSelectionModel().clearAndSelect(indexItemV);
+          }
 
           switch (ke.getCode()) {
             case TAB:
@@ -2723,12 +2829,18 @@ public class PrincipalController implements Initializable
         ////////if (mediaPlayer == null)return; // if doesn't exits a media return
 
         indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+              // just in case doesn't exit.
+        if (indexItemV < 0) {
+          indexItemV = 0;
+          listViewV.getSelectionModel().clearAndSelect(indexItemV);
+        }
         showListViewH();
         // if I do double click
         if (event.getClickCount() == 2) {
           handlePlayButtonItemOriginal();
         }
        }
+
      });
 
     listViewV.setOnMouseReleased((e) -> {
@@ -2737,6 +2849,12 @@ public class PrincipalController implements Initializable
       setBorder(listViewV);
       oldNode = tabPanelListViewH;
       indexItemV = listViewV.getSelectionModel().getSelectedIndex();
+      // just in case doesn't exit.
+      if (indexItemV < 0) {
+        indexItemV = 0;
+        listViewV.getSelectionModel().clearAndSelect(indexItemV);
+      }
+
       showListViewH();
     });
 
@@ -2857,125 +2975,81 @@ public class PrincipalController implements Initializable
 
     //<editor-fold defaultstate="collapsed" desc="Tab pane">
 
-    tabPanelListViewH.getSelectionModel()
-            .selectedItemProperty().addListener(new ChangeListener<Tab>()
-             {
-
-              @Override
-              public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1)
-               {
-
-                if (t1.getText().equals(leer)) {
-                  oldNode = rateSliderReading;
-                  if (mediaPlayer != null) { // if doesn't exits a media return
-
-                    indexItemV = listViewV.getSelectionModel().getSelectedIndex();
-                    flw.setListView(listViewV, itemsOriginal);
-                  }
-
-                } else if (t1.getText().equals(escribir)) {
-                  oldNode = rateSliderWriting;
-                  if (mediaPlayer != null) { // if doesn't exits a media return
-
-                    flw.setListView(listViewV, itemsTranslation);
-                  }
-
-                } else if (t1.getText().equals(traducir)) {
-                  oldNode = rateSliderTranslation;
-                  if (mediaPlayer != null) { // if doesn't exits a media return
-
-                    flw.setListView(listViewV, itemsOriginal);
-                  }
-                }
-                listViewV.getSelectionModel().select(indexItemV);
-                currentTab = t1.getText();
-
-                listViewH01Reading.setVisible(currentTab.equals(leer));
-                textFieldWriting.setVisible(currentTab.equals(escribir));
-                textFieldTranslation.setVisible(currentTab.equals(traducir));
-                listViewH02Reading.setVisible(currentTab.equals(leer));
-               }
-
-
-              @Override
-              public String toString()
-               {
-                return super.toString();
-               }
-
-             });
-
-    tabPanelListViewH.addEventFilter(KeyEvent.KEY_PRESSED,
-            new EventHandler<KeyEvent>()
+    tabPanelListViewH.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
      {
 
       @Override
-      public void handle(KeyEvent event
-      )
+      public void handle(KeyEvent event)
        {
 
         KeyCode key = event.getCode();
         // An triger
         if (!event.getTarget().equals(tabPanelListViewH)) return;
-        if (key.equals(KeyCode.TAB)) {
-          event.consume();
-        }
+        if (key.equals(KeyCode.TAB)) event.consume();
+
         if (key.equals(KeyCode.UP)) {
           event.consume();
-          if (oldNode.equals(listViewV)) {
-            if (currentTab.equals(leer)) {
-              rateSliderReading.requestFocus();
-              setBorder(rateSliderReading);
-            }
-            if (currentTab.equals(escribir)) {
-              rateSliderWriting.requestFocus();
-              setBorder(rateSliderWriting);
-            }
-            if (currentTab.equals(traducir)) {
-              rateSliderTranslation.requestFocus();
-              setBorder(rateSliderTranslation);
-            }
-          } else {
+
+          if (!oldNode.equals(listViewV)) {
             oldNode.requestFocus();
             setBorder(oldNode);
+            return;
+          }
+          if (currentTab.equals(leer)) {
+            rateSliderReading.requestFocus();
+            setBorder(rateSliderReading);
+          }
+          if (currentTab.equals(escribir)) {
+            rateSliderWriting.requestFocus();
+            setBorder(rateSliderWriting);
+          }
+          if (currentTab.equals(traducir)) {
+            rateSliderTranslation.requestFocus();
+            setBorder(rateSliderTranslation);
           }
         }
-        if (key.equals(KeyCode.LEFT) && currentTab.equals(leer)) {
-          setBorder(listViewV);
-          listViewV.requestFocus();
-          event.consume();
+
+        if (key.equals(KeyCode.LEFT)) {
+          if (currentTab.equals(leer)) {
+            setBorder(listViewV);
+            listViewV.requestFocus();
+            event.consume();
+          } else {
+            tabPanelListViewH.getSelectionModel().selectPrevious();
+            changeListview(tabPanelListViewH.getSelectionModel().getSelectedItem().getText());
+            event.consume();
+
+          }
         }
-        if (key.equals(KeyCode.RIGHT) && currentTab.equals(traducir)) {
-          event.consume();
+
+        if (key.equals(KeyCode.RIGHT)) {
+          if (currentTab.equals(traducir)) {
+            event.consume();
+          } else {
+            tabPanelListViewH.getSelectionModel().selectNext();
+            changeListview(tabPanelListViewH.getSelectionModel().getSelectedItem().getText());
+            event.consume();
+
+          }
         }
         if (key.equals(KeyCode.DOWN)) {
           event.consume();
         }
        }
 
-     }
-    );
+     });
+    tabPanelListViewH.setOnMousePressed((event) -> {
+      event.consume();
+    });
 
-    tabPanelListViewH.setOnMouseReleased(
-            (MouseEvent) -> {
+    tabPanelListViewH.setOnMouseReleased((event) -> {
 
+      Tab t = tabPanelListViewH.getSelectionModel().getSelectedItem();
+      changeListview(t.getText());
       setBorder(tabPanelListViewH);
-      MouseEvent.consume();
+      event.consume();
+    });
 
-      if (mediaPlayer == null) return; // if doesn't exits a media return
-
-      if (currentTab.equals(leer)) {
-        flw.setListView(listViewV, itemsOriginal);
-        oldNode = rateSliderReading;
-      } else if (currentTab.equals(escribir)) {
-        flw.setListView(listViewV, itemsTranslation);
-        oldNode = rateSliderWriting;
-      } else if (currentTab.equals(traducir)) {
-        flw.setListView(listViewV, itemsOriginal);
-        oldNode = rateSliderTranslation;
-      }
-    }
-    );
     //</editor-fold>   
 
     //<editor-fold defaultstate="collapsed" desc="TextField">
@@ -3326,6 +3400,7 @@ public class PrincipalController implements Initializable
           event.consume();
         } else listViewH02Reading.setVisible(false);
        }
+
      });
     //</editor-fold>
 
@@ -3419,6 +3494,7 @@ public class PrincipalController implements Initializable
           message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / setTransversalFocus()", e.toString(), e);
         }
        }
+
      ;
     });
     //</editor-fold>
@@ -3440,6 +3516,7 @@ public class PrincipalController implements Initializable
         setBorder(lw);
         currentTab = leer;
        }
+
      });
 
     lw.setOnMouseReleased((event) -> {

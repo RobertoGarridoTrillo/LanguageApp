@@ -13,6 +13,8 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -43,32 +45,32 @@ public class MainController implements Initializable
   @FXML private AnchorPane mainViewAnchorPaneBottom;
   @FXML private Label mainLabelBottom;
   @FXML private ProgressBar mainProgressBarBottom;
-  
+
   @FXML private MenuBar menuBar;
-  
+
   @FXML private Menu fileMenu;
   @FXML private Menu userMenu;
   @FXML private Menu flagsMenu;
   @FXML private Menu goMenu;
   @FXML private Menu helpMenu;
-  
+
   @FXML private MenuItem openMenu;
   @FXML private MenuItem closeMenu;
   @FXML private MenuItem exitMenu;
-  
+
   @FXML private MenuItem loginMenu;
   @FXML private MenuItem unloginMenu;
   @FXML private MenuItem registroMenu;
-  
+
   @FXML private MenuItem EnglishMenu;
   @FXML private MenuItem SpanishMenu;
   @FXML private MenuItem FrenchMenu;
   @FXML private MenuItem ItalianMenu;
   @FXML private MenuItem JapaneseMenu;
-  
+
   @FXML private MenuItem dashBoard;
   @FXML private MenuItem databaseMenu;
-  
+
   @FXML private MenuItem controlesMenu;
   @FXML private MenuItem aboutMenu;
 
@@ -95,8 +97,16 @@ public class MainController implements Initializable
   // Array of nodes (Flags)
   private MenuItem[] menuItemFlags;
 
+  // List of the Subtitles and audio
+  private String[] subtitle;
+  private String subtitleAudio;
+
   // Images of the flags
   ImageView[] imageViews;
+
+  // Events of the flags
+  EventHandler<ActionEvent> eventHandlerFlags;
+
 
   // Central Node
   private Node centerNode, centerNodeOld;
@@ -133,12 +143,12 @@ public class MainController implements Initializable
     mainStage = MainScene.getMainStage();
 
     // Fade In / Out
-/*/*    setMainFade(); */
+    /*/*    setMainFade(); */
 
     // Initial value of the progressBar and label
     progressBarValue = new SimpleDoubleProperty(0.0);
     labelText = "";
-    
+
     mainProgressBarBottom.setProgress(progressBarValue.getValue());
     mainProgressBarBottom.setVisible(false);
     mainLabelBottom.setText(labelText);
@@ -150,6 +160,7 @@ public class MainController implements Initializable
 
     // Setting the flags of the menu item
     setImageFlags();
+    setEventFlags();
 
     // Effect fade
     fadeProgressBar = new FadeTransition(Duration.millis(2000), mainProgressBarBottom);
@@ -177,13 +188,13 @@ public class MainController implements Initializable
    */
   private void setImageFlags()
    {
-    
+
     try {
-      
+
       imageViews = new ImageView[5];
       menuItemFlags = new MenuItem[]{EnglishMenu, SpanishMenu,
         FrenchMenu, ItalianMenu, JapaneseMenu};
-      
+
       String[] ruta = {
         "English.png", "Spanish.png", "French.png", "Italian.png", "Japanese.png"};
       for (int i = 0; i < imageViews.length; i++) {
@@ -195,23 +206,61 @@ public class MainController implements Initializable
         menuItemFlags[i].setVisible(false);
       }
 
-      // the first is always disabled
-      menuItemFlags[0].setDisable(true);
-      
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainController / setImageFlags()", e.toString(), e);
     }
    }
 
+
+  /**
+   *
+   */
+  private void setEventFlags()
+   {
+    eventHandlerFlags = setEventHandlerFlags(); // Creo a new EventHandler
+    EnglishMenu.setOnAction(eventHandlerFlags);
+    FrenchMenu.setOnAction(eventHandlerFlags);
+    ItalianMenu.setOnAction(eventHandlerFlags);
+    JapaneseMenu.setOnAction(eventHandlerFlags);
+    SpanishMenu.setOnAction(eventHandlerFlags);
+   }
+
+
+  /**
+   *
+   * @return
+   */
+  private EventHandler<ActionEvent> setEventHandlerFlags()
+   {
+    return new EventHandler<ActionEvent>()
+     {
+
+      @Override
+      public void handle(ActionEvent event)
+       {
+
+        MenuItem menuItemitem = (MenuItem) event.getSource();
+        String flag = menuItemitem.getId();
+
+        mainScene.setButtonSubtitle(flag);
+       }
+
+     };
+   }
+
+
   /**
    *
    * @param s Array of String with the names of languages loaded.
+   * @param ss String, the audio lenguage
    */
-  public void setEraserFlags(String[] s)
+  public void setVisibleFlagMenu(String[] s, String ss)
    {
     for (String menuItem : s) {
       menuItemFlags[Arrays.asList(s).indexOf(menuItem)].setVisible(true);
     }
+     // the language of the media is always disabled
+     menuItemFlags[Arrays.asList(s).indexOf(ss)].setDisable(true);
    }
 
   //</editor-fold>
@@ -229,6 +278,7 @@ public class MainController implements Initializable
     checkCenter();
    }
 
+
   /**
    * When click on the close menu
    */
@@ -236,6 +286,7 @@ public class MainController implements Initializable
    {
     mainScene.buttonCloseMenu();
    }
+
 
   /**
    * When click on the close menu
@@ -248,6 +299,7 @@ public class MainController implements Initializable
     checkCenter();
    }
 
+
   /**
    * handle of the login menu
    */
@@ -258,6 +310,7 @@ public class MainController implements Initializable
     // change the color of the bottom depens its place
     checkCenter();
    }
+
 
   /**
    * handle of the Unlogin menu
@@ -270,6 +323,7 @@ public class MainController implements Initializable
     /*/*checkCenter(); */
    }
 
+
   /**
    * handle of the login menu
    */
@@ -281,13 +335,6 @@ public class MainController implements Initializable
     checkCenter();
    }
 
-  /**
-   * handle of the login menu
-   */
-  @FXML private void handleSubtitle()
-   {
-    mainScene.buttonSubtitle();
-   }
 
   /**
    * When click on the close menu
@@ -297,6 +344,7 @@ public class MainController implements Initializable
     mainScene.buttonControlesMenu();
    }
 
+
   /**
    * handle of the About menu"
    */
@@ -304,6 +352,7 @@ public class MainController implements Initializable
    {
     mainScene.buttonAboutMenu();
    }
+
 
   /**
    * handle of the Resultados menu
@@ -315,6 +364,7 @@ public class MainController implements Initializable
     // change the color of the bottom depens its place
     checkCenter();
    }
+
 
   /**
    * handle of the Dashboard menu
@@ -343,11 +393,11 @@ public class MainController implements Initializable
     //System.out.println("center " + centerString);
 
     if (centerString.equals("loginViewHbox")) {
-      
+
       mainViewBorderPane.setStyle("-fx-background-color: #004f8a");
-      
+
     } else {
-      
+
       mainViewBorderPane.setStyle("-fx-background-color: #252525");
     }
     return centerNode;
@@ -365,6 +415,7 @@ public class MainController implements Initializable
    {
     return mainProgressBarBottom.getProgress();
    }
+
 
   /**
    *
@@ -385,6 +436,7 @@ public class MainController implements Initializable
     //});
    }
 
+
   /**
    *
    * @return double, the value of the progressBar
@@ -393,6 +445,7 @@ public class MainController implements Initializable
    {
     return mainLabelBottom.getText();
    }
+
 
   /**
    *
@@ -408,7 +461,6 @@ public class MainController implements Initializable
 
   //</editor-fold>
 
-
   //<editor-fold defaultstate="collapsed" desc="Fade in / out openMenu">
 
   /**
@@ -417,12 +469,12 @@ public class MainController implements Initializable
   public void mainFadeNewIn()
    {
     centerNode = checkCenter();
-    
+
     mainFadeNewIn = new FadeTransition(Duration.millis(500), centerNode);
 
     //mainFadeNewIn.setFromValue(0.0);
     mainFadeNewIn.setToValue(1.0);
-    
+
     System.out.println("mainFadeNewIn " + mainFadeNewIn.getNode() + "\n");
 
     //centerNode.setVisible(true);    
@@ -430,17 +482,18 @@ public class MainController implements Initializable
     mainFadeNewIn.play();
    }
 
+
   /**
    *
    */
   public void mainFadeOldIn()
    {
-    
+
     //mainFadeOldIn.setFromValue(0.0);
     mainFadeOldIn.setToValue(1.0);
     mainFadeOldIn.play();
     //centerNodeOld.setVisible(true);
-    
+
     System.out.println("mainFadeOldIn " + mainFadeOldIn.getNode() + "\n");
    }
 
@@ -452,18 +505,16 @@ public class MainController implements Initializable
    {
     centerNode = checkCenter();
     centerNodeOld = centerNode;
-    
+
     mainFadeOldOut = new FadeTransition(Duration.millis(500), centerNodeOld);
     mainFadeOldIn = new FadeTransition(Duration.millis(500), centerNodeOld);
-    
+
     mainFadeOldOut.setFromValue(1.0);
     mainFadeOldOut.setToValue(0.0);
-    
+
     mainFadeOldOut.setOnFinished((e) -> {
       //centerNodeOld.setVisible(false);
     });
-    
-    System.out.println("mainFadeOldOut " + mainFadeOldOut.getNode() + "  ----------------");
 
     /*/*centerNode.setDisable(false);*/
     // centerNode.setVisible(true);

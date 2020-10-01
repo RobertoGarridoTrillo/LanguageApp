@@ -29,11 +29,11 @@
             </Menu>
             <Menu fx:id="flagsMenu" mnemonicParsing="false" text="%Subtítulos">
                <items>
-                  <MenuItem fx:id="EnglishMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Inglés" />
-                  <MenuItem fx:id="SpanishMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Español" />
-                  <MenuItem fx:id="FrenchMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Francés" />
-                  <MenuItem fx:id="ItalianMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Italiano" />
-                  <MenuItem fx:id="JapaneseMenu" mnemonicParsing="false" onAction="#handleSubtitle" text="%Japonés" />
+                  <MenuItem fx:id="EnglishMenu" mnemonicParsing="false" text="%Inglés" />
+                  <MenuItem fx:id="SpanishMenu" mnemonicParsing="false" text="%Español" />
+                  <MenuItem fx:id="FrenchMenu" mnemonicParsing="false" text="%Francés" />
+                  <MenuItem fx:id="ItalianMenu" mnemonicParsing="false" text="%Italiano" />
+                  <MenuItem fx:id="JapaneseMenu" mnemonicParsing="false" text="%Japonés" />
                </items>
             </Menu>
             <Menu fx:id="goMenu" mnemonicParsing="false" text="%Ir a">

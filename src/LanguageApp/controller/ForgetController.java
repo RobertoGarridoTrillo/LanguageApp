@@ -548,7 +548,7 @@ public class ForgetController implements Initializable
 
       String result = null;
       int preguntaInt = 0;
-      String[] languages = HandleLocale01.getLanguages();
+      String[] languages = HandleLocale01.getLANGUAGES();
       ResourceBundle rs = null;
       String pregunta = null;
       Locale locale;
