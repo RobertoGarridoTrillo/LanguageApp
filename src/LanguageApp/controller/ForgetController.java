@@ -70,6 +70,7 @@ public class ForgetController implements Initializable
 
   // The nodes of the view
   private Node[] node;
+  private HashMap<Integer, Node> errorLabelMap;
 
   // The focused and old node
   Node currentNode, oldNode;
@@ -130,7 +131,7 @@ public class ForgetController implements Initializable
       mainStage = MainScene.getMainStage();
 
       // Create the locale for the pop up messages
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       message = new Message(resources);
 
       node = new Node[]{
@@ -148,6 +149,7 @@ public class ForgetController implements Initializable
 
       // Setting the jfxtextfield name
       setJFXTextField();
+      setText();
 
       // Settiong the intial border
       setBorder(usuarioTextFieldForget);
@@ -207,6 +209,14 @@ public class ForgetController implements Initializable
     eventButton(oldUserButtonForget, 3, 0);
    }
 
+  /**
+   *
+   */
+  public void setText()
+   {
+    usuarioTextFieldForget.setText("");
+    respuestaTextFieldForget.setText("");
+   }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
@@ -245,7 +255,7 @@ public class ForgetController implements Initializable
           int i = -1;
 
           if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
-          
+
           if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
             i = up;
             ke.consume();
@@ -299,6 +309,7 @@ public class ForgetController implements Initializable
 
           }
          }
+
        });
 
       // setting onClick
@@ -450,7 +461,6 @@ public class ForgetController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handlers">
- 
   /**
    *
    * @param n
@@ -460,10 +470,10 @@ public class ForgetController implements Initializable
    {
     try {
       int indNode = Arrays.asList(fieldsChecked).indexOf(n);
-      
+
       handleValidation02(n, true);
       if (registro[indNode] == false) return indNode;
-      
+
       for (int i = 0; i < fieldsNumber; i++) {
         if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i], false);
 
@@ -475,6 +485,7 @@ public class ForgetController implements Initializable
     }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
+
 
   /**
    *
@@ -488,11 +499,10 @@ public class ForgetController implements Initializable
     String instance = "";
     Object preguntaObject = null;
 
-    HashMap<Integer, Node> errorLabelMap = new HashMap<>();
+    errorLabelMap = new HashMap<>();
     errorLabelMap.put(0, errorUserLabel);
     errorLabelMap.put(1, errorUserLabel);
     errorLabelMap.put(2, errorRespuestaLabel);
-    
 
     if (n instanceof JFXTextField) {
       fieldString[indNode] = ((JFXTextField) n).getText().trim();
@@ -504,7 +514,12 @@ public class ForgetController implements Initializable
     }
     if (n instanceof JFXComboBox) {
       preguntaObject = ((JFXComboBox) n).getValue();
-      if (preguntaObject  != null) fieldString[indNode] = preguntaObject.toString();
+      if (preguntaObject != null) {
+        fieldString[indNode] = preguntaObject.toString();
+      } else {
+        fieldString[indNode] = "";
+      }
+
       instance = "JFXComboBox";
     }
     String text = "";
@@ -520,7 +535,7 @@ public class ForgetController implements Initializable
       text = "No puede tener mas de 20 letras";
     }
     if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
-             instance.equals("JFXComboBox")) {
+            instance.equals("JFXComboBox")) {
       text = "Elige una pregunta de seguridad";
     }
     if (!text.equals("")) {
@@ -534,6 +549,7 @@ public class ForgetController implements Initializable
     }
    }
 
+
   /**
    *
    */
@@ -545,8 +561,8 @@ public class ForgetController implements Initializable
 
     //boolean activoBoolean = activoCheckBox.isSelected();
     if (registro[0] == true && registro[1] == true && registro[2] == true) {
-
       String result = null;
+      /*/*
       int preguntaInt = 0;
       String[] languages = HandleLocale01.getLANGUAGES();
       ResourceBundle rs = null;
@@ -569,22 +585,27 @@ public class ForgetController implements Initializable
 
         locale = new Locale(language);
         rs = ResourceBundle.getBundle("LanguageApp.resources.bundles.LanguageApp", locale);
-        pregunta = rs.getString(preguntasRegistro.get(preguntaInt));
+        pregunta = rs.getString(preguntasRegistro.get(preguntaInt));*/
 
-        result = mainScene.handleRecordar(fieldString[0], pregunta, fieldString[2]);
+      // change the question into a "original language" question  
+      int original = preguntaComboBoxForget.getSelectionModel().getSelectedIndex();
+      fieldString[1] = preguntasRegistro.get(original);
 
-        if (result != null) {
-          errorPasswordLabel.setManaged(true);
-          errorPasswordLabel.setText(resources.getString("Contraseña") + ": " + result);
-          break;
-        } else {
-          errorPasswordLabel.setManaged(true);
-          errorPasswordLabel.setText(resources.getString("El usuario no existe"));
+      result = mainScene.handleRecordar(fieldString[0], fieldString[1], fieldString[2]);
 
-        }
+      if (result != null) {
+        errorPasswordLabel.setManaged(true);
+        errorPasswordLabel.setText(resources.getString("Contraseña") + ": " + result);
+        //break;
+      } else {
+        errorPasswordLabel.setManaged(true);
+        errorPasswordLabel.setText(resources.getString("El usuario no existe"));
+
       }
+      // }
     }
    }
+
 
   /**
    *
@@ -593,6 +614,7 @@ public class ForgetController implements Initializable
    {
     mainScene.buttonRegistro();
    }
+
 
   /**
    *

@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -51,6 +53,7 @@ public class Directorio
   // pop-up messages
   Message message;
 
+
   /**
    * constructor
    */
@@ -62,7 +65,7 @@ public class Directorio
     initial = new Initial();
 
     // pop-up messages
-    Message message = new Message(HandleLocale01.handleLocale01());
+    message = new Message(HandleLocale01.handleLocale01());
 
     // The path is an absolute path (retarive to the initial instalation)    
     path = System.getProperty("user.dir");
@@ -83,6 +86,7 @@ public class Directorio
     pstmt = null;
     sql = null;
    }
+
 
   /**
    *
@@ -154,6 +158,7 @@ public class Directorio
     return false;
    }
 
+
   /**
    * pone todos materias activos a cero del usuario que este activo
    *
@@ -187,17 +192,18 @@ public class Directorio
       conn.close();
 
     } catch (Exception e) {
-       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
       }
     }
    }
+
 
   /**
    * @param name
@@ -231,7 +237,7 @@ public class Directorio
 
       ResultSet rs = pstmt.executeQuery();
       conn.commit();
-      //rs.first();
+
       // if there is any 
       while (rs.next() && salida == false) {
 
@@ -288,22 +294,94 @@ public class Directorio
         pstmt.executeUpdate();
         conn.commit();
         pstmt.close();
-        conn.close();
 
         // save in the model the global directory
         setPath(path);
         setLastDirectory(lastDirectory);
         setLastFile(name);
+        rs = conn.prepareStatement("SELECT last_insert_rowid();").executeQuery();
+        if (rs.next()) materia_id = rs.getInt(1);
+
+        conn.close();
       }
     } catch (Exception e) {
-       message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
+      }
+    }
+   }
+
+
+  /**
+   *
+   * @param subtitle
+   */
+  public void checkAndSetIdioma(String[] subtitle)
+   {
+    conn = null;
+    pstmt = null;
+
+    // Preparing statement
+    try {
+      // Try connection
+      conn = connect();
+      conn.setAutoCommit(false);
+
+      sql = "SELECT m.materia_id FROM materias m " +
+              "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
+              "WHERE u.usuario_id = ? AND m.materia_activo = 1";
+      pstmt = conn.prepareStatement(sql);
+      pstmt.setInt(1, usuario_id);
+      ResultSet rs = pstmt.executeQuery();
+      conn.commit();
+
+      if (rs.next()) {
+        materia_id = rs.getInt("materia_id");
+      }
+
+      // I check if there is any equal record
+      sql = "SELECT i.idioma_nombre FROM idiomas i WHERE i.fk_materia_id = ?";
+      pstmt = conn.prepareStatement(sql);
+      pstmt.setInt(1, materia_id);
+      rs = pstmt.executeQuery();
+      conn.commit();
+
+      ArrayList<String> names = new ArrayList<>();
+      while (rs.next()) {
+        names.add(rs.getString("idioma_nombre"));
+      }
+
+      for (String sub : subtitle) {
+        if (!names.contains(sub)) {
+          sql = "INSERT INTO idiomas (fk_materia_id, idioma_nombre) VALUES (?,?)";
+          pstmt = conn.prepareStatement(sql);
+          // set the value
+          pstmt.setInt(1, materia_id);
+          pstmt.setString(2, sub);
+          pstmt.executeUpdate();
+          conn.commit();
+        }
+      }
+      pstmt.close();
+      conn.close();
+
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", 
+              "Directorio / checkAndSetIdioma()", e.toString(), e);
+    } finally {
+      try {
+        if (conn != null) {
+          conn.close();
+        }
+      } catch (Exception e) {
+        message.message(Alert.AlertType.ERROR, "Error message", 
+                "Directorio / checkAndSetLastDirectory()", e.toString(), e);
       }
     }
    }
@@ -320,6 +398,7 @@ public class Directorio
     return initial.getPath();
    }
 
+
   /**
    *
    * @param path
@@ -330,6 +409,7 @@ public class Directorio
     initial.setPath(path);
    }
 
+
   /**
    * Return the actual Last Directory
    *
@@ -339,6 +419,7 @@ public class Directorio
    {
     return initial.getLastDirectory();
    }
+
 
   /**
    * Set the actual directory
@@ -351,6 +432,7 @@ public class Directorio
     initial.setLastDirectory(lastDirectory);
    }
 
+
   /**
    * Return the actual Last File
    *
@@ -361,6 +443,7 @@ public class Directorio
    {
     return initial.getLastFile();
    }
+
 
   /**
    * Set the last open file
@@ -373,46 +456,58 @@ public class Directorio
     initial.setLastFile(lastFile);
    }
 
+
   /**
    * setting the last directory
    *
+   * @param usuario_id
    */
-  public void update()
+  public void delete(int usuario_id)
    {
     try {
       // Try connection
       conn = connect();
       conn.setAutoCommit(false);
-
-
+      Platform.runLater(() -> {
+        message.message(Alert.AlertType.INFORMATION,
+                "Error message",
+                "Archivos multimedia movidos o perdidos",
+                "", null);
+        Platform.exit();
+        System.exit(0);
+      });
       // set the value
-      sql = "UPDATE materias SET materia_nombre = ?, directorio = ?, materia_activo = ? WHERE materia_id = ?";
+      sql = "DELETE FROM materias  " +
+              "WHERE materia_id IN ( " +
+              "SELECT m.materia_id FROM materias m " +
+              "INNER JOIN usuarios u " +
+              "ON u.usuario_id = m.fk_usuario_id " +
+              "WHERE u.usuario_id = ? and m.materia_activo = 1)";
+
       pstmt = conn.prepareStatement(sql);
 
-      pstmt.setInt(1, materia_id);
-      pstmt.setString(2, materia_nombre);
-      pstmt.setString(3, lastDirectory);
-      pstmt.setInt(4, materia_activo);
+      pstmt.setInt(1, usuario_id);
 
       pstmt.executeUpdate();
       conn.commit();
       pstmt.close();
 
     } catch (Exception e) {
-       message.message(Alert.AlertType.ERROR, "Error message", "Directorio / update()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "Directorio / delete()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "Directorio / update()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Error message", "Directorio / delete()", e.toString(), e);
       }
     }
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Connect">
+
   /**
    *
    * @return
@@ -430,13 +525,14 @@ public class Directorio
       // if doesn't exit it's create the database
       Class.forName("org.sqlite.JDBC");
     } catch (ClassNotFoundException | SQLException e) {
-       message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
     }
     return conn;
    }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Executing Emergentes messages">
+
   /**
    * show a standard emergent message
    *

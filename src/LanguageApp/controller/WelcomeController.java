@@ -3,13 +3,11 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
-import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -24,7 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+import javafx.util.Pair;
 //</editor-fold>
 
 /**
@@ -114,7 +112,7 @@ public class WelcomeController implements Initializable
       mainStage = MainScene.getMainStage();
 
       // Create the locale for the pop up messages
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       message = new Message(resources);
 
       node = new Node[]{
@@ -362,6 +360,7 @@ public class WelcomeController implements Initializable
     }
    }
 
+
   /**
    *
    */
@@ -369,14 +368,15 @@ public class WelcomeController implements Initializable
    {
 
     boolean activoBoolean = activoCheckBoxWelcome.isSelected();
+
     if (nombre != null) {
 
-      mainScene.handleEntrar(activoBoolean, true);
-
+      mainScene.handleEntrar(activoBoolean, true); 
     } else {
       mainScene.buttonLoginMenu();
     }
    }
+
 
   /**
    *
@@ -385,6 +385,7 @@ public class WelcomeController implements Initializable
    {
     mainScene.buttonLoginMenu();
    }
+
 
   /**
    *
@@ -398,6 +399,10 @@ public class WelcomeController implements Initializable
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
 
+  /**
+   *
+   * @param progressBarValue
+   */
   public void setProgressBarValue(DoubleProperty progressBarValue)
    {
     this.progressBarValue.setValue(progressBarValue.getValue());

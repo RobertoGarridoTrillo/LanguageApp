@@ -213,7 +213,7 @@
                 <Insets right="10.0" />
               </HBox.margin>
             </ImageView>
-            <HBox fx:id="HBoxNuevoUsuarioLogin" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="296.0">
+            <HBox fx:id="HBoxNuevoUsuarioLogin" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="296.0">
               <children>
                         <JFXButton fx:id="newUserButtonLogin" alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="290.0" styleClass="initialBorderItems" text="%Crear cuenta" textFill="WHITE" />
               </children>
@@ -238,7 +238,7 @@
     </VBox>
   </children>
    <styleClass>
-      <String fx:value="root" />
+      <String fx:value="rootLogin" />
       <String fx:value="textFieldLogin" />
    </styleClass>
 </AnchorPane>

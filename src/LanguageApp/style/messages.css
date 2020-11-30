@@ -13,6 +13,7 @@
 }
 
 /* fuentes */
+
 .dialog-pane{
   -fx-font-family: 'FreeSans';
   -fx-font-size: 13pt;
@@ -20,21 +21,28 @@
   -fx-font-style: normal;
   -fx-text-fill: white;
 }
+
 .dialog-pane .label , 
 .alert.error .dialog-pane, .alert.error .dialog-pane label,
 .text-input-dialog .dialog-pane, .text-input-dialog .dialog-pane label,
-.choice-dialog.dialog-pane, .choice-dialog.dialog-pane label,
-.alert.information.dialog-pane, .alert.information.dialog-pane label,
+.choice-dialog.dialog-pane, .choice-dialog .dialog-pane label,
+.alert.information.dialog-pane, .alert.information .dialog-pane label,
 .alert.confirmation .dialog-pane, .alert.confirmation .dialog-pane label
 {
   -fx-text-fill: white;  
 }
 .dialog-pane:header .header-panel {
-  -fx-background-color: #004f8a;
+  -fx-background-color: #333636;
   -fx-text-fill: white;
 }
+
 .dialog-pane:header .header-panel .label, .expandable-content{
-  -fx-background-color: #004f8a;
+  -fx-background-color: #333636;
+  -fx-text-fill: white;
+  -fx-font-size: 15pt;
+}
+.GridPane{
+  -fx-background-color: #333636;
   -fx-text-fill: white;
   -fx-font-size: 15pt;
 }
@@ -53,7 +61,7 @@
   -fx-border-width: 3;
   -fx-border-radius: 3;
   -fx-border-insets: 0;
-  -fx-border-style: solid line-join bevel line-cap square;
+  /*-fx-border-style: solid line-join bevel line-cap square; */
   -fx-text-fill: white;
 
 }
@@ -69,6 +77,184 @@
 
 .borderVisible{
   -fx-border-color: coral;
+  -fx-background-color: transparent;  
+  -fx-border-width: 3;
+  -fx-border-radius: 3;
+  -fx-border-insets: 0;  
+}
+
+.button, .button:hover, .button:selected{
+  /*-fx-min-height: 250px; */
+  -fx-pref-width: 158px;
+  -fx-min-witdh: 150px; 
+}
+
+.graphic-container{
+  padding: 0;
+  -fx-background-color: transparent;  
+}
+.alert.confirmation.dialog-pane,
+.text-input-dialog.dialog-pane,
+.choice-dialog.dialog-pane {
+  -fx-graphic: url("/LanguageApp/resources/images/dialog-confirm.png");
+}
+
+.alert.information.dialog-pane {
+  -fx-graphic: url("/LanguageApp/resources/images/dialog-information.png");
+}
+
+.alert.error.dialog-pane {
+  -fx-graphic: url("/LanguageApp/resources/images/dialog-error.png");
+}
+
+.alert.warning.dialog-pane {
+  -fx-graphic: url("/LanguageApp/resources/images/dialog-warning.png");
+}
+
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
+/*        Password login*/
+.jfx-password-field {
+  -jfx-focus-color: coral; /* #4059A9; */
+  -jfx-unfocus-color: #4d4d4d;
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 12pt;
+  -fx-border-color: #004f8a; /*#333333;*/
+}
+
+.jfx-password-field > .input-line {
+  -fx-background-color: -jfx-unfocus-color;
+  -fx-pref-height: 0px;
+  -fx-translate-y: 4;
+}
+
+.jfx-password-field > .input-focused-line{
+  -fx-background-color: -jfx-focus-color;
+  -fx-pref-height: 2px;
+}
+
+.jfx-password-field, .jfx-password-field:focused, .jfx-password-field:hover {
+  -fx-prompt-text-fill: #0f9d58; /* #4D4D4D; */
+  -fx-background-color: TRANSPARENT;
+  -fx-text-fill: white;
+}
+
+.jfx-password-field:error {
+  -jfx-focus-color: #D34336;
+  -jfx-unfocus-color: #D34336;
+}
+
+.jfx-password-field .error-label {
+  -fx-text-fill: #D34336;
+}
+
+.jfx-password-field .error-icon {
+  -fx-fill: #D34336;  
+}
+
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
+/*        textField login  */
+.jfx-text-field {
+  -jfx-focus-color: coral; 
+  -jfx-unfocus-color: #004f8a; 
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 12pt;
+  -fx-border-color: #004f8a; 
+}
+
+.jfx-text-field  .input-line {
+  -fx-background-color: -jfx-unfocus-color;
+  -fx-pref-height: 1px;
+  -fx-translate-y: 1;
+}
+
+.jfx-text-field  .input-focused-line {
+  -fx-background-color:  #004f8a; /* -jfx-focus-color; */
+  -fx-pref-height: 2px;
+}
+
+.jfx-text-field, .jfx-text-field:focused, .jfx-text-field:hover {
+  -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+  -fx-prompt-text-fill: #0f9d58; 
+  -fx-text-fill: white;
+  -fx-highlight-fill: #000000;
+
 }
 
 
+.jfx-text-field:error {
+  -jfx-focus-color: #D34336;
+  -jfx-unfocus-color: #D34336;
+}
+
+.jfx-text-field .error-label {
+  -fx-text-fill: #D34336;
+}
+
+.jfx-text-field .error-icon {
+  -fx-fill: #D34336;  
+
+}
+
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
+/*      ComboBox               */
+.jfx-combo-box {
+  -jfx-focus-color: coral; /*#4059A9; */
+  -jfx-unfocus-color: #4d4d4d;
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 12pt;
+  -fx-border-color: #004f8a; /*#333333;*/
+}
+
+.jfx-combo-box > .input-line {
+  -fx-background-color: -jfx-unfocus-color;
+  -fx-pref-height: 0px;
+  -fx-translate-y: 1;
+}
+
+.jfx-combo-box > .input-focused-line {
+  -fx-background-color:  -jfx-focus-color; 
+  -fx-pref-height: 0px;
+}
+
+.jfx-combo-box,
+.jfx-combo-box:focused,
+.jfx-combo-box:editable,
+.jfx-combo-box:focused {
+  -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+  -fx-background-radius: 3px;
+  -fx-background-insets: 0px;
+}
+
+.jfx-combo-box .combo-box-button-container {
+  -fx-background-color: TRANSPARENT;
+}
+
+.jfx-combo-box > .arrow-button,
+.jfx-combo-box:editable > .arrow-button,
+.jfx-combo-box:focused > .arrow-button {
+  -fx-background-color: TRANSPARENT;
+}
+
+
+.jfx-combo-box:error {
+  -jfx-focus-color: #D34336;
+  -jfx-unfocus-color: #D34336;
+}
+
+.jfx-combo-box .error-label {
+  -fx-text-fill:#D34336;
+
+}
+
+.jfx-combo-box .error-icon {
+  -fx-fill: #D34336;
+}

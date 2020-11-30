@@ -24,11 +24,12 @@
 .hyperlink:hover, .hyperlink:focused,
 .slider:hover, .slider:focused, 
 .listViewH:hover, .listViewH:focused,
-.textFieldH:hover,
+.textFieldH:hover, 
 .tab-pane:hover, .tab-pane:focused,
 #anchorListViewV:hover{
   -fx-border-color: coral;
-  -fx-background-color: #252525;
+  /*-fx-background-color: transparent; */
+  -fx-background-insets:0;
   -fx-border-width: 2;
   -fx-border-radius: 2;
   -fx-border-insets: 0;
@@ -39,8 +40,9 @@
 /* borde transparente inicial para luego cambiarlo de color*/
 .initialBorder, .button, .hyperlink, .listViewH, 
 .textFieldH, .tab-pane, .listViewV, .principalViewAnchorPane{  
-  -fx-border-color: #252525;
-  -fx-background-color: #252525;  
+  -fx-border-color: transparent;
+  -fx-background-color: transparent;  
+  -fx-background-insets:0;
   -fx-border-width: 2;
   -fx-border-radius: 2;
   -fx-border-insets: 0;  
@@ -52,45 +54,37 @@
 
 
 /* para las pestañas del tab */
-/*.tab-pane {
+.tab-pane {
   -fx-tab-min-height: 1.8333em; 
   -fx-tab-max-height: 1.8333em; 
-}*/
-
-.tab-pane > .tab-header-area > .tab-header-background {
-  -fx-background-color: #252525;
-
+}
+.tab-pane:bottom > .tab-header-area > .tab-header-background {
+  -fx-background-color: transparent;
 }
 
-.tab-pane > .tab-header-area > .headers-region > .tab {
+.tab-pane > .tab-header-area > .headers-region > .tab{
+  -fx-alignment: CENTER;
   -fx-background-insets: 0 1 1 0, 1 2 1 1, 2 3 1 2;
   -fx-background-radius: 3 3 0 0, 2 2 0 0, 1 1 0 0;
   -fx-padding: 0.083333em 0.5em 0.0769em 0.5em; 
-  -fx-background-color:#252525;
+  -fx-background-color:#252525;    
 }
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+  -fx-background-color:#252525;  
+}
+
 .tab-pane > .tab-header-area > .headers-region > .tab:hover{
-  -fx-alignment: CENTER;
   -fx-background-color: #404040;  
 }
-.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container:hover{
-
+.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container {
 }
+
 .tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
   -fx-alignment: CENTER;
-  -fx-background-color: #252525;  
+  -fx-background-color: transparent;  
   -fx-text-fill: white;
   -fx-font-weight: bold;
 }
-.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label:selected {
-  -fx-alignment: CENTER;
-  -fx-background-color: #004f8b;  
-
-}
-.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label:hover {
-  -fx-alignment: CENTER;
-  -fx-background-color: #404040;  
-}
-
 
 /*  listView */
 .listViewH{
@@ -110,5 +104,63 @@
 /*  TableView   */
 .table-view{
   -fx-background-color:#252525;
-  
-}/*tableViewDataBase*/
+}
+
+/*  Button      */
+.button {
+  /*-fx-background-radius: 5em;*/
+  -fx-min-width: 36px;
+  -fx-min-height: 36px;
+  -fx-max-width: 36px;
+  -fx-max-height: 36px;
+}
+
+/*  Slider      */
+.slider { 
+  -show-value-on-interaction: true;
+}
+
+.slider .thumb {
+    -fx-background-color:
+        linear-gradient(to bottom, derive(-fx-text-box-border, -20%), derive(-fx-text-box-border, -30%)),
+        -fx-inner-border,
+        -fx-body-color;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 1.0em; /* makes sure this remains circular */
+    -fx-padding: 0.583333em;  /* 7 */
+    -fx-effect: dropshadow(two-pass-box , rgba(0, 0, 0, 0.1), 5, 0.0 , 0, 2);
+}
+.slider:focused .thumb {
+    -fx-background-radius: 1.0em; /* makes sure this remains circular */
+}
+.slider .track {
+      -fx-background-color:
+          -fx-shadow-highlight-color,
+          linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
+          linear-gradient(to bottom,
+            derive(-fx-control-inner-background, -9%),
+            derive(-fx-control-inner-background, 0%),
+            derive(-fx-control-inner-background, -5%),
+            derive(-fx-control-inner-background, -12%)
+          );
+    -fx-background-insets: 0 0 -1 0, 0, 1;
+    -fx-background-radius: 0.25em, 0.25em, 0.166667em; /* 3 3 2 */
+    -fx-padding: 0.25em; /* 3 */
+}
+.slider:vertical .track {
+    -fx-background-color:
+          -fx-shadow-highlight-color,
+          -fx-text-box-border,
+          linear-gradient(to right,
+            derive(-fx-control-inner-background, -9%),
+            -fx-control-inner-background,
+            derive(-fx-control-inner-background, -9%)
+          );
+}
+.slider .axis {
+    -fx-tick-label-fill: derive(-fx-text-background-color, 30%);
+    -fx-tick-length: 5px;
+    -fx-minor-tick-length: 3px;
+    -fx-border-color: null;
+}
+/*tableViewDataBase*/

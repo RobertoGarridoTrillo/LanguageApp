@@ -1,16 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="dataBaseViewAnchorPane" fx:id="dataBaseViewAnchorPane" styleClass="root" stylesheets="@../style/principal.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.DataBaseController">
+<AnchorPane fx:id="dataBaseViewAnchorPane" prefWidth="1215.0" styleClass="root" stylesheets="@../style/principal.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LanguageApp.controller.DataBaseController">
    <children>
-      <TableView fx:id="tableViewDataBase" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <columns>
-          <TableColumn prefWidth="75.0" text="C1" />
-          <TableColumn prefWidth="75.0" text="C2" />
-        </columns>
-      </TableView>
+      <TabPane fx:id="tabPanelDataBase" prefHeight="200.0" prefWidth="200.0" side="BOTTOM" styleClass="initialBorder" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+            <Tab fx:id="tabUsuario" text="%Usuario">
+              <content>
+                <AnchorPane>
+                     <children>
+                        <TableView fx:id="usuarioTableView" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="usuario_idTableColumn" minWidth="-Infinity" prefWidth="110.0" text="%ID Usuario" />
+                              <TableColumn fx:id="usuario_nombreTableColumn" minWidth="-Infinity" prefWidth="225.0" text="%Nombre de usuario" />
+                              <TableColumn fx:id="passwordTableColumn" minWidth="-Infinity" prefWidth="200.0" text="%Contraseña" />
+                              <TableColumn fx:id="usuario_activoTableColumn" minWidth="-Infinity" prefWidth="147.0" text="%Usuario Activo" />
+                              <TableColumn fx:id="preguntaTableColumn" minWidth="-Infinity" prefWidth="281.0" text="%Pregunta secreta" />
+                              <TableColumn fx:id="respuestaTableColumn" minWidth="-Infinity" prefWidth="240.0" text="%Traducir" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="tabMaterias" text="%Materias">
+              <content>
+                <AnchorPane>
+                     <children>
+                        <TableView fx:id="materiasTableView" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="materia_idTableColumn" minWidth="-Infinity" prefWidth="110.0" text="%ID Materia" />
+                              <TableColumn fx:id="fk_usuario_nombreTableColumn" minWidth="-Infinity" prefWidth="225.0" text="%Nombre de usuario" />
+                              <TableColumn fx:id="materia_nombreTableColumn" minWidth="-Infinity" prefWidth="245.0" text="%Materias" />
+                              <TableColumn fx:id="directorioTableColumn" minWidth="-Infinity" prefWidth="623.0" text="%Directorio" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+          <Tab fx:id="tabDatosMaterias" text="%Idiomas de las materias">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <TableView fx:id="idiomasTableView" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="idioma_idTableColumn" minWidth="-Infinity" prefWidth="110.0" text="%ID Idioma" />
+                              <TableColumn fx:id="subject_nombreTableColumn" minWidth="-Infinity" prefWidth="345.0" text="%Materias" />
+                              <TableColumn fx:id="idiomaTableColumn" minWidth="-Infinity" prefWidth="245.0" text="%Idioma" />
+                              <TableColumn fx:id="escribirTableColumn" minWidth="-Infinity" prefWidth="250.0" text="%Escribir" />
+                              <TableColumn fx:id="traducirTableColumn" minWidth="-Infinity" prefWidth="250.0" text="%Idioma" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>

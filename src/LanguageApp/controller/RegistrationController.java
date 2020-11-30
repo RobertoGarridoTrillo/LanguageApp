@@ -73,6 +73,7 @@ public class RegistrationController implements Initializable
 
   // The nodes of the view
   private Node[] node;
+  private HashMap<Integer, Node> errorLabelMap;
 
   // The focused and old node
   Node currentNode, oldNode;
@@ -133,7 +134,7 @@ public class RegistrationController implements Initializable
       mainStage = MainScene.getMainStage();
 
       // Create the locale for the pop up messages
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       message = new Message(resources);
 
       node = new Node[]{
@@ -152,6 +153,7 @@ public class RegistrationController implements Initializable
 
       // Setting the jfxtextfield name
       setJFXTextField();
+      setText();
 
       // Settiong the intial border
       setBorder(usuarioTextFieldRegistro);
@@ -209,6 +211,17 @@ public class RegistrationController implements Initializable
     eventButton(respuestaTextFieldRegistro, 2, 4);
     eventButton(registroButtonRegistro, 3, 5);
     eventButton(oldUserButtonRegistro, 4, 0);
+   }
+
+
+  /**
+   *
+   */
+  public void setText()
+   {
+    usuarioTextFieldRegistro.setText("");
+    passwordTextFieldRegistro.setText("");
+    respuestaTextFieldRegistro.setText("");
    }
 
 //</editor-fold>
@@ -305,6 +318,7 @@ public class RegistrationController implements Initializable
 
           }
          }
+
        }
       );
 
@@ -478,10 +492,10 @@ public class RegistrationController implements Initializable
    {
     try {
       int indNode = Arrays.asList(fieldsChecked).indexOf(n);
-      
+
       handleValidation02(n, true);
       if (registro[indNode] == false) return indNode;
-      
+
       for (int i = 0; i < fieldsNumber; i++) {
         if (i != indNode) handleValidation02(fieldsChecked[i], false);
 
@@ -489,10 +503,11 @@ public class RegistrationController implements Initializable
       }
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "ForgetController / handleValidation()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / handleValidation()", e.toString(), e);
     }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
+
 
   /**
    *
@@ -502,56 +517,64 @@ public class RegistrationController implements Initializable
    */
   private void handleValidation02(Node n, boolean show)
    {
-    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
-    String instance = "";
-    Object preguntaObject = null;
+    try {
+      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+      String instance = "";
+      Object preguntaObject = null;
 
-    HashMap<Integer, Node> errorLabelMap = new HashMap<>();
-    errorLabelMap.put(0, errorUserLabel);
-    errorLabelMap.put(1, errorPasswordLabel);
-    errorLabelMap.put(2, errorPasswordLabel);
-    errorLabelMap.put(3, errorRespuestaLabel);
+      errorLabelMap = new HashMap<>();
+      errorLabelMap.put(0, errorUserLabel);
+      errorLabelMap.put(1, errorPasswordLabel);
+      errorLabelMap.put(2, errorPasswordLabel);
+      errorLabelMap.put(3, errorRespuestaLabel);
 
-
-    if (n instanceof JFXTextField) {
-      fieldString[indNode] = ((JFXTextField) n).getText().trim();
-      instance = "JFXTextField";
-    }
-    if (n instanceof JFXPasswordField) {
-      fieldString[indNode] = ((JFXPasswordField) n).getText().trim();
-      instance = "JFXPasswordField";
-    }
-    if (n instanceof JFXComboBox) {
-      preguntaObject = ((JFXComboBox) n).getValue();
-      if (preguntaObject  != null) fieldString[indNode] = preguntaObject.toString();
-      instance = "JFXComboBox";
-    }
-    String text = "";
-    registro[indNode] = true;
-
-    if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
-      text = "No puede estar vacío";
-    }
-    if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
-      text = "No puede tener mas de 100 letras";
-    }
-    if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
-      text = "No puede tener mas de 20 letras";
-    }
-    if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
-            instance.equals("JFXComboBox")) {
-      text = "Elige una pregunta de seguridad";
-    }
-    if (!text.equals("")) {
-      registro[indNode] = false;
-
-      if (show) {
-        Label tempLabel = (Label) errorLabelMap.get(indNode);
-        tempLabel.setManaged(true);
-        tempLabel.setText(resources.getString(text));
+      if (n instanceof JFXTextField) {
+        fieldString[indNode] = ((JFXTextField) n).getText().trim();
+        instance = "JFXTextField";
       }
+      if (n instanceof JFXPasswordField) {
+        fieldString[indNode] = ((JFXPasswordField) n).getText().trim();
+        instance = "JFXPasswordField";
+      }
+      if (n instanceof JFXComboBox) {
+        preguntaObject = ((JFXComboBox) n).getValue();
+        if (preguntaObject != null) {
+          fieldString[indNode] = preguntaObject.toString();
+        } else {
+          fieldString[indNode] = "";
+        }
+        instance = "JFXComboBox";
+      }
+      String text = "";
+      registro[indNode] = true;
+
+      if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
+        text = "No puede estar vacío";
+      }
+      if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
+        text = "No puede tener mas de 100 letras";
+      }
+      if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
+        text = "No puede tener mas de 20 letras";
+      }
+      if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
+              instance.equals("JFXComboBox")) {
+        text = "Elige una pregunta de seguridad";
+      }
+      if (!text.equals("")) {
+        registro[indNode] = false;
+
+        if (show) {
+          Label tempLabel = (Label) errorLabelMap.get(indNode);
+          tempLabel.setManaged(true);
+          tempLabel.setText(resources.getString(text));
+        }
+      }
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / handleValidation02()", e.toString(), e);
     }
    }
+
 
   /**
    *
@@ -563,20 +586,33 @@ public class RegistrationController implements Initializable
     handleValidation(preguntaComboBoxRegistro);
     handleValidation(respuestaTextFieldRegistro);
 
+    // change the question into a "original language" question
+    int original = preguntaComboBoxRegistro.getSelectionModel().getSelectedIndex();
+    fieldString[2] = preguntasRegistro.get(original);
+
     /*/*boolean activoBoolean = activoCheckBox.isSelected(); */
     if (registro[0] == true && registro[1] == true && registro[2] == true && registro[3] == true) {
 
       int userExist = mainScene.handleRegistro(
-              fieldString[0], fieldString[1], fieldString[2], fieldString[3]);
+              fieldString[0], fieldString[1], true, fieldString[2], fieldString[3]);
 
       if (userExist != 0) {
         errorUserLabel.setManaged(true);
         errorUserLabel.setText(resources.getString("El usuario ya existe"));
       } else {
-        mainScene.handleEntrar(true, false);
+        // Checking if there's some active user
+      /*/*Object id = mainScene.handleCheckNombre().getKey();
+
+      int usuario_last = ( id != null) ? (Integer) id : 0; 
+      
+      mainScene.handleEntrar(true, mainScene.handleCheckMateriaActivo(usuario_last)); */
+      
+      mainScene.handleEntrar(true,true);
+
       }
     }
    }
+
 
   /**
    *
@@ -585,6 +621,7 @@ public class RegistrationController implements Initializable
    {
     mainScene.buttonLoginMenu();
    }
+
 
   /**
    *

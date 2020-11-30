@@ -61,6 +61,10 @@ public class LoginController implements Initializable
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
+      // Create the locale for the pop up messages
+      /*/*HandleLocale01.handleLocale01();*/
+      message = new Message(resources);
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "LoginController / initialize()", e.toString(), e);
     }

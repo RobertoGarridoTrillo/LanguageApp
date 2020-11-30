@@ -155,7 +155,7 @@
     </VBox>
   </children>
    <styleClass>
-      <String fx:value="root" />
+      <String fx:value="rootLogin" />
       <String fx:value="textFieldLogin" />
    </styleClass>
 </AnchorPane>

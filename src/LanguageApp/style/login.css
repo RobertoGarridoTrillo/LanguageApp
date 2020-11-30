@@ -17,12 +17,20 @@
  
 */
 
-.root {
+.rootLogin {
   -fx-font-family: 'FreeSans';
   -fx-font-size: 12pt;
   -fx-font-weight: normal;
   -fx-font-style: normal;
   -fx-background-color: #004f8a;
+}
+.rootFormDatabase {
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 13pt;
+  -fx-font-weight: normal;
+  -fx-font-style: normal;
+  -fx-background-color: #333636;
+  -fx-effect: dropshadow( gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0.0, 0.0 );
 }
 
 /*------------------------------------------------------------------------*/
@@ -119,11 +127,11 @@
   /*-fx-graphic: url("media/open.png"); */
   -fx-width : 30px;
   -fx-height : 20px;
-  
+
 }
 
 .menu-item > .accelerator-text{
-    /* -fx-graphic: none; */
+  /* -fx-graphic: none; */
 }
 
 .menu-item:focused > .label, 
@@ -181,7 +189,7 @@
 /*        textField login  */
 .jfx-text-field {
   -jfx-focus-color: coral; 
-  -jfx-unfocus-color: #004f8a; 
+  -jfx-unfocus-color: transparent; /*#004f8a; */
   -fx-font-family: 'FreeSans';
   -fx-font-size: 12pt;
   -fx-border-color: #004f8a; 
@@ -202,10 +210,8 @@
   -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
   -fx-prompt-text-fill: #0f9d58; 
   -fx-text-fill: white;
-  -fx-highlight-fill: #000000;
-
+  -fx-highlight-fill: #0f9d58; /*#004f8a;*/
 }
-
 
 .jfx-text-field:error {
   -jfx-focus-color: #D34336;
@@ -289,6 +295,45 @@
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 
+.dialog-pane{
+  -fx-font-family: 'FreeSans';
+  -fx-font-size: 13pt;
+  -fx-font-weight: bold;
+  -fx-font-style: normal;
+  -fx-text-fill: white;
+}
+
+.dialog-pane .label , 
+.alert.error .dialog-pane, .alert.error .dialog-pane label,
+.text-input-dialog .dialog-pane, .text-input-dialog .dialog-pane label,
+.choice-dialog.dialog-pane, .choice-dialog .dialog-pane label,
+.alert.information.dialog-pane, .alert.information .dialog-pane label,
+.alert.confirmation .dialog-pane, .alert.confirmation .dialog-pane label
+{
+  -fx-text-fill: white;  
+}
+.dialog-pane:header .header-panel {
+  -fx-background-color: #333636;
+  -fx-text-fill: white;
+}
+
+.dialog-pane:header .header-panel .label, .expandable-content{
+  -fx-background-color: #333636;
+  -fx-text-fill: white;
+  -fx-font-size: 15pt;
+}
+.GridPane{
+  -fx-background-color: #333636;
+  -fx-text-fill: white;
+  -fx-font-size: 15pt;
+}
+.details-button:hover {
+  -fx-underline: false;
+}
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
 /*        Genericos */
 .textFieldLogin, textFieldLogin:active, textFieldLogin:hover, textFieldLogin:focus {
   -fx-text-fill: white;
@@ -300,11 +345,11 @@
 /* For delete the border of the item that aren't Hbox */
 .initialBorderItems, .initialBorderItems:hover, .initialBorderItems:focused,  
 .jfx-button, .jfx-button:hover, .jfx-button:focused {    
-  -fx-background-color: #004f8a;
+  -fx-background-color: transparent; /*#004f8a;*/
   -fx-background-radius: 0px;
   -fx-background-inset: 0;
 
-  -fx-border-color: #004f8a; 
+  -fx-border-color: transparent; /*#004f8a;*/
   -fx-border-width: 0px;
   -fx-border-radius: 0px;
   -fx-border-insets: 0;
@@ -312,18 +357,18 @@
 
 /* For For delete the border of the item that are Hbox */   
 .initialBorderLogin, .borderLoginInvisible  {    
-  -fx-background-color: #004f8a;
+  -fx-background-color: transparent; /*#004f8a;*/
   -fx-background-inset: 0;
 
 
-  -fx-border-color: #004f8a; 
+  -fx-border-color: transparent; /*#004f8a;*/
   -fx-border-width: 3px;;
   -fx-border-radius: 3px;
   -fx-border-insets: 0;
 }
 
 .initialBorderLogin:hover, .borderLoginVisible {
-  -fx-background-color: #004f8a;
+  -fx-background-color:  transparent; /*#004f8a;*/
   -fx-background-inset: 0;
 
   -fx-border-color: coral;
@@ -343,25 +388,25 @@
 }
 
 .labelError, .labelError:hover, .labelError:focused{
-  -fx-border-color: #004f8a;
+  -fx-border-color:transparent; /* #004f8a;*/
   -fx-font-family: 'FreeSans';
   -fx-font-size: 13pt;
   -fx-text-fill: #ff3460;
 }
 
 #labelError, #labelError:hover, #labelError:focused{
-  -fx-border-color: #004f8a;
+  -fx-border-color: transparent; /*#004f8a; */
   -fx-text-fill: #0f9d58;
 }
 
 #labelError > .input-line {
-  -fx-background-color: #004f8a; 
+  -fx-background-color: transparent; /*#004f8a;*/
   -fx-pref-height: 2px;
   -fx-translate-y: 4;
 }
 
 #labelError > .input-focused-line {
-  -fx-background-color: #004f8a; 
+  -fx-background-color: transparent; /*#004f8a;*/
   -fx-pref-height: 0px;
 }
 

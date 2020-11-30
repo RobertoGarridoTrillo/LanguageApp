@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -28,10 +29,16 @@ public class Message
   // For the bounle of idioms
   ResourceBundle resources;
 
+
+  /**
+   *
+   * @param resources
+   */
   public Message(ResourceBundle resources)
    {
     this.resources = resources;
    }
+
 
   /**
    * show a standard emergent message
@@ -51,14 +58,15 @@ public class Message
 
     Alert alert = new Alert(alertType);
     alert.setResizable(true);
-    
     alert.initModality(Modality.APPLICATION_MODAL);
     alert.initOwner(mainStage);
 
+    alert.setTitle(resources.getString(title));
 
     if (about.equals("¿Quieres cerrar la sesión?") ||
             about.equals("¿Quieres salir de la aplicación?") ||
-            about.equals("Acerca de esta aplicación:")) {
+            about.equals("Acerca de esta aplicación:") ||
+            about.equals("Archivos multimedia movidos o perdidos")) {
       alert.getDialogPane().setHeaderText(resources.getString(about));
     } else {
       alert.getDialogPane().setHeaderText(about);
@@ -69,7 +77,6 @@ public class Message
     } else {
       alert.getDialogPane().setContentText(contextText);
     }
-
     if (ex != null) {
       // Create expandable Exception.
       StringWriter sw = new StringWriter();
@@ -114,4 +121,5 @@ public class Message
     }
     return false;
    }
+
  }

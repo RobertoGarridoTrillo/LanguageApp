@@ -26,6 +26,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 //</editor-fold>
 
 /**
@@ -59,7 +60,6 @@ public class FormController implements Initializable
   @FXML private HBox HBoxRecuperarLogin;
   @FXML private JFXButton recuperarButtonLogin;
 
-
   @FXML private HBox HBoxNuevoUsuarioLogin;
   @FXML private JFXButton newUserButtonLogin;
 
@@ -68,6 +68,7 @@ public class FormController implements Initializable
 
   // The nodes of the view
   private Node[] node;
+  private HashMap<Integer, Node> errorLabelMap;
 
   // The focused and old node
   Node currentNode, oldNode;
@@ -125,7 +126,12 @@ public class FormController implements Initializable
         loginButtonLogin,
         activoCheckBoxLogin,
         recuperarButtonLogin,
-        newUserButtonLogin};
+        newUserButtonLogin
+      };
+
+      // Create the locale for the pop up messages
+      /*/*HandleLocale01.handleLocale01();*/
+      message = new Message(resources);
 
       // Setting the current node
       currentNode = usuarioTextFieldLogin;
@@ -134,6 +140,7 @@ public class FormController implements Initializable
 
       // Setting the jfxtextfield name
       setJFXTextField();
+      setText();
 
       // Settiong the intial border
       setBorder(usuarioTextFieldLogin);
@@ -176,6 +183,16 @@ public class FormController implements Initializable
     eventButton(activoCheckBoxLogin, 2, 4);
     eventButton(recuperarButtonLogin, 3, 5);
     eventButton(newUserButtonLogin, 4, 0);
+   }
+
+
+  /**
+   *
+   */
+  public void setText()
+   {
+    usuarioTextFieldLogin.setText("");
+    passwordTextFieldLogin.setText("");
    }
 
 //</editor-fold>
@@ -266,12 +283,13 @@ public class FormController implements Initializable
 
           }
          }
+
        });
 
       // setting onClick
       n.setOnMouseClicked((MouseEvent) -> {
         if (n.isDisable()) return;
-        
+
         // HBoxError disabled
         handleEraseError();
 
@@ -433,6 +451,7 @@ public class FormController implements Initializable
     mainScene.handleForgetUsuario();
    }
 
+
   /**
    *
    * @param n
@@ -442,10 +461,10 @@ public class FormController implements Initializable
    {
     try {
       int indNode = Arrays.asList(fieldsChecked).indexOf(n);
-      
+
       handleValidation02(n, true);
       if (registro[indNode] == false) return indNode;
-      
+
       for (int i = 0; i < fieldsNumber; i++) {
         if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i], false);
 
@@ -457,6 +476,7 @@ public class FormController implements Initializable
     }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
+
 
   /**
    *
@@ -470,7 +490,7 @@ public class FormController implements Initializable
     String instance = "";
     Object preguntaObject = null;
 
-    HashMap<Integer, Node> errorLabelMap = new HashMap<>();
+    errorLabelMap = new HashMap<>();
     errorLabelMap.put(0, errorUserLabel);
     errorLabelMap.put(1, errorPasswordLabel);
 
@@ -484,7 +504,11 @@ public class FormController implements Initializable
     }
     if (n instanceof JFXComboBox) {
       preguntaObject = ((JFXComboBox) n).getValue();
-      if (!preguntaObject.equals("")) fieldString[indNode] = preguntaObject.toString();
+      if (preguntaObject != null) {
+        fieldString[indNode] = preguntaObject.toString();
+      } else {
+        fieldString[indNode] = "";
+      }
       instance = "JFXComboBox";
     }
     String text = "";
@@ -515,32 +539,45 @@ public class FormController implements Initializable
     }
    }
 
+
   /**
    *
    */
   private void handlelogin()
    {
     handleValidation(usuarioTextFieldLogin);
-    handleValidation(passwordTextFieldLogin);    
-    /*/*handleValidationUser(true);
-    handleValidationPassword(true);*/
+    handleValidation(passwordTextFieldLogin);
+
     boolean activoBoolean = activoCheckBoxLogin.isSelected();
 
     // If user and password are valid
     if (registro[0] == true && registro[1] == true) {
 
       // Check if that user exits (One or more  exits, 0 doesn't exit)
-      int usuario_id = (Integer) mainScene.handleCheckUser(fieldString[0], fieldString[1]).getKey();
-      /*/* int usuario_id = (Integer) mainScene.handleCheckUser(usuarioString, passwordString).getKey(); */
+      Pair pair = mainScene.handleCheckUser(fieldString[0], fieldString[1]);
+
+      int usuario_id = (Integer) pair.getKey();
+      String usuario_nombre = (String) pair.getValue();
 
       // Put the number of user, just in case there was not active user
       // Check if the new user and (assumig there was) the active user of the data base were the
       if (usuario_id > 0) {
-
-        int usuario_last = (Integer) mainScene.handleCheckNombre().getKey();
+        // id of the new user
         mainScene.setUsuario_id(usuario_id);
+        mainScene.setUsuario_nombre(usuario_nombre);
 
-        mainScene.handleEntrar(activoBoolean, (usuario_id == usuario_last));
+        // id of the old user active
+        Object old_id = mainScene.handleCheckNombre().getKey();// the user with the active user in the DDBB
+        int usuario_last_ddbb = (old_id != null) ? (Integer) old_id : 0;// From object to int (evito el null)
+        
+        // true if the old user has a materia_activo
+        boolean materia_activo = mainScene.handleCheckMateriaActivo(usuario_last_ddbb);
+        // if materia_activo exits delete the materia charged
+        if (materia_activo &&
+                usuario_last_ddbb != usuario_id) mainScene.handleCloseMenu("buttonLoginMenu");
+   
+        mainScene.handleEntrar(activoBoolean, usuario_last_ddbb == usuario_id);
+        
 
       } else {
         errorUserLabel.setManaged(true);
@@ -548,6 +585,7 @@ public class FormController implements Initializable
       }
     }
    }
+
 
   /**
    *
@@ -557,6 +595,7 @@ public class FormController implements Initializable
     mainScene.buttonRegistro();
 
    }
+
 
   /**
    *

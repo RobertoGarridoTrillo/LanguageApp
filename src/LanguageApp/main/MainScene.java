@@ -3,11 +3,13 @@ package LanguageApp.main;
 import LanguageApp.controller.DataBaseController;
 import LanguageApp.controller.ForgetController;
 import LanguageApp.controller.FormController;
+import LanguageApp.controller.FormDataBaseController;
 import LanguageApp.controller.LoginController;
 import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
 import LanguageApp.controller.RegistrationController;
 import LanguageApp.controller.WelcomeController;
+import LanguageApp.model.Usuario;
 import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
@@ -40,6 +42,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -75,10 +78,12 @@ public class MainScene extends Application
   private AnchorPane dataBaseView;
 
   // Setting the global varibles
-  private String usuario_nombre;
-  private int usuario_activo;
+  private int usuario_activo; // if I remenber or not in the next login
+
   // The real usuario_id
   private static int usuario_id;
+  private static String usuario_nombre;
+
   // When I'm in the welcome screen
   boolean welcomeScreen;
 
@@ -110,6 +115,9 @@ public class MainScene extends Application
   FadeTransition fIn, fadeLoginIn;
   FadeTransition fOut, fadeLoginOut;
 
+  // the status of the media when change scene
+  private String key, look;
+
   ChangeListener mainChangeListener;
 
 //</editor-fold>
@@ -136,9 +144,13 @@ public class MainScene extends Application
     // setting progressbar. I use a doubleProperty (it's a class wrapper) instead double.
     progressBarValue = new SimpleDoubleProperty();
     labelText = new SimpleStringProperty();
-
     progressBarValue.setValue(0.0);
     labelText.setValue("");
+
+    // Setting the status to the fade the change scene
+    key = "";
+    look = "";
+
    }
 
 //</editor-fold>
@@ -178,21 +190,28 @@ public class MainScene extends Application
     forgetView();
     loginView();
 
-
     // Checking if there's some active user
-    Object nombre = handleCheckNombre().getValue();
-    Object id = handleCheckNombre().getKey();
+    Pair pair = handleCheckNombre();
+    Object id = pair.getKey();
+    Object name = pair.getValue();
 
-    usuario_nombre = (nombre != null) ? nombre.toString() : null;
     usuario_id = (id != null) ? (Integer) id : 0;
+    // Put the name in the welcome label
+    if (name == null) {
+      usuario_nombre = null;
+      welcomeController.handlePutName(usuario_nombre);
+    } else {
+      usuario_nombre = (name.equals("root")) ? null : name.toString();
+      welcomeController.handlePutName(usuario_nombre);
+    }
+
 
 
     // Checking the colour of the back progress bar
     centerNode = mainController.checkCenter();
     centerString = centerNode.getId();
 
-    // Put the name in the welcome label
-    welcomeController.handlePutName(usuario_nombre);
+
 
     this.mainStage.setResizable(false);
     //this.mainStage.setWidth(1215);
@@ -216,7 +235,7 @@ public class MainScene extends Application
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("WelcomeView");
 
       welcomeView = (AnchorPane) loader.load();
@@ -234,6 +253,7 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="FormView">
+
   /**
    *
    */
@@ -242,7 +262,7 @@ public class MainScene extends Application
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("FormView");
 
       formView = (AnchorPane) loader.load();
@@ -255,6 +275,7 @@ public class MainScene extends Application
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / formView()", e.toString(), e);
     }
    }
+
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="RegisterView">
@@ -264,7 +285,7 @@ public class MainScene extends Application
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("RegistrationView");
 
       registrationView = (AnchorPane) loader.load();
@@ -286,7 +307,7 @@ public class MainScene extends Application
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("ForgetView");
 
       forgetView = (AnchorPane) loader.load();
@@ -308,7 +329,7 @@ public class MainScene extends Application
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("LoginView");
 
       loginView = (HBox) loader.load();
@@ -342,7 +363,7 @@ public class MainScene extends Application
    {
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("MainView");
 
       mainView = (BorderPane) loader.load();
@@ -370,17 +391,17 @@ public class MainScene extends Application
 
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="pricipalView">
+//<editor-fold defaultstate="collapsed" desc="principalView">
 
   /**
    *
    */
-  private void principalView()
+  public void principalView()
    {
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("PrincipalView");
 
       principalView = (AnchorPane) loader.load();
@@ -403,7 +424,7 @@ public class MainScene extends Application
 
     try {
       // Create the FXMLLoader
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("DataBaseView");
 
       dataBaseView = (AnchorPane) loader.load();
@@ -425,46 +446,9 @@ public class MainScene extends Application
    *
    * @return
    */
-  public Pair handleCheckNombre()
+  public Pair<Integer, String> handleCheckNombre()
    {
-    Connection conn = null;
-    Statement stmt = null;
-    usuario_nombre = null;
-
-    usuario_nombre = null;
-
-    // Preparing statement
-    try {
-      String sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_activo = 1";
-      // Try connection
-      conn = dataBaseController.connect();
-
-      stmt = conn.createStatement();
-      //
-      ResultSet rs = stmt.executeQuery(sql);
-
-      if (rs.next()) {
-        usuario_id = rs.getInt("usuario_id");
-        usuario_nombre = rs.getString("usuario_nombre");
-      } else {
-        usuario_id = 0;
-      }
-
-      stmt.close();
-      conn.close();
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
-    } finally {
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / CheckUser()", e.toString(), e);
-      }
-    }
-    return new Pair(usuario_id, usuario_nombre);
+    return dataBaseController.handleCheckNombre();
    }
 
 
@@ -476,24 +460,14 @@ public class MainScene extends Application
   public void handleEntrar(boolean activoBoolean, boolean usuario_last)
    {
 
-    Connection conn = null;
-    Statement stmt = null;
-
     // In SQLinte doesn't exit boolean
     usuario_activo = (activoBoolean) ? 1 : 0;
 
     try {
-      // Try connection
-      conn = dataBaseController.connect();
-      conn.setAutoCommit(false);
-
-      handlBorrarMarcar(activoBoolean);
+      dataBaseController.handleBorrarMarcar(activoBoolean, usuario_id);
 
       if (!usuario_last) {
-        // First I close the thead media to slider
-        principalController.handleCloseMenu("buttonLoginMenu");
-
-        principalView();
+        principalController.handleOpenMenu2Play();
       }
 
       // change the center
@@ -503,65 +477,22 @@ public class MainScene extends Application
       // change the color of the anchor panel bottom
       mainController.checkCenter();
 
+      //Update the dashborad of the database
+      dataBaseController.mostrarUsuario();
+
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
-    } finally {
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
-      }
     }
    }
 
 
   /**
    *
-   * @param activoBoolean If only wants to delete, put it false
+   * @param origen
    */
-  public void handlBorrarMarcar(boolean activoBoolean)
+  public void handleCloseMenu(String origen)
    {
-
-    Connection conn = null;
-    Statement stmt = null;
-    PreparedStatement pstmt = null;
-
-    // In SQLinte doesn't exit boolean
-    usuario_activo = (activoBoolean) ? 1 : 0;
-
-    try {
-      // Try connection
-      conn = dataBaseController.connect();
-      conn.setAutoCommit(false);
-
-      String sql = "UPDATE usuarios SET usuario_activo = 0;";
-      stmt = conn.createStatement();
-      stmt.executeUpdate(sql);
-      conn.commit();
-      stmt.close();
-      // set the value
-      sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
-      pstmt = conn.prepareStatement(sql);
-      pstmt.setInt(1, usuario_activo);
-      pstmt.setInt(2, usuario_id);
-      pstmt.executeUpdate();
-      conn.commit();
-      pstmt.close();
-      conn.close();
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handlBorrarMarcar()", e.toString(), e);
-    } finally {
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handlBorrarMarcar()", e.toString(), e);
-      }
-    }
+    principalController.handleCloseMenu(origen);
    }
 
 
@@ -573,166 +504,60 @@ public class MainScene extends Application
    */
   public Pair handleCheckUser(String usuarioString, String passwordString)
    {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    Statement stmt = null;
-
-    usuario_nombre = null;
-
-    // Preparing statement
-    String sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_nombre = ? and password = ?";
-    try {
-      // Try connection
-      conn = dataBaseController.connect();
-      conn.setAutoCommit(false);
-
-      // preparing statement
-      pstmt = conn.prepareStatement(sql);
-
-      // set the value
-      pstmt.setString(1, usuarioString);
-      pstmt.setString(2, passwordString);
-
-      //
-      ResultSet rs = pstmt.executeQuery();
-
-
-      if (rs.next()) {
-        usuario_id = rs.getInt("usuario_id");
-        usuario_nombre = rs.getString("usuario_nombre");
-      } else {
-
-      }
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
-    } finally {
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (SQLException e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleCheckUser()", e.toString(), e);
-      }
-    }
-    return new Pair(usuario_id, usuario_nombre);
+    return dataBaseController.handleCheckUser(usuarioString, passwordString);
    }
 
 
   /**
+   *
    * @param usuarioString
    * @param passwordString
+   * @param activoBoolean
    * @param preguntaString
    * @param respuestaString
-   * @param user
    * @return
    */
-  public int handleRegistro(String usuarioString, String passwordString, String preguntaString, String respuestaString)
+  public int handleRegistro(String usuarioString, String passwordString, boolean activoBoolean, String preguntaString, String respuestaString)
    {
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    Statement stmt = null;
-    String sql = null;
-    Pair usuario;
+    int ret = dataBaseController.handleRegistro(usuarioString, passwordString, activoBoolean, preguntaString, respuestaString);
+    dataBaseController.handleRegistro02(usuarioString, passwordString, activoBoolean);
 
-    try {
-
-      //  if don't, I create him
-      usuario = handleCheckUser(usuarioString, passwordString);
-      if ((String) usuario.getValue() != null) {
-        return (Integer) usuario.getKey();
-      }
-
-      // I create the user
-      conn = dataBaseController.connect();
-      conn.setAutoCommit(false);
-      sp = conn.setSavepoint("Registration");
-
-      handlBorrarMarcar(false); //put all the usuario_id to 0
-
-      // Preparing statement
-      sql = "INSERT INTO  usuarios (usuario_nombre, password, usuario_activo, pregunta, respuesta) " + "VALUES (?,?,1,?,?)";
-      pstmt = conn.prepareStatement(sql);
-      // set the value
-      pstmt.setString(1, usuarioString);
-      pstmt.setString(2, passwordString);
-      pstmt.setString(3, preguntaString);
-      pstmt.setString(4, respuestaString);
-      pstmt.executeUpdate();
-      conn.commit();
-      pstmt.close();
-
-    } catch (Exception e) {
-      try {
-        conn.rollback(sp);
-      } catch (SQLException ex) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", ex.toString(), ex);
-      }
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
-    } finally {
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
-      }
-    }
-
-    // Read the usuario_id of the rec
-    usuario = handleCheckUser(usuarioString, passwordString);
-    setUsuario_id(usuario_id);
-
-    return 0;
+    return ret;
    }
 
 
-  public String handleRecordar(String usuarioString, String preguntaString, String respuestaString)
+  /**
+   *
+   * @param usuarioString
+   * @param passwordString
+   * @param activoBoolean
+   * @param preguntaString
+   * @param respuestaString
+   * @return
+   */
+  public int handleCreate(String usuarioString, String passwordString, boolean activoBoolean, String preguntaString, String respuestaString)
    {
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    String password = null;
+    int ret = dataBaseController.handleRegistro(usuarioString, passwordString, activoBoolean, preguntaString, respuestaString);
 
-    // Preparing statement
-    String sql = "SELECT password FROM usuarios WHERE usuario_nombre = ? and pregunta = ? and respuesta = ?";
-    try {
-      // Try connection
-      conn = dataBaseController.connect();
-      conn.setAutoCommit(false);
+    dataBaseController.handleRegistro03(usuarioString, passwordString, activoBoolean, preguntaString, respuestaString);
+    dataBaseController.handleCloseModal();
 
-      // preparing statement
-      pstmt = conn.prepareStatement(sql);
+    return ret;
+   }
 
-      // set the value
-      pstmt.setString(1, usuarioString);
-      pstmt.setString(2, preguntaString);
-      pstmt.setString(3, respuestaString);
 
-      //
-      ResultSet rs = pstmt.executeQuery();
-      conn.commit();
-
-      while (rs.next()) {
-        password = rs.getString(1);
-        return password;
-      }
-
-      pstmt.close();
-      conn.close();
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
-    } finally {
-      try {
-        if (conn != null) {
-          conn.close();
-        }
-      } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
-      }
-    }
-    return password;
+  /**
+   *
+   * @param usuarioString
+   * @param preguntaString
+   * @param respuestaString
+   * @return
+   */
+  public String handleRecordar(String usuarioString, String preguntaString, String respuestaString)
+   {
+    return dataBaseController.handleRecordar(usuarioString, preguntaString, respuestaString);
    }
 
 
@@ -742,9 +567,29 @@ public class MainScene extends Application
    */
   public void handleForgetUsuario()
    {
-
     setFadeLogin("forget");
+   }
 
+
+  /**
+   *
+   * @param user
+   */
+  public void handleUpdate(Usuario user)
+   {
+    dataBaseController.handleUpdate(user);
+    dataBaseController.handleCloseModal();
+
+   }
+
+
+  /**
+   *
+   * @param user
+   */
+  public void handleDelete(Usuario user)
+   {
+    dataBaseController.handleDelete(user);
    }
 
 
@@ -758,10 +603,12 @@ public class MainScene extends Application
       e.consume();
 
       fadeOldOut();
+      helperFadePlayOut("withFileChooser");
 
       if (!message.message(Alert.AlertType.CONFIRMATION, "Salir", "¿Quieres salir de la aplicación?", "", null)) {
         fadeNewIn();
         fadeOldIn();
+        helperFadePlayIn("withFileChooser");
         return;
       }
       Platform.exit();
@@ -771,13 +618,19 @@ public class MainScene extends Application
    }
 
 
+  public Pair<String, String> handleUpdateCorrection(String trans, String currentTab, int indexItemV, double success)
+   {
+    return dataBaseController.handleUpdateCorrection(trans, currentTab, indexItemV, success);
+   }
+
+
   /**
    *
    */
   private void handleLocale02(String s)
    {
     try {
-      HandleLocale01.handleLocale01();
+      /*/*HandleLocale01.handleLocale01();*/
       URL urlFXML = new URL(MainScene.class
               .getResource("/LanguageApp/view/" + s + ".fxml").toExternalForm());
 
@@ -785,6 +638,17 @@ public class MainScene extends Application
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleRegistro()", e.toString(), e);
     }
+   }
+
+
+  /**
+   *
+   * @param usuarioId
+   * @return
+   */
+  public boolean handleCheckMateriaActivo(int usuarioId)
+   {
+    return dataBaseController.handleCheckMateriaActivo(usuarioId);
    }
 
 //</editor-fold> 
@@ -815,6 +679,28 @@ public class MainScene extends Application
 
   /**
    *
+   *
+   * @param usuario_nombre
+   */
+  public static void setUsuario_nombre(String usuario_nombre)
+   {
+    MainScene.usuario_nombre = usuario_nombre;
+   }
+
+
+  /**
+   *
+   * @return
+   *
+   */
+  public static String getUsuario_nombre()
+   {
+    return MainScene.usuario_nombre;
+   }
+
+
+  /**
+   *
    * @return
    */
   public double getProgressBarValue()
@@ -840,6 +726,7 @@ public class MainScene extends Application
     formController.setProgressBarValue(progressBarValue);
     registrationController.setProgressBarValue(progressBarValue);
     forgetController.setProgressBarValue(progressBarValue);
+    principalController.setProgressBarValue(progressBarValue);
     //System.out.println("mainScene " + progressBarValue.getValue());
 
     if (progressBarValue.getValue() >= 1) progressBarValue.set(0.0);
@@ -867,7 +754,6 @@ public class MainScene extends Application
    }
 
 
-  
   /**
    *
    * @param subtitle String[] Array of String with the name of the subtitles in the media
@@ -878,10 +764,28 @@ public class MainScene extends Application
     this.subtitle = subtitle;
     mainController.setVisibleFlagMenu(this.subtitle, subtitleAudio);
    }
-  
-  public void setButtonSubtitle(String flag){
+
+
+  /**
+   *
+   * @param subtitle String[] Array of String with the name of the subtitles in the media
+   * @param subtitleAudio The audio subtitle of the media
+   */
+  public void setInvisibleFlagMenu(String[] subtitle, String subtitleAudio)
+   {
+    this.subtitle = subtitle;
+    mainController.setInvisibleFlagMenu(this.subtitle, subtitleAudio);
+   }
+
+
+  /**
+   *
+   * @param flag
+   */
+  public void setButtonSubtitle(String flag)
+   {
     principalController.changeListViewByFlag(flag);
-  }
+   }
 
 //</editor-fold> 
 
@@ -899,6 +803,7 @@ public class MainScene extends Application
       }
 
       fadeOldOut();
+      helperFadePlayOut("withFileChooser");
 
       if (principalController.handleOpenMenu()) {
 
@@ -912,8 +817,15 @@ public class MainScene extends Application
         welcomeScreen = false;
         fadeNewIn();
         fadeOldIn();
+        helperFadePlayIn("withFileChooser");
+
+
+        //Update the dashborad of the database
+        dataBaseController.mostrarUsuario();
+
       } else {
         fadeOldIn();
+        helperFadePlayIn("withFileChooser");
       }
 
     } catch (Exception e) {
@@ -934,14 +846,17 @@ public class MainScene extends Application
       }
 
       fadeOldOut();
+      helperFadePlayOut("withFileChooser");
 
       if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
               "¿Quieres cerrar el archivo?", "", null)) {
         fadeOldIn();
+        helperFadePlayIn("withFileChooser");
         return;
       } else {
         fadeOldIn();
         fadeNewIn();
+        helperFadePlayIn("withFileChooser");
       }
       principalController.handleCloseMenu("handleCloseMenu");
     } catch (Exception e) {
@@ -958,11 +873,13 @@ public class MainScene extends Application
    {
 
     fadeOldOut();
+    helperFadePlayOut("withFileChooser");
 
     if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
             "¿Quieres salir de la aplicación?", "", null)) {
 
       fadeOldIn();
+      helperFadePlayIn("withFileChooser");
       return;
     }
 
@@ -977,6 +894,7 @@ public class MainScene extends Application
   public void buttonControlesMenu()
    {
     fadeOldOut();
+    helperFadePlayOut("withFileChooser");
     message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
             "Controles: \n\n" +
             "Cursores:  para desplazarte por los diferentes " +
@@ -989,6 +907,7 @@ public class MainScene extends Application
             "reproducirla.\n\n", null);
 
     fadeOldIn();
+    helperFadePlayIn("withFileChooser");
    }
 
 
@@ -998,10 +917,12 @@ public class MainScene extends Application
   public void buttonAboutMenu()
    {
     fadeOldOut();
+    helperFadePlayOut("withFileChooser");
 
     message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:", "Autor: Roberto Garrido Trillo", null);
     fadeNewIn();
     fadeOldIn();
+    helperFadePlayIn("withFileChooser");
    }
 
 
@@ -1036,11 +957,13 @@ public class MainScene extends Application
     }
 
     fadeOldOut();
+    helperFadePlayOut("withFileChooser");
 
     boolean salida = message.message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "¿Quieres cerrar la sesión?", "", null);
     if (!salida) {
       fadeOldIn();
       fadeNewIn();
+      helperFadePlayIn("withFileChooser");
       return;
     }
 
@@ -1054,7 +977,8 @@ public class MainScene extends Application
       mainView.setCenter(loginView);
 
       // Deleting the active in the database
-      handlBorrarMarcar(false);
+      dataBaseController.handleBorrarMarcar(false, usuario_id);
+      /*/*      handlBorrarMarcar(false);*/
 
       // Deleting the global variables
       usuario_id = 0;
@@ -1066,6 +990,7 @@ public class MainScene extends Application
 
       fadeNewIn();
       fadeOldIn();
+      helperFadePlayIn("withFileChooser");
 
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonUnloginMenu()", e.toString(), e);
@@ -1118,10 +1043,14 @@ public class MainScene extends Application
   public void buttonDatabaseMenu()
    {
     // if doesn't be user, return
-    if (usuario_id == 0 || welcomeScreen || mainController.checkCenter().getId().equals("dataBaseViewAnchorPane")) {
+    if (usuario_id == 0 || welcomeScreen ||
+            mainController.checkCenter().getId().equals("dataBaseViewAnchorPane")) {
       return;
     }
     try {
+
+      //Update the dashborad of the database
+      dataBaseController.mostrarUsuario();
 
       setFadeLogin("database");
 
@@ -1165,42 +1094,41 @@ public class MainScene extends Application
               case "login":
                 loginNode = formView;
                 mainNode = loginView;
-                /*/*principalView.setOpacity(1.0);*/
+                formController.setText();
                 welcomeScreen = true;
                 break;
 
               case "registro":
                 loginNode = registrationView;
                 mainNode = loginView;
-                /*/*principalView.setOpacity(1.0);*/
+                registrationController.setText();
                 welcomeScreen = true;
                 break;
 
               case "forget":
                 loginNode = forgetView;
                 mainNode = loginView;
-                /*/*principalView.setOpacity(1.0);*/
+                forgetController.setText();
                 welcomeScreen = true;
                 break;
 
               case "dashboard":
                 loginNode = welcomeView;
                 mainNode = principalView;
-                /*/*loginView.setOpacity(1.0);*/
                 welcomeScreen = false;
+                helperFadePlayIn("withoutFileChooser");
                 break;
 
               case "database":
                 loginNode = welcomeView;
                 mainNode = dataBaseView;
-                /*/*loginView.setOpacity(1.0);*/
                 welcomeScreen = false;
+                helperFadePlayOut("withoutFileChooser");
                 break;
 
               default:
                 loginNode = welcomeView;
                 mainNode = loginView;
-                /*/*loginView.setOpacity(1.0);*/
                 principalView.setOpacity(1.0);
                 welcomeScreen = true;
                 break;
@@ -1213,12 +1141,6 @@ public class MainScene extends Application
             fadeLoginOut.stop();
             fadeLoginIn.play();
 
-            String result = principalController.getMediaStatus();
-            if (result.equals("playing")) {
-              principalController.handlePlayButton();
-            } else if (result.equals("playingOriginal")) {
-              principalController.handlePlayButtonItemOriginal();
-            }
           }
          }
 
@@ -1226,11 +1148,10 @@ public class MainScene extends Application
 
       //centerNode = mainController.checkCenter();
       fadeLoginOut = handleSetFadeOut();
-
       fadeLoginOut.play();
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonDatabaseMenusetFadeLogin()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / setFadeLogin()", e.toString(), e);
     }
    }
 
@@ -1263,6 +1184,7 @@ public class MainScene extends Application
    {
     mainController.mainFadeNewIn();
    }
+
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Fade in / out of the scene without filechooser">
@@ -1274,6 +1196,7 @@ public class MainScene extends Application
     fIn = new FadeTransition(Duration.millis(250), centerNode);
     //fIn.setFromValue(0.0);
     fIn.setToValue(1.0);
+
     return fIn;
    }
 
@@ -1286,14 +1209,87 @@ public class MainScene extends Application
     fOut = new FadeTransition(Duration.millis(250), centerNode);
     fOut.setFromValue(1.0);
     fOut.setToValue(0.0);
+
     return fOut;
+   }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="helper Fade Play In Out">
+
+  /**
+   *
+   */
+  private void helperFadePlayIn(String key)
+   {
+    String result = principalController.getMediaStatus();
+    if (!key.equals(look) ||
+            (result.equals("pause") && look.equals(""))) return;
+
+    switch (result) {
+      case "pause":
+        principalController.handlePlayButton();
+        break;
+      case "pauseOriginal":
+        principalController.handlePlayButtonItemOriginal();
+        break;
+      default:
+        break;
+    }
+    look = "";
+   }
+
+
+  /**
+   *
+   */
+  private void helperFadePlayOut(String key)
+   {
+    String result = principalController.getMediaStatus();
+
+    if (!key.equals(look) && !look.equals("")) return;
+
+    if (result.equals("pause")) {
+      look = "";
+      return;
+    }
+
+    look = key;
+
+
+
+    switch (result) {
+      case "playing":
+        principalController.handlePlayButton();
+        break;
+      case "playingOriginal":
+        principalController.handlePlayButtonItemOriginal();
+        break;
+      default:
+        break;
+    }
+   }
+
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Fade out of the label and progressbar">
+
+  public void fadeLabel()
+   {
+    mainController.fadeLabel();
+   }
+
+
+  public void fadeProgressBar()
+   {
+    mainController.fadeProgressBar();
    }
 
   //</editor-fold>
 
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="getMainStage">
+//<editor-fold defaultstate="collapsed" desc="GetMainStage">
 
   /**
    * Returns the main stage, if you need it, for example to use it with the filechooser in the mainController class

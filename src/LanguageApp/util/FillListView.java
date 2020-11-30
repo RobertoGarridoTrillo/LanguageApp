@@ -21,7 +21,7 @@ public class FillListView {
     *
     * @param listView Listview H o listView V
     * @param it An array of item objects
-    * @return A String with the name file
+    * @return A String with the- name file
     */
    public String setListView (ListView listView, Item[] it)
    {
@@ -36,9 +36,9 @@ public class FillListView {
             listItem.add((it[i].getId() + 1) + " " + it[i].getText());
          }
          // 
-         //Platform.runLater(() -> {
+         Platform.runLater(() -> {
          listView.setItems(listItem);
-         //});
+         });
 
       } catch (Exception e) {
          Platform.runLater(() -> {

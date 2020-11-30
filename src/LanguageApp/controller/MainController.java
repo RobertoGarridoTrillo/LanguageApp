@@ -155,7 +155,6 @@ public class MainController implements Initializable
     mainLabelBottom.setVisible(false);
 
     // Create the locale for the pop up messages
-    HandleLocale01.handleLocale01();
     message = new Message(resources);
 
     // Setting the flags of the menu item
@@ -176,6 +175,13 @@ public class MainController implements Initializable
       mainLabelBottom.setVisible(false);
       mainProgressBarBottom.setOpacity(1);
       mainLabelBottom.setOpacity(1);
+    });
+
+
+    // The value of the progressBar in mainScene
+    //inicioButtonWelcome.visibleProperty().bind(progressBarValue.greaterThanOrEqualTo(1));
+    progressBarValue.addListener((observable, oldValue, newValue) -> {
+      menuBar.setDisable(progressBarValue.lessThan(1).get());
     });
    }
 
@@ -249,6 +255,16 @@ public class MainController implements Initializable
    }
 
 
+  public void setInvisibleFlagMenu(String[] s, String ss)
+   {
+    
+    for (String menuItem : s) {
+      menuItemFlags[Arrays.asList(s).indexOf(menuItem)].setVisible(false);
+    }
+    // the language of the media is always disabled
+    menuItemFlags[Arrays.asList(s).indexOf(ss)].setDisable(false);
+   }
+
   /**
    *
    * @param s Array of String with the names of languages loaded.
@@ -256,11 +272,12 @@ public class MainController implements Initializable
    */
   public void setVisibleFlagMenu(String[] s, String ss)
    {
+    
     for (String menuItem : s) {
       menuItemFlags[Arrays.asList(s).indexOf(menuItem)].setVisible(true);
     }
-     // the language of the media is always disabled
-     menuItemFlags[Arrays.asList(s).indexOf(ss)].setDisable(true);
+    // the language of the media is always disabled
+    menuItemFlags[Arrays.asList(s).indexOf(ss)].setDisable(true);
    }
 
   //</editor-fold>
@@ -461,7 +478,7 @@ public class MainController implements Initializable
 
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="Fade in / out openMenu">
+  //<editor-fold defaultstate="collapsed" desc="Fade in / out openMenu and Label-progressBar">
 
   /**
    *
@@ -472,10 +489,10 @@ public class MainController implements Initializable
 
     mainFadeNewIn = new FadeTransition(Duration.millis(500), centerNode);
 
-    //mainFadeNewIn.setFromValue(0.0);
+    // mainFadeNewIn.setFromValue(0.0);
     mainFadeNewIn.setToValue(1.0);
 
-    System.out.println("mainFadeNewIn " + mainFadeNewIn.getNode() + "\n");
+    // System.out.println("mainFadeNewIn " + mainFadeNewIn.getNode() + "\n");
 
     //centerNode.setVisible(true);    
     /*/*centerNode.setDisable(false);*/
@@ -494,7 +511,7 @@ public class MainController implements Initializable
     mainFadeOldIn.play();
     //centerNodeOld.setVisible(true);
 
-    System.out.println("mainFadeOldIn " + mainFadeOldIn.getNode() + "\n");
+    // System.out.println("mainFadeOldIn " + mainFadeOldIn.getNode() + "\n");
    }
 
 
@@ -519,6 +536,18 @@ public class MainController implements Initializable
     /*/*centerNode.setDisable(false);*/
     // centerNode.setVisible(true);
     mainFadeOldOut.play();
+   }
+
+
+  public void fadeLabel()
+   {
+    fadeLabel.play();
+   }
+
+
+  public void fadeProgressBar()
+   {
+    fadeProgressBar.play();
    }
 
 

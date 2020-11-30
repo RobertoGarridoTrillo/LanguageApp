@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -79,7 +80,7 @@
                                         <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                           <children>
                                             <Label minWidth="-Infinity" prefWidth="65.0" text="%Reproducir Película" textAlignment="CENTER" wrapText="true" />
-                                                                  <HBox spacing="1.0">
+                                                                  <HBox spacing="5.0">
                                                                      <children>
                                                   <Button fx:id="playButtonReading" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="initialBorder" />
                                                                      
@@ -89,10 +90,11 @@
                                                                      </children>
                                                                   </HBox>
                                 
-                                            <Slider fx:id="mediaSliderReading" styleClass="initialBorder" HBox.hgrow="ALWAYS">
+                                                  <Slider fx:id="mediaSliderReading" styleClass="initialBorder" HBox.hgrow="ALWAYS">
                                                                      <HBox.margin>
                                                                         <Insets />
-                                                                     </HBox.margin></Slider>
+                                                                     </HBox.margin>
+                                                                  </Slider>
                                           </children>
                                                                <VBox.margin>
                                                                   <Insets bottom="10.0" />
@@ -105,11 +107,11 @@
                                                                      <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase original" textAlignment="CENTER" wrapText="true">
                                             </Label>
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
                                                         <Button fx:id="playButtonItemOriginalReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
                                                         <Button fx:id="backButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                        <Button fx:id="forwardButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
+                                                        <Button fx:id="forwardButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleForwardButtonItemOriginal" styleClass="initialBorder" />
                                                         <Button fx:id="stopButtonItemOriginalReading" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
@@ -118,12 +120,12 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                                         <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
-                                                                              <Button fx:id="playButtonItemVirtualReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="backButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="forwardButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="stopButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="playButtonItemVirtualReading" mnemonicParsing="false" onAction="#handlePlayButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleBackButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleForwardButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualReading" mnemonicParsing="false" onAction="#handleStopButtonItemVirtual" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -131,12 +133,12 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                                         <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase traducida virtual" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
-                                                                              <Button fx:id="playButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="stopButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="backButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="playButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handlePlayButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleBackButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleForwardButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslatedReading" mnemonicParsing="false" onAction="#handleStopButtonItemTranslatedVirtual" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -230,7 +232,7 @@
                                         <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                           <children>
                                             <Label minWidth="-Infinity" prefWidth="65.0" text="%Reproducir Película" textAlignment="CENTER" wrapText="true" />
-                                                                  <HBox spacing="1.0">
+                                                                  <HBox spacing="5.0">
                                                                      <children>
                                                   <Button fx:id="playButtonWriting" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="initialBorder" />
                                                   <Button fx:id="backButtonWriting" mnemonicParsing="false" onAction="#handleBackButton" styleClass="initialBorder" />
@@ -249,11 +251,11 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase original" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
                                                         <Button fx:id="playButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
                                                         <Button fx:id="backButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                        <Button fx:id="forwardButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
+                                                        <Button fx:id="forwardButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleForwardButtonItemOriginal" styleClass="initialBorder" />
                                                         <Button fx:id="stopButtonItemOriginalWriting" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
@@ -262,12 +264,12 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                                         <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
-                                                                              <Button fx:id="playButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="backButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="forwardButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="stopButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="playButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handleBackButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handleForwardButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualWriting" mnemonicParsing="false" onAction="#handleStopButtonItemVirtual" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -275,12 +277,12 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                                         <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase traducida virtual" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
-                                                                              <Button fx:id="playButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="stopButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="backButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="playButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handlePlayButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleBackButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleForwardButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslatedWriting" mnemonicParsing="false" onAction="#handleStopButtonItemTranslatedVirtual" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -288,9 +290,14 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox alignment="TOP_CENTER" spacing="5.0">
                                                                            <children>
                                                         <Button fx:id="correctionButtonWriting" mnemonicParsing="false" onAction="#handlecorrectionButtonWriting" styleClass="initialBorder" />
+                                                        <ProgressIndicator fx:id="indicatorSuccessWriting" minHeight="-Infinity" minWidth="-Infinity" prefHeight="36.0" prefWidth="40.0" progress="0.0">
+                                                                                 <HBox.margin>
+                                                                                    <Insets top="2.0" />
+                                                                                 </HBox.margin>
+                                                                              </ProgressIndicator>
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -380,7 +387,7 @@
                                         <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" spacing="20.0" VBox.vgrow="ALWAYS">
                                           <children>
                                             <Label minWidth="-Infinity" prefWidth="65.0" text="%Reproducir Película" textAlignment="CENTER" wrapText="true" />
-                                                                  <HBox spacing="1.0">
+                                                                  <HBox spacing="5.0">
                                                                      <children>
                                                   <Button fx:id="playButtonTranslation" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="initialBorder" />
                                                   <Button fx:id="backButtonTranslation" mnemonicParsing="false" onAction="#handleBackButton" styleClass="initialBorder" />
@@ -399,11 +406,11 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase original" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
                                                         <Button fx:id="playButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
                                                         <Button fx:id="backButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                        <Button fx:id="forwardButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
+                                                        <Button fx:id="forwardButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleForwardButtonItemOriginal" styleClass="initialBorder" />
                                                         <Button fx:id="stopButtonItemOriginalTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
@@ -412,12 +419,12 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                                         <Label minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" text="%Frase virtual" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
-                                                                              <Button fx:id="playButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="backButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="forwardButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="stopButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="playButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handleForwardButtonItemVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemVirtual" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -425,12 +432,12 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                                         <Label minHeight="-Infinity" prefHeight="20.0" text="%Frase traducida virtual" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox spacing="5.0">
                                                                            <children>
-                                                                              <Button fx:id="playButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="stopButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="backButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleForwardPlayButtonItemOriginal" styleClass="initialBorder" />
-                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemOriginal" styleClass="initialBorder" />
+                                                                              <Button fx:id="playButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handlePlayButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="backButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleBackButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="forwardButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleForwardButtonItemTranslatedVirtual" styleClass="initialBorder" />
+                                                                              <Button fx:id="stopButtonItemVirtualTranslatedTranslation" mnemonicParsing="false" onAction="#handleStopButtonItemTranslatedVirtual" styleClass="initialBorder" />
                                                                            </children>
                                                                         </HBox>
                                                                      </children>
@@ -438,9 +445,13 @@
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
                                                   <Label minHeight="-Infinity" prefHeight="20.0" text="%Respuesta" textAlignment="CENTER" wrapText="true" />
-                                                                        <HBox spacing="1.0">
+                                                                        <HBox alignment="TOP_CENTER" spacing="5.0">
                                                                            <children>
                                                         <Button fx:id="correctionButtonTranslation" mnemonicParsing="false" onAction="#handlecorrectionButtonTranslation" styleClass="initialBorder" />
+                                                        <ProgressIndicator fx:id="indicatorSuccessTranslation" minHeight="-Infinity" minWidth="-Infinity" prefHeight="36.0" prefWidth="40.0" progress="0.0">
+                                                                                 <HBox.margin>
+                                                                                    <Insets top="2.0" />
+                                                                                 </HBox.margin></ProgressIndicator>
                                                                            </children>
                                                                         </HBox>
                                                                      </children>

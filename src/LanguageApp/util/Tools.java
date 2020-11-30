@@ -1,4 +1,4 @@
-package LanguageApp.controller;
+package LanguageApp.util;
 
 import LanguageApp.util.HandleLocale01;
 import java.util.Arrays;

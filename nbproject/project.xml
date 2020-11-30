@@ -13,6 +13,11 @@
             </test-roots>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>confirmar</word>
+            <word>eliminar</word>
+            <word>Escribir</word>
+            <word>nombre</word>
+            <word>Traducir</word>
             <word>usuario</word>
             <word>youtube</word>
         </spellchecker-wordlist>

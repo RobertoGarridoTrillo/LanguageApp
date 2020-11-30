@@ -4,8 +4,8 @@ import LanguageApp.model.Item;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -22,9 +22,10 @@ public class SaveWordsAsList {
    // pop-up messages
    Message message = new Message(HandleLocale01.handleLocale01());
    
+   // There is another simil pattern in SortPhrase.java
    Pattern pattern = Pattern.compile(
            "\\[|\\]|\\º|\\ª|\\@|\\·|\\#|\\$|\\~|\\%|\\€|\\&|\\¬|\\/|\\(|\\)|\\=|\\?|\\¿|\\¡" +
-           "|\\^|\\+|\\*|\\||\\{|\\}|\\_|\\-|\\.|\\:|\\,|\\;|\\<|\\>|\\«|\"|\\ |\\»|\\!");
+           "|\\^|\\+|\\*|\\||\\{|\\}|\\_|\\-|\\.|\\:|\\,|\\;|\\<|\\>|\\«|\"|\\ |\\»|\\!|\\。");
    Matcher matcherFirst, matcherLast;
 
 
@@ -40,7 +41,7 @@ public class SaveWordsAsList {
       // Array with the words of one phrase
       String[] wordPhrase;
       // Set with all the words (no repeat words)
-      Set<String> ws = new HashSet<>();
+      Set<String> ws = new LinkedHashSet<>();
       // The "words set" above pased to String, to save in disk
       String wString = "";
 
