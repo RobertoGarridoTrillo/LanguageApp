@@ -607,7 +607,7 @@ public class RegistrationController implements Initializable
       
       mainScene.handleEntrar(true, mainScene.handleCheckMateriaActivo(usuario_last)); */
       
-      mainScene.handleEntrar(true,true);
+      mainScene.handleEntrar(true,false);
 
       }
     }

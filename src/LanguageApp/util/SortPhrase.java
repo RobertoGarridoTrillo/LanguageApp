@@ -1,11 +1,16 @@
 package LanguageApp.util;
 
 import LanguageApp.model.Item;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -28,18 +33,21 @@ public class SortPhrase
    * @param items
    * @return
    */
-  public Set<String> sortPhrases(Item[] items)
+  public String[] sortPhrases(Item[] items)
    {
 
-    String[] tempOriginal = new String[items.length - 1]; // Out the last row
-    // Set with all the words (no repeat words)
-    Set<String> ws = new LinkedHashSet<>();
+    //List<String> tempOriginal = new ArrayList<>();
 
-    // Adding the words of this phrase to the List
-    for (int i = 0; i < items.length - 1; i++) {
-      tempOriginal[i] = items[i].getText();
-    }
+    // Set with all the words 
+    // no repeat words preserves the order of the original collection 
+    // while removing duplicate elements:)
+    // Set<String> ws = new LinkedHashSet<>(tempOriginal);   
 
+    // Set with all the words (no  repeat words no preserv order)
+    // Set<String> ws = new HashSet<>(tempOriginal);
+
+
+    /*/*
     // Delete the repeats
     int lonjitud = tempOriginal.length;
 
@@ -87,7 +95,28 @@ public class SortPhrase
     for (int i = 0; i < lonjitud; i++) {
       ws.add(tempOriginal[i]);
     }
-    return ws;
+     */
+ /*/* Another way
+    //Convierte a List ambos arreglos        
+    List<String> list01 = new ArrayList<String>(Arrays.asList(tempOriginal));
+    List<String> list02 = new ArrayList<String>(Arrays.asList(tempOriginal));
+    List<String> listFinal = Stream.concat(list01.stream(), list02.stream())
+            .distinct()
+            .collect(Collectors.toList());
+
+    int lonjitud = listFinal.size();
+    ws.addAll(listFinal); */
+    
+    String[] tempOriginal = new String[items.length - 1]; // Out the last row
+    
+    int lonjitud = items.length - 1;
+    
+    // Adding the words of this phrase to the List
+    for (int i = 0; i < items.length - 1; i++) {
+      tempOriginal[i] = ((pattern.matcher(items[i].getText())).replaceAll(""));
+    }
+
+    return tempOriginal;
    }
 
  }

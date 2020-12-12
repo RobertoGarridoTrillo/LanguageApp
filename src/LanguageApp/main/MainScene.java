@@ -403,7 +403,7 @@ public class MainScene extends Application
       // Create the FXMLLoader
       /*/*HandleLocale01.handleLocale01();*/
       handleLocale02("PrincipalView");
-
+      // 195 MB
       principalView = (AnchorPane) loader.load();
 
       // Give the mainController access to the main app (It´s like a instance)
@@ -847,18 +847,18 @@ public class MainScene extends Application
 
       fadeOldOut();
       helperFadePlayOut("withFileChooser");
-
-      if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
+      //Message m = new Message(resources);
+      /*/*if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
               "¿Quieres cerrar el archivo?", "", null)) {
         fadeOldIn();
         helperFadePlayIn("withFileChooser");
         return;
-      } else {
+      } else { */
         fadeOldIn();
         fadeNewIn();
         helperFadePlayIn("withFileChooser");
-      }
-      principalController.handleCloseMenu("handleCloseMenu");
+      //}
+      principalController.handleCloseMenu("buttonUnloginMenu");
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonCloseMenu()", e.toString(), e);
     }

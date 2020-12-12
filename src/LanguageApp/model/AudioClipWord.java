@@ -19,6 +19,12 @@ public class AudioClipWord
    }
 
 
+  public AudioClipWord()
+   {
+   }
+  
+
+
   public Map<String, AudioClip> getAudioClip()
    {
     return audioClip;

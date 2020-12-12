@@ -19,6 +19,11 @@ public class AudioClipPhrase
    }
 
 
+  public AudioClipPhrase()
+   {
+   }
+
+
 
   public Map<String, MediaPlayer> getAudioMedia()
    {

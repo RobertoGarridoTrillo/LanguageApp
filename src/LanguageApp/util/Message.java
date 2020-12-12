@@ -54,7 +54,7 @@ public class Message
    {
 
     // References to mainScene
-    mainStage = MainScene.getMainStage();
+    //mainStage = MainScene.getMainStage();
 
     Alert alert = new Alert(alertType);
     alert.setResizable(true);

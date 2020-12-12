@@ -31,18 +31,16 @@ public class AudioClips
    * @param lastFile
    * @return A map with the name and the Audioclip
    */
-  public Map<String, AudioClip> setAudioClip(Set<String> set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
+  public HashMap<String, AudioClip> setAudioClip(Set<String> set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
    {
 
-    // An unique audioclip
-    AudioClip ac;
+      Map<String, AudioClip> audioClips = new HashMap<>();
+      audioClips.clear();
 
-    // pop-up messages
+    // pop-up mes-sages
     Message message = new Message(HandleLocale01.handleLocale01());
 
     String s;
-
-    Map<String, AudioClip> audioClips = new HashMap<>();
 
     String audioError;
 
@@ -50,12 +48,10 @@ public class AudioClips
 
     URI resource;
 
-    // instance of the Map
-    audioClips.clear();
-
     audioError = null;
 
     try {
+
       for (String ws : set) {
 
         // This is to fix the forbbiden name con. in windows
@@ -67,11 +63,10 @@ public class AudioClips
         s = lastdirectory + se + ws + ".mp3";
 
         resource = new File(s).toURI();
-
-        ac = new AudioClip(resource.toString());
+        AudioClip ac = new AudioClip(resource.toString());
 
         audioClips.put(ws, ac);
-        ac = null;
+        // ac = null;
 
         audioClips.get(ws).setRate(rateSlider.getValue());
         audioClips.get(ws).setBalance(balanceSlider.getValue());
@@ -83,12 +78,14 @@ public class AudioClips
     } catch (Exception e) {
       final String error = audioError;
       Platform.runLater(() -> {
-      message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" 
-              + error + "\"", "AudioClips.java / setAudioClip()", e);
+        message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" +
+                error + "\"", "AudioClips.java / setAudioClip()", e);
       });
     }
     System.gc();
-    return audioClips;
+    System.runFinalization();
+    
+    return new HashMap<String, AudioClip>(){{putAll(audioClips);}};
    }
 
 
@@ -101,7 +98,7 @@ public class AudioClips
    * @param volumeSlider
    * @return
    */
-  public Map<String, MediaPlayer> setAudioMedia(Set<String> set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
+  public Map<String, MediaPlayer> setAudioMedia(String[] set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
    {
     // An unique audioclip
     MediaPlayer me;
@@ -118,7 +115,7 @@ public class AudioClips
     String se = System.getProperty("file.separator");
 
     URI resource;
-   audioMedia.clear();
+    audioMedia.clear();
 
     audioError = null;
 
@@ -140,9 +137,8 @@ public class AudioClips
         me = new MediaPlayer(new Media(resource.toString()));
 
         audioMedia.put(ws, me);
-        //me.dispose();
-        me = null;
-
+        // me.dispose();
+        // me = null;
         audioMedia.get(ws).setRate(rateSlider.getValue());
         audioMedia.get(ws).setBalance(balanceSlider.getValue());
         audioMedia.get(ws).setVolume(volumeSlider.getValue());
@@ -153,14 +149,14 @@ public class AudioClips
     } catch (Exception e) {
       final String error = audioError;
       Platform.runLater(() -> {
-      message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" + 
-              error + "\"", "AudioClips.java / setAudioClip()", e);
+        message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" +
+                error + "\"", "AudioClips.java / setAudioClip()", e);
       });
     }
 
     System.gc();
     System.runFinalization();
-    return audioMedia;
+    return new HashMap<String, MediaPlayer>(){{putAll(audioMedia);}};
    }
 
  }

@@ -2,8 +2,12 @@ package LanguageApp.util;
 
 import LanguageApp.model.Item;
 import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import javafx.scene.control.Alert;
 
@@ -34,7 +38,9 @@ public class GetJson {
          Reader reader = new FileReader(fl);
 
          // Convert JSON File to Java Object
-         is = gson.fromJson(reader, Item[].class);
+         InputStream inputStream  = new FileInputStream(fl.getAbsolutePath());
+         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+         is = gson.fromJson(new InputStreamReader(inputStream,"UTF-8"), Item[].class);
 
          // Put the id handly
          for (int i = 0; i < is.length; i++) {

@@ -12,7 +12,6 @@ import LanguageApp.util.Directorio;
 import LanguageApp.util.FillListView;
 import LanguageApp.util.FormatTime;
 import LanguageApp.util.GetJson;
-import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import LanguageApp.util.SaveWordsAsList;
 import LanguageApp.util.SelectedFile;
@@ -22,9 +21,12 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -45,7 +47,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
@@ -53,7 +54,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -71,7 +71,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
 //</editor-fold>
@@ -288,17 +287,15 @@ public class PrincipalController implements Initializable
   // Save as a list of words
   private Set<String>[] wordSet;
 
-  private Set<String>[] phraseSet;
+  /*/*private String[] phraseSet; */
   private String[][] phraseString;
 
   // Show ListView 
   private String[] itemWordsOriginal;
-
   private String[] itemWordsTranslation;
 
   // ListView MarkerText
   private String markerTextOriginal;
-
   private String markerTextTranslation;
 
   // AudiClip
@@ -346,21 +343,14 @@ public class PrincipalController implements Initializable
   private double success;
 
   // Class instances
-  private SelectedFile sf;
-
-  private GetJson gj;
-
-  private FillListView flw;
-
-  private AudioClips ac;
-
-  private SaveWordsAsList swal;
-
-  private FormatTime ft;
-
+  // private SelectedFile sf;
+  // private GetJson gj;
+  // private FillListView flw;
+  // private AudioClips ac;
+  // private SaveWordsAsList swal;
+  // private FormatTime ft;
   private Directorio dire;
-
-  private SortPhrase sp;
+  // private SortPhrase sp;
 
   // Active user
   private int usuario_id;
@@ -380,11 +370,12 @@ public class PrincipalController implements Initializable
   private String leer, escribir, traducir;
 
   // Thread handleOpenMenu2Thread
-  private final Thread handleOpenMenu2Thread;
+  private Thread handleOpenMenu2Thread;
 
   private String handleOpenMenu2; // Play, pause, stop handleOpenMenu2
 
   private final Object handleOpenMenu2Lock = new Object();
+
 
 //</editor-fold>  
 
@@ -393,16 +384,15 @@ public class PrincipalController implements Initializable
   public PrincipalController()
    {
 
-
     //<editor-fold defaultstate="collapsed" desc="Instances">
-    sf = new SelectedFile();
-    gj = new GetJson();
-    flw = new FillListView();
-    ac = new AudioClips();
+    // sf = new SelectedFile();
+    // gj = new GetJson();
+    // flw = new FillListView();
+    // ac = new AudioClips();
     dire = new Directorio();
-    swal = new SaveWordsAsList();
-    ft = new FormatTime();
-    sp = new SortPhrase();
+    // swal = new SaveWordsAsList();
+    // ft = new FormatTime();
+    // sp = new SortPhrase();
 
     //</editor-fold>
 
@@ -433,6 +423,7 @@ public class PrincipalController implements Initializable
               // Extract the current time of the media and put in in the label
               currentTime = mediaPlayer.getCurrentTime();
               Platform.runLater(() -> {
+                FormatTime ft = new FormatTime();
                 timeLabelReading.setText(ft.formatting(currentTime, duration));
               });
 
@@ -471,25 +462,37 @@ public class PrincipalController implements Initializable
       public void run()
        {
         try {
+          String[] subtitle;
+          Item[][] idiomas;
+          Set<String>[] wordSet;
+          String[] phraseSet;
+          String[][] phraseString;
+          AudioClipWord[] audioClipsWords;
+          AudioClipPhrase[] audioClipsPhrases;
+          String subtitleAudio = "";
+          Item[] itemsOriginal;
+          Item[] itemsTranslation;
+
+          int idiomasLength = 0;
 
           while (!handleOpenMenu2.equals("stop")) {
 
-            System.out.println("Entrando " + " " + handleOpenMenu2Thread.getName());
-            System.out.println("handleOpenMenu2 " + handleOpenMenu2);
+            //System.out.println("Entrando " + " " + handleOpenMenu2Thread.getName());
+            //System.out.println("handleOpenMenu2 " + handleOpenMenu2);
 
             synchronized (handleOpenMenu2Lock) {
               while (handleOpenMenu2.equals("pause")) {
                 handleOpenMenu2Lock.wait();
-                System.out.println("Esperando " + " " + handleOpenMenu2Thread.getName());
-                System.out.println("handleOpenMenu2 " + handleOpenMenu2);
+                //System.out.println("Esperando " + " " + handleOpenMenu2Thread.getName());
+                //System.out.println("handleOpenMenu2 " + handleOpenMenu2);
 
               }
 
             }
             if (handleOpenMenu2.equals("stop")) return;
 
-            System.out.println("Repito ciclo Esperar " + handleOpenMenu2 +
-                    " " + handleOpenMenu2Thread.getName());
+            //System.out.println("Repito ciclo Esperar " + handleOpenMenu2 +
+            //        " " + handleOpenMenu2Thread.getName());
 
             //<editor-fold defaultstate="collapsed" desc="Creando Matrices">
 
@@ -498,44 +501,47 @@ public class PrincipalController implements Initializable
             // Getting initial user and materia_activo
             usuario_id = mainScene.getUsuario_id();
             usuario_nombre = mainScene.getUsuario_nombre();
+            // Checking if exists some equal, if doesn't it's created
             dire.checkIni(usuario_id);
+
+            // Si por error hay mas de una materia activa
+            String ld = dire.getLastDirectory();
+            String lf = dire.getLastFile();
+            dire.checkAndSetLastDirectory(lf, ld, usuario_id);
 
             materia_activo = mainScene.handleCheckMateriaActivo(usuario_id);
             if (materia_activo) {
 
               // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
-              jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
+              File jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
 
               // el subtitle suele salir ordenado, pero no es seguro, solo para ir cargango jsons
-              subtitle = jsonBinder.list(); // Name of the carpets into Json (Englis, Spanish...)
+              // Name of the carpets into Json (Englis, Spanish...)
+              subtitle = jsonBinder.list();
 
               // if the directoriy has problem (empty, moved...) delete the row database
-
-
               if (subtitle == null) dire.delete(usuario_id);
               while (subtitle == null) {
               }
+              int subtitleLength = subtitle.length;
 
               // Problemas with the generic array - fixed
-              idiomas = new Item[subtitle.length][]; // Array of items[] -> idiomas[][]
+              // Array of items[] -> idiomas[][]
+              idiomas = new Item[subtitleLength][];
 
-              wordSet = (Set<String>[]) new LinkedHashSet[subtitle.length]; // set of words
+              // set of words
+              wordSet = (Set<String>[]) new LinkedHashSet[subtitleLength];
 
-              phraseSet = (Set<String>[]) new LinkedHashSet[subtitle.length]; // set of phrases
+              phraseSet = new String[subtitleLength]; // set of phrases
 
-              phraseString = new String[subtitle.length][];
+              phraseString = new String[subtitleLength][];
 
-              totalMessages = 7 + (subtitle.length * 5);
+              int totalMessages = 7 + (subtitleLength * 5);
 
               setProgressBar(totalMessages, "Creando Matrices");
 
-              // Array of Map <String, Audiocips> of words
-              /*/*audioClipsWords = (Map<String, AudioClip>[]) new Map[subtitle.length]; */
-              // Array of Map <String, Audiocips> of phrases
-              /*/* audioClipsPhrases = (Map<String, MediaPlayer>[]) new Map[subtitle.length];*/
-
-              audioClipsWords = new AudioClipWord[subtitle.length];
-              audioClipsPhrases = new AudioClipPhrase[subtitle.length];
+              audioClipsWords = new AudioClipWord[subtitleLength];
+              audioClipsPhrases = new AudioClipPhrase[subtitleLength];
 
               //</editor-fold>     
 
@@ -545,7 +551,7 @@ public class PrincipalController implements Initializable
 
               dire.checkAndSetIdioma(subtitle);
 
-              for (int x = 0; x < subtitle.length; x++) {
+              for (int x = 0; x < subtitleLength; x++) {
                 setProgressBar(totalMessages, "Leyendo Json en " +
                         subtitle[x].replaceAll(".json", ""));
 
@@ -554,21 +560,31 @@ public class PrincipalController implements Initializable
 
                 if (file.exists()) {
                   // Read the Json witn the Item[]
+                  GetJson gj = new GetJson();
                   idiomas[x] = gj.getJson(file);
+                  gj = null;
+
+                  // Read the subtitle and capitalize
                   subtitle[x] = subtitle[x].replaceAll(".json", "");
+                  subtitle[x] = subtitle[x].substring(0, 1)
+                          .toUpperCase() + subtitle[x].substring(1);
 
                   // Extract the languages of the media, the rest from subtitle[]
                   subtitleAudio = idiomas[x][idiomas[x].length - 1].getText();
 
                   setProgressBar(totalMessages, "Creando palabras en " + subtitle[x]);
-
+                  SaveWordsAsList swal = new SaveWordsAsList();
                   wordSet[x] = swal.saveWordsAsList(idiomas[x]);
 
                   setProgressBar(totalMessages, "Creando frases en " + subtitle[x]);
+                  SortPhrase sp = new SortPhrase();
+                  phraseSet = sp.sortPhrases(idiomas[x]);
 
-                  phraseSet[x] = sp.sortPhrases(idiomas[x]);
+                  phraseString[x] = new String[phraseSet.length];
+                  phraseString[x] = phraseSet;
+                  //
+                  idiomasLength = phraseString[x].length;
 
-                  phraseString[x] = phraseSet[x].toArray(new String[phraseSet[x].size()]);
 
                 }
               }
@@ -584,7 +600,6 @@ public class PrincipalController implements Initializable
               // Fill itemOriginal with the first language of the subtitleAudio[0]
               subOrig = Tools.getIndex(subtitle, subtitleAudio);
 
-              itemsOriginal = idiomas[subOrig];
 
               // Fill translation with the default language of the machine, if it's equal to the
               // first then put spanis by default
@@ -594,8 +609,14 @@ public class PrincipalController implements Initializable
               subTrans = Tools.getIndex(subtitle, trans);
 
               itemsTranslation = idiomas[subTrans];
+              itemsOriginal = idiomas[subOrig];
+
+              /* ********************* */
+              setItemsOriginal(itemsOriginal);
+              setItemsTranslation(itemsTranslation);
 
               // fill a ListView with the phrases of the Items array
+              FillListView flw = new FillListView();
               flw.setListView(listViewV, itemsOriginal);
 
               // Creating the path to the media
@@ -609,25 +630,38 @@ public class PrincipalController implements Initializable
               // Set the MediaPlayer
               setMediaPlayer();
 
+              AudioClips ac = new AudioClips();
+
               // Setting audiclips
-              for (int x = 0; x < subtitle.length; x++) {
+              for (int x = 0; x < subtitleLength; x++) {
 
                 setProgressBar(totalMessages, "Creando tablas de palabras en " + subtitle[x]);
 
-                audioClipsWords[x] = new AudioClipWord(ac.setAudioClip(wordSet[x],
-                        dire.getLastDirectory() + "Dictionaries\\" +
-                        subtitle[x] + "Dictionary\\Words",
+
+                String direction = dire.getLastDirectory() + "Dictionaries\\" +
+                        subtitle[x] + "Dictionary\\Words";
+
+
+                audioClipsWords[x] = new AudioClipWord();
+                
+                audioClipsWords[x].setAudioClip(ac.setAudioClip(
+                        wordSet[x], direction,
                         rateSliderReading, balanceSliderReading, volumeSliderReading));
+
+
                 setProgressBar(totalMessages, "Creando tablas de frases en " + subtitle[x]);
 
-                audioClipsPhrases[x] = new AudioClipPhrase(ac.setAudioMedia(phraseSet[x],
-                        dire.getLastDirectory() + "Dictionaries\\" +
-                        subtitle[x] + "Dictionary\\Phrases",
-                        rateSliderReading, balanceSliderReading, volumeSliderReading));
-              }
+                direction = dire.getLastDirectory() + "Dictionaries\\" +
+                        subtitle[x] + "Dictionary\\Phrases";
 
-              System.runFinalization();
+                audioClipsPhrases[x] = new AudioClipPhrase(ac.setAudioMedia(
+                        phraseString[x], direction,
+                        rateSliderReading, balanceSliderReading, volumeSliderReading));
+
+              }
+              ac = null;
               System.gc();
+              System.runFinalization();
               //</editor-fold>
 
               //<editor-fold defaultstate="collapsed" desc="Configurando los deslizadores">
@@ -656,7 +690,6 @@ public class PrincipalController implements Initializable
               listViewV.scrollTo(0);
               listViewV.getSelectionModel().select(0);
 
-              showListViewH();
 
               // Setting the initial pause
               currentOriginal = new Duration(itemsOriginal[indexItemV].getStart());
@@ -667,10 +700,51 @@ public class PrincipalController implements Initializable
               //and set it in  the label textLabel  
               setEndTimefile();
 
-              // Pause the Thread
+
+              setSetterOpenMenu2(subtitleLength, idiomasLength);
+
+              setSubtitle(subtitle);
+              setIdiomas(idiomas);
+              setWordSet(wordSet);
+              /*/* setPhraseSet(phraseSet);*/
+              setPhraseString(phraseString);
+              setAudioClipsWords(audioClipsWords);
+              setAudioClipsPhrases(audioClipsPhrases);
+              setSubtitleAudio(subtitleAudio);
+              setItemsOriginal(itemsOriginal);
+              setItemsTranslation(itemsTranslation);
+
+
+              /*/*
+              for (Map.Entry<String, AudioClip> entry : clipMap.entrySet()) {
+                String key = entry.getKey();
+                clipMap.put(key, null);
+
+              }
+              for (Map.Entry<String, MediaPlayer> entry : mediaMap.entrySet()) {
+                String key = entry.getKey();
+                mediaMap.get(key).dispose();
+                mediaMap.put(key, null);
+              }
+               */
+              
+              
+              subtitle = null;
+              idiomas = null;
+              wordSet = null;
+              phraseSet = null;
+              phraseString = null;
+              audioClipsWords = null;
+              audioClipsPhrases = null;
+              subtitleAudio = null;
+              itemsOriginal = null;
+              itemsTranslation = null;
+              System.gc();
+              showListViewH();
               setProgressBar(totalMessages, "Finalizado");
             }
 
+            // Pause the Thread
             handleOpenMenu2Pause();
 
             //</editor-fold>
@@ -688,6 +762,144 @@ public class PrincipalController implements Initializable
 
    }
 
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Setters and Getters Thread handleOpenMenu2">
+
+  public void setSetterOpenMenu2(int subtitleLength, int idiomasLength)
+   {
+    subtitle = new String[subtitleLength];
+    idiomas = new Item[subtitleLength][idiomasLength];
+    wordSet = (Set<String>[]) new LinkedHashSet[subtitleLength];
+    /*/*phraseSet = new String[subtitleLength]; */
+    phraseString = new String[subtitleLength][];
+    audioClipsWords = new AudioClipWord[subtitleLength];
+    audioClipsPhrases = new AudioClipPhrase[subtitleLength];
+    subtitleAudio = "";
+    itemsOriginal = new Item[idiomasLength];
+    itemsTranslation = new Item[idiomasLength];
+   }
+
+
+  public Item[] getItemsOriginal()
+   {
+    return itemsOriginal;
+   }
+
+
+  public void setItemsOriginal(Item[] itemsOriginal)
+   {
+    this.itemsOriginal = itemsOriginal;
+   }
+
+
+  public Item[] getItemsTranslation()
+   {
+    return itemsTranslation;
+   }
+
+
+  public void setItemsTranslation(Item[] itemsTranslation)
+   {
+    this.itemsTranslation = itemsTranslation;
+   }
+
+
+  public Item[][] getIdiomas()
+   {
+    return idiomas;
+   }
+
+
+  public void setIdiomas(Item[][] idiomas)
+   {
+    this.idiomas = idiomas;
+   }
+
+
+  public String getSubtitleAudio()
+   {
+    return subtitleAudio;
+   }
+
+
+  public void setSubtitleAudio(String subtitleAudio)
+   {
+    this.subtitleAudio = subtitleAudio;
+   }
+
+
+  public String[] getSubtitle()
+   {
+    return subtitle;
+   }
+
+
+  public void setSubtitle(String[] subtitle)
+   {
+    this.subtitle = subtitle;
+   }
+
+
+  public Set<String>[] getWordSet()
+   {
+    return wordSet;
+   }
+
+
+  public void setWordSet(Set<String>[] wordSet)
+   {
+    this.wordSet = wordSet;
+   }
+
+
+  /*/*
+  public String[] getPhraseSet()
+   {
+    return phraseSet;
+   }
+
+
+  public void setPhraseSet(String[] phraseSet)
+   {
+    this.phraseSet = phraseSet;
+   }
+   */
+
+  public String[][] getPhraseString()
+   {
+    return phraseString;
+   }
+
+
+  public void setPhraseString(String[][] phraseString)
+   {
+    this.phraseString = phraseString;
+   }
+
+
+  public AudioClipWord[] getAudioClipsWords()
+   {
+    return audioClipsWords;
+   }
+
+
+  public void setAudioClipsWords(AudioClipWord[] audioClipsWords)
+   {
+    this.audioClipsWords = audioClipsWords;
+   }
+
+
+  public AudioClipPhrase[] getAudioClipsPhrases()
+   {
+    return audioClipsPhrases;
+   }
+
+
+  public void setAudioClipsPhrases(AudioClipPhrase[] audioClipsPhrases)
+   {
+    this.audioClipsPhrases = audioClipsPhrases;
+   }
 
 //</editor-fold>
 
@@ -790,6 +1002,7 @@ public class PrincipalController implements Initializable
 
       // Setting the listViewH and textField invisible or disable
       listViewH01Reading.setVisible(true);
+      listViewH02Reading.setVisible(true);
       textFieldWriting.setVisible(false);
       textFieldTranslation.setVisible(false);
 
@@ -815,7 +1028,7 @@ public class PrincipalController implements Initializable
       // The index of the listviewV when click in the pause Button
       currentPauseItem = 0;
 
-      // Setting the status of the media and the sliderMedia
+      // Setting the statu- of the media and the sliderMedia
       status = Status.STOPPED;
 
       // Getting initial user
@@ -869,7 +1082,8 @@ public class PrincipalController implements Initializable
     try {
 
       // Open a filechooser
-      File file = sf.getSelectedFile(mainStage, dire.getLastDirectory());
+      SelectedFile selectedFile = new SelectedFile();
+      File file = selectedFile.getSelectedFile(mainStage, dire.getLastDirectory());
       if (file == null) {
 
         return false;
@@ -945,8 +1159,15 @@ public class PrincipalController implements Initializable
       if (mediaPlayer == null) {
         return;
       }
-
+      
       handleStopButton();
+
+      
+      // Setting the listViewH and textField invisible or disable
+      listViewH01Reading.setVisible(true);
+      listViewH02Reading.setVisible(true);
+      textFieldWriting.setVisible(false);
+      textFieldTranslation.setVisible(false);
 
       // Delete flogs
       mainScene.setInvisibleFlagMenu(subtitle, subtitleAudio);
@@ -955,22 +1176,13 @@ public class PrincipalController implements Initializable
 
         idiomas[x] = null;
         subtitle[x] = null;
+
         wordSet[x] = null;
-        phraseSet[x] = null;
+        /*/*phraseSet[x] = null; */
         phraseString[x] = null;
-        for (Map.Entry<String, AudioClip> entry : audioClipsWords[x].getAudioClip().entrySet()) {
-          Object key = entry.getKey();
-          key = null;
-          AudioClip value = entry.getValue();
-          value = null;
-        }
-        for (Map.Entry<String, MediaPlayer> entry : audioClipsPhrases[x].getAudioMedia().entrySet()) {
-          Object key = entry.getKey();
-          key = null;
-          MediaPlayer value = entry.getValue();
-          value.dispose();
-          value = null;
-        }
+
+ 
+
 
         audioClipsWords[x] = null;
         audioClipsPhrases[x] = null;
@@ -981,7 +1193,7 @@ public class PrincipalController implements Initializable
       subtitleAudio = null;
 
       wordSet = null;
-      phraseSet = null;
+      /*/* phraseSet = null; */
       phraseString = null;
 
       audioClipsWords = null;
@@ -992,9 +1204,14 @@ public class PrincipalController implements Initializable
       itemWordsOriginal = null;
       itemWordsTranslation = null;
 
+      //mediaView = null;
       mediaPlayer.dispose();
       mediaPlayer = null;
       media = null;
+      virtual.dispose();
+      virtual = null;
+      translatedVirtual.dispose();
+      translatedVirtual = null;
       System.gc();
 
       itemsOriginal = new Item[1];
@@ -1002,6 +1219,7 @@ public class PrincipalController implements Initializable
       itemsTranslation = new Item[1];
       itemsTranslation[0] = new Item(0, 0, " ");
 
+      FillListView flw = new FillListView();
       flw.setListView(listViewV, itemsOriginal);
       flw.setListView(listViewH01Reading, itemsOriginal);
       flw.setListView(listViewH02Reading, itemsOriginal);
@@ -1026,10 +1244,11 @@ public class PrincipalController implements Initializable
         case "buttonLoginMenu":
           break;
         case "buttonUnloginMenu":
-          //System.out.println("mediaToSliderStop");
-          //mediaToSliderStop();
-          //handleOpenMenu2Salir();
-          //handleOpenMenu2Play();
+          /*/*System.out.println("Creando un nuevo principio");
+          dire.createIni(usuario_id);
+          handleOpenMenu2Salir();
+          mediaToSliderStop();
+          //handleOpenMenu2Play(); */
           break;
         default:
           break;
@@ -1040,15 +1259,16 @@ public class PrincipalController implements Initializable
         message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / handleMenuClose()", e.toString(), e);
       });
     }
+
    }
 
-  //</editor-fold>
+//</editor-fold>
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Play, stop, pause Button...">
 
-  //<editor-fold defaultstate="collapsed" desc="Play media normal">
+//<editor-fold defaultstate="collapsed" desc="Play media normal">
   /**
    * Controller for slider media play button
    */
@@ -1146,6 +1366,8 @@ public class PrincipalController implements Initializable
    }
 
 
+
+
   /**
    *
    * @param botonOriginal Stop false / Play true - The original pause button mode
@@ -1200,7 +1422,8 @@ public class PrincipalController implements Initializable
   /**
    * handle of the
    */
-  @FXML private void handleBackButton()
+  @FXML
+  private void handleBackButton()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1253,6 +1476,7 @@ public class PrincipalController implements Initializable
     mediaPlayer.setStopTime(Duration.seconds(end));
     // Label time to cero
     duration = mediaPlayer.getMedia().getDuration();
+    FormatTime ft = new FormatTime();
     timeLabelReading.setText(ft.formatting(Duration.seconds(start), duration));
 
     // Enable the scroll to markers
@@ -1300,6 +1524,7 @@ public class PrincipalController implements Initializable
       setTicksSliderMedia(mediaSliderWriting, 100);
       setTicksSliderMedia(mediaSliderTranslation, 100);
       // Label time to cero
+      FormatTime ft = new FormatTime();
       timeLabelReading.setText(ft.formatting(Duration.ZERO, duration));
       // Enable the scroll to markers
       playButtonBoolean = true;
@@ -1470,7 +1695,8 @@ public class PrincipalController implements Initializable
   /**
    *
    */
-  @FXML private void handlePlayButtonItemVirtual()
+  @FXML
+  private void handlePlayButtonItemVirtual()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1488,7 +1714,8 @@ public class PrincipalController implements Initializable
   /**
    *
    */
-  @FXML private void handleBackButtonItemVirtual()
+  @FXML
+  private void handleBackButtonItemVirtual()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1505,7 +1732,8 @@ public class PrincipalController implements Initializable
   /**
    *
    */
-  @FXML private void handleForwardButtonItemVirtual()
+  @FXML
+  private void handleForwardButtonItemVirtual()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1520,7 +1748,8 @@ public class PrincipalController implements Initializable
   /**
    *
    */
-  @FXML private void handleStopButtonItemVirtual()
+  @FXML
+  private void handleStopButtonItemVirtual()
    {
     if (mediaPlayer == null) return; // if doesn't exits a media return
 
@@ -1553,7 +1782,8 @@ public class PrincipalController implements Initializable
   /**
    *
    */
-  @FXML private void handleBackButtonItemTranslatedVirtual()
+  @FXML
+  private void handleBackButtonItemTranslatedVirtual()
    {
     // if doesn't exits a media return // if doesn't exits a media return
     if (mediaPlayer == null || translatedVirtual == null) return;
@@ -1692,6 +1922,7 @@ public class PrincipalController implements Initializable
    {
     try {
       if (mediaPlayer == null) return; // if doesn't exits a media return
+      SaveWordsAsList swal = new SaveWordsAsList();
 
       listViewH02Reading.setVisible(true);
       getIndexitemV();
@@ -1889,10 +2120,20 @@ public class PrincipalController implements Initializable
    */
   private void setVirtualMedia()
    {
+    if (phraseString == null) return;
+    String virtualString = phraseString[subOrig][indexItemV];
+    MediaPlayer mediaVirtual = audioClipsPhrases[subOrig].getAudioMedia().get(virtualString);
 
-    getIndexitemV();
-    virtual = audioClipsPhrases[subOrig].getAudioMedia().get(phraseString[subOrig][indexItemV]);
-    translatedVirtual = audioClipsPhrases[subTrans].getAudioMedia().get(phraseString[subTrans][indexItemV]);
+    virtual = mediaVirtual;
+
+    String virtualTranslateString = phraseString[subTrans][indexItemV];
+    MediaPlayer mediaTranslateVirtual = audioClipsPhrases[subTrans].getAudioMedia().get(virtualTranslateString);
+
+    translatedVirtual = mediaTranslateVirtual;
+
+
+    /*/* virtual = audioClipsPhrases[subOrig].getAudioMedia().get(phraseString[subOrig][indexItemV]);
+    translatedVirtual = audioClipsPhrases[subTrans].getAudioMedia().get(phraseString[subTrans][indexItemV]); */
 
     startVirtual = new Duration(virtual.getStartTime().toMillis());
     endVirtual = new Duration(virtual.getStopTime().toMillis());
@@ -2329,11 +2570,11 @@ public class PrincipalController implements Initializable
         inicio = itemsOriginal[itemInicio].getStart();
         fin = itemsOriginal[itemFinal].getStart();
 
-        System.out.println("item " + itemInicio + " - " + itemFinal +
+        /*System.out.println("item " + itemInicio + " - " + itemFinal +
                 "  lonj " + lonjInicio + " - " + ((itemsOriginal.length - 1) - lonjFinal) +
                 " inicio " + inicio + " " + sliderMediaCurrent + " " + fin +
                 " cont " + contInicio + " - " + contFinal +
-                " itemFinal-itemInicio " + (itemFinal - itemInicio));
+                " itemFinal-itemInicio " + (itemFinal - itemInicio));*/
         if (inicio < sliderMediaCurrent) {
           suplenteInicio = itemInicio;
           contInicio = 2;
@@ -2400,10 +2641,12 @@ public class PrincipalController implements Initializable
 
     //changeListview(trans); // Reuse changeListView to show itemTranslation
     if (currentTab.equals(leer) || currentTab.equals(traducir)) {
+      FillListView flw = new FillListView();
       flw.setListView(listViewV, itemsOriginal);
       showListViewH();
     }
     if (currentTab.equals(escribir)) {
+      FillListView flw = new FillListView();
       flw.setListView(listViewV, itemsTranslation);
       showListViewH();
     }
@@ -2424,6 +2667,7 @@ public class PrincipalController implements Initializable
     if (text.equals(leer)) {
       oldNode = rateSliderReading;
       if (mediaPlayer != null) { // if doesn't exits a media return
+        FillListView flw = new FillListView();
         flw.setListView(listViewV, itemsOriginal);
         currentTab = leer;
       }
@@ -2433,6 +2677,7 @@ public class PrincipalController implements Initializable
       if (mediaPlayer != null) { // if doesn't exits a media return
         currentTab = escribir;
         // Setting the listViewH itemInicio
+        FillListView flw = new FillListView();
         flw.setListView(listViewV, itemsTranslation);
         /*/*
         tabPanelListViewH.getSelectionModel().clearAndSelect(1);// if comes from flag menuItem
@@ -2443,6 +2688,7 @@ public class PrincipalController implements Initializable
       oldNode = rateSliderTranslation;
       if (mediaPlayer != null) { // if doesn't exits a media return
         currentTab = traducir;
+        FillListView flw = new FillListView();
         flw.setListView(listViewV, itemsOriginal);
       }
     }
@@ -2471,6 +2717,7 @@ public class PrincipalController implements Initializable
    {
     try {
       if (mediaPlayer == null) return; // if doesn't exits a media return
+      SaveWordsAsList swal = new SaveWordsAsList();
 
       // Get the index of the clicked itemInicio
       getIndexitemV();
@@ -2505,15 +2752,15 @@ public class PrincipalController implements Initializable
                 trans.concat(".json"), currentTab, indexItemV, 0);
         indicatorSuccessWriting.setProgress(Double.valueOf(p.getKey()));
         indicatorSuccessTranslation.setProgress(Double.valueOf(p.getValue()));
+        // Set the media virtual and translates
+        setVirtualMedia();
       });
 
-      // Set the media virtual and translates
-      setVirtualMedia();
 
     } catch (ArrayIndexOutOfBoundsException ex) {
     } catch (Exception e) {
       Platform.runLater(() -> {
-      message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController / showListViewH()", e.toString(), e);
       });
     }
 
@@ -2523,7 +2770,7 @@ public class PrincipalController implements Initializable
   /**
    *
    */
-  private void getIndexitemV()
+  private String getIndexitemV()
    {
     indexItemV = listViewV.getSelectionModel().getSelectedIndex();
     // just in case doesn't exit.
@@ -2531,6 +2778,7 @@ public class PrincipalController implements Initializable
       indexItemV = 0;
       listViewV.getSelectionModel().clearAndSelect(indexItemV);
     }
+    return listViewV.getSelectionModel().getSelectedItem();
    }
 
 //</editor-fold>
@@ -2890,7 +3138,7 @@ public class PrincipalController implements Initializable
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / updateValues()", e.toString(), e);
     }
-
+    FormatTime ft = new FormatTime();
     timeLabelReading.setText(ft.formatting(currentTime, duration));
    }
 
@@ -2906,6 +3154,7 @@ public class PrincipalController implements Initializable
       @Override
       public void run()
        {
+        FormatTime ft = new FormatTime();
         currentTime = Duration.ZERO;
         duration = mediaPlayer.getMedia().getDuration();
         timeLabelReading.setText(ft.formatting(currentTime, duration));

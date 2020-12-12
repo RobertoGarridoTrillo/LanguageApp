@@ -491,15 +491,15 @@ public class FormDataBaseController implements Initializable
         if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i],
                   false);
 
-        if (registro[i] == false) 
+        if (registro[i] == false)
           return (i >= 2) ? i + 2 : i;
       }
 
-      }catch (Exception e) {
+    } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "FormController / handleValidation()", e.toString(), e);
     }
-      return (node[fieldsNumber].isDisable() ? -1 : 5);
-    }
+    return (node[fieldsNumber].isDisable() ? -1 : 5);
+   }
 
 
   /**
@@ -571,10 +571,12 @@ public class FormDataBaseController implements Initializable
   private void handleUpdateCreate(String select)
    {
     try {
-
+      String preguntaString = "";
+      Object preguntaObject = null;
+      
       handleValidation(usuarioTextFieldFormDataBase);
       handleValidation(passwordTextFieldFormDataBase);
-      /*/*handleValidation(preguntaComboBoxFormDataBase); */
+      /*/*handleValidation(preguntaComboBoxFormDataBase);*/
       handleValidation(respuestaTextFieldFormDataBase);
 
       //int activoBoolean = (activoCheckBoxFormDataBase.isSelected()) ? 1 : 0;
@@ -582,11 +584,11 @@ public class FormDataBaseController implements Initializable
 
       // change the question into a "original language" question
       int original = preguntaComboBoxFormDataBase.getSelectionModel().getSelectedIndex();
-      fieldString[2] = preguntasRegistro.get(original);
+      /*/*fieldString[2] = preguntasRegistro.get(original);*/
 
       int newUser = (Integer) mainScene.handleCheckUser(fieldString[0], fieldString[1]).getKey();
       // if the fields aren't valid then return
-      if (!(registro[0] == true && registro[1] == true && registro[2] == true && registro[3] == true)) {
+      if (!(registro[0] == true && registro[1] == true && registro[2] == true)) {
         return;
       }
       // if newUser != 0 -> Create newUser OR newUser != user.getUsuario_id() -> Update then return
@@ -597,7 +599,12 @@ public class FormDataBaseController implements Initializable
         return;
       }
 
-
+      preguntaString = "";
+      preguntaObject = ((JFXComboBox) preguntaComboBoxFormDataBase).getValue();
+      if (preguntaObject != null) {
+        preguntaString = preguntaObject.toString();
+      }
+      
       switch (select) {
         case "update":
           Usuario u = new Usuario();
@@ -605,20 +612,20 @@ public class FormDataBaseController implements Initializable
           u.setUsuario_nombre(fieldString[0]);
           u.setPassword(fieldString[1]);
           u.setUsuario_activo(activoBoolean);
-          u.setPregunta(fieldString[2]);
-          u.setRespuesta(fieldString[3]);
+          u.setPregunta(preguntaString);
+          u.setRespuesta(fieldString[2]);
 
           mainScene.handleUpdate(u);
           break;
         case "create":
-          mainScene.handleCreate(fieldString[0], fieldString[1], activoBoolean, fieldString[2], fieldString[3]);
+          mainScene.handleCreate(fieldString[0], fieldString[1], activoBoolean, preguntaString, fieldString[2]);
           break;
         default:
           break;
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      message.message(Alert.AlertType.ERROR, "Error message", "FormDataBaseController / handleUpdateCreate()", e.toString(), e);
     }
 
    }

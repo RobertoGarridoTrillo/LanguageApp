@@ -30,6 +30,7 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -267,7 +268,8 @@ public class DataBaseController implements Initializable
       // if doesn't exit it's create the database
       Class.forName("org.sqlite.JDBC");
     } catch (ClassNotFoundException | SQLException e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, 
+              "Error message", "DataBaseController / connect()", e.toString(), e);
     }
     return conn01;
    }
@@ -1497,7 +1499,7 @@ public class DataBaseController implements Initializable
 
     usuario_nombre = (nombre != null) ? nombre.toString() : null;
     usuario_id = (id != null) ? (Integer) id : 0;
-
+    
     if (usuario_id == 0 || usuario_nombre == null) return;
     usuarioArrayList = new ArrayList();
     materiaArrayList = new ArrayList();
@@ -1910,7 +1912,7 @@ public class DataBaseController implements Initializable
 
       tableColumn.setOnEditStart((event) -> {
         showModalForm(event.getRowValue(), index);
-      });
+      });      
     } else {
       TableColumn<Usuario, Boolean> tableColumn = (TableColumn<Usuario, Boolean>) tc;
       tableColumn.setEditable(false);

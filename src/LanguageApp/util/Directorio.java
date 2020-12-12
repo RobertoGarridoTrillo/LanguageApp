@@ -239,7 +239,7 @@ public class Directorio
       conn.commit();
 
       // if there is any 
-      while (rs.next() && salida == false) {
+      while (rs.next()) {
 
         // si hay un registro igual al pedido por el filechoose
         if (rs.getString("materia_nombre").equals(name)) {
@@ -282,6 +282,18 @@ public class Directorio
 
       // si no hay un registro igual al pedido por el filechoose
       if (salida == false) {
+
+        sql = "UPDATE materias set materia_activo = 0 " +
+                "WHERE materia_id IN ( " +
+                "SELECT m.materia_id FROM materias m " +
+                "INNER JOIN usuarios u " +
+                "ON u.usuario_id = m.fk_usuario_id " +
+                "WHERE u.usuario_id = ?)";
+
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, usuario_id);
+        pstmt.executeUpdate();
+        conn.commit();
 
         sql = "INSERT INTO materias (fk_usuario_id, materia_nombre, directorio, materia_activo) " +
                 "VALUES (?,?,?,?)";
@@ -372,7 +384,7 @@ public class Directorio
       conn.close();
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", 
+      message.message(Alert.AlertType.ERROR, "Error message",
               "Directorio / checkAndSetIdioma()", e.toString(), e);
     } finally {
       try {
@@ -380,7 +392,7 @@ public class Directorio
           conn.close();
         }
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", 
+        message.message(Alert.AlertType.ERROR, "Error message",
                 "Directorio / checkAndSetLastDirectory()", e.toString(), e);
       }
     }
