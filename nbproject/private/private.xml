@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="316"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="320">
+        <file>
+            <url>src/LanguageApp/controller/PrincipalController.java</url>
+            <bookmark id="318">
+                <name/>
+                <line>561</line>
+                <key/>
+            </bookmark>
+            <bookmark id="319">
+                <name/>
+                <line>574</line>
+                <key/>
+            </bookmark>
+            <bookmark id="320">
+                <name/>
+                <line>578</line>
+                <key/>
+            </bookmark>
+            <bookmark id="317">
+                <name/>
+                <line>2624</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="Desarrollo de interfaces">
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/model/AudioClipWord.java</file>
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/model/AudioClipPhrase.java</file>
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/main/MainScene.java</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/PrincipalController.java</file>
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/AudioClips.java</file>
         </group>
     </open-files>
 </project-private>

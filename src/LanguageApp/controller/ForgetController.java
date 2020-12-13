@@ -3,7 +3,6 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
-import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
@@ -13,7 +12,6 @@ import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;

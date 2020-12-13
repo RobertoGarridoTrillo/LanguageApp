@@ -3,7 +3,6 @@ package LanguageApp.main;
 import LanguageApp.controller.DataBaseController;
 import LanguageApp.controller.ForgetController;
 import LanguageApp.controller.FormController;
-import LanguageApp.controller.FormDataBaseController;
 import LanguageApp.controller.LoginController;
 import LanguageApp.controller.MainController;
 import LanguageApp.controller.PrincipalController;
@@ -15,12 +14,7 @@ import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.sql.Statement;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.animation.FadeTransition;
@@ -42,7 +36,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -467,7 +460,7 @@ public class MainScene extends Application
       dataBaseController.handleBorrarMarcar(activoBoolean, usuario_id);
 
       if (!usuario_last) {
-        principalController.handleOpenMenu2Play();
+        principalController.handleOpenMenu2Thread.start();
       }
 
       // change the center
@@ -492,6 +485,7 @@ public class MainScene extends Application
    */
   public void handleCloseMenu(String origen)
    {
+    if (principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED)) return;
     principalController.handleCloseMenu(origen);
    }
 
@@ -519,7 +513,6 @@ public class MainScene extends Application
    */
   public int handleRegistro(String usuarioString, String passwordString, boolean activoBoolean, String preguntaString, String respuestaString)
    {
-
     int ret = dataBaseController.handleRegistro(usuarioString, passwordString, activoBoolean, preguntaString, respuestaString);
     dataBaseController.handleRegistro02(usuarioString, passwordString, activoBoolean);
 
@@ -630,7 +623,6 @@ public class MainScene extends Application
   private void handleLocale02(String s)
    {
     try {
-      /*/*HandleLocale01.handleLocale01();*/
       URL urlFXML = new URL(MainScene.class
               .getResource("/LanguageApp/view/" + s + ".fxml").toExternalForm());
 
@@ -801,7 +793,10 @@ public class MainScene extends Application
       if (welcomeScreen) {
         return;
       }
-
+      // if the app is loading a film return
+      if (principalController.handleOpenMenu2Thread != null &&
+              !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+        return;
       fadeOldOut();
       helperFadePlayOut("withFileChooser");
 
@@ -841,24 +836,26 @@ public class MainScene extends Application
    {
     try {
       // if doesn't be user, return
-      if (welcomeScreen) {
+      if (welcomeScreen) return;
+      // if the app is loading a film return
+      if (principalController.handleOpenMenu2Thread != null &&
+              !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
         return;
-      }
 
       fadeOldOut();
       helperFadePlayOut("withFileChooser");
       //Message m = new Message(resources);
-      /*/*if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
+      if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
               "¿Quieres cerrar el archivo?", "", null)) {
         fadeOldIn();
         helperFadePlayIn("withFileChooser");
         return;
-      } else { */
+      } else {
         fadeOldIn();
         fadeNewIn();
         helperFadePlayIn("withFileChooser");
-      //}
-      principalController.handleCloseMenu("buttonUnloginMenu");
+      }
+      principalController.handleCloseMenu("handleCloseMenu");
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / buttonCloseMenu()", e.toString(), e);
     }
@@ -893,6 +890,11 @@ public class MainScene extends Application
    */
   public void buttonControlesMenu()
    {
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
+
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
     message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
@@ -916,6 +918,10 @@ public class MainScene extends Application
    */
   public void buttonAboutMenu()
    {
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
 
@@ -931,7 +937,10 @@ public class MainScene extends Application
    */
   public void buttonLoginMenu()
    {
-
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
     try {
       centerNode = mainController.checkCenter();
       if (centerNode.getId().equals("loginViewHbox") &&
@@ -952,9 +961,11 @@ public class MainScene extends Application
   public void buttonUnloginMenu()
    {
     // if doesn't be user, return
-    if (welcomeScreen && usuario_id == 0) {
+    if (welcomeScreen) return;
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
       return;
-    }
 
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
@@ -1003,7 +1014,10 @@ public class MainScene extends Application
    */
   public void buttonRegistro()
    {
-
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
     try {
       centerNode = mainController.checkCenter();
       if (centerNode.getId().equals("loginViewHbox") &&
@@ -1022,10 +1036,15 @@ public class MainScene extends Application
    */
   public void buttonDashBoardMenu()
    {
+
     // if doesn't be user, return
-    if (usuario_id == 0 || welcomeScreen || mainController.checkCenter().getId().equals("principalViewAnchorPane")) {
+    if (usuario_id == 0 || welcomeScreen ||
+            mainController.checkCenter().getId().equals("principalViewAnchorPane"))
       return;
-    }
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+             !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
 
     try {
 
@@ -1047,6 +1066,10 @@ public class MainScene extends Application
             mainController.checkCenter().getId().equals("dataBaseViewAnchorPane")) {
       return;
     }
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
     try {
 
       //Update the dashborad of the database
@@ -1067,7 +1090,10 @@ public class MainScene extends Application
 
   public void setFadeLogin(String destiny)
    {
-
+    // if the app is loading a film return
+    if (principalController.handleOpenMenu2Thread != null &&
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      return;
     try {
 
       mainChangeListener = new ChangeListener<Double>()

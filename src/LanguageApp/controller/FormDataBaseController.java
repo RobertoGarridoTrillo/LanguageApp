@@ -2,7 +2,6 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import LanguageApp.model.Usuario;
-import LanguageApp.util.HandleLocale01;
 import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
@@ -13,11 +12,8 @@ import com.jfoenix.controls.JFXTextField;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,8 +25,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.Pair;
-import org.omg.PortableServer.SERVANT_RETENTION_POLICY_ID;
 
 /**
  * FXML Controller class

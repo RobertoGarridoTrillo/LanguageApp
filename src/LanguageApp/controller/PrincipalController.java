@@ -7,7 +7,6 @@ import LanguageApp.main.MainScene;
 import LanguageApp.model.AudioClipPhrase;
 import LanguageApp.model.AudioClipWord;
 import LanguageApp.model.Item;
-import LanguageApp.util.AudioClips;
 import LanguageApp.util.Directorio;
 import LanguageApp.util.FillListView;
 import LanguageApp.util.FormatTime;
@@ -22,11 +21,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -287,7 +284,7 @@ public class PrincipalController implements Initializable
   // Save as a list of words
   private Set<String>[] wordSet;
 
-  /*/*private String[] phraseSet; */
+  private String[] phraseSet;
   private String[][] phraseString;
 
   // Show ListView 
@@ -370,7 +367,7 @@ public class PrincipalController implements Initializable
   private String leer, escribir, traducir;
 
   // Thread handleOpenMenu2Thread
-  private Thread handleOpenMenu2Thread;
+  public Thread handleOpenMenu2Thread;
 
   private String handleOpenMenu2; // Play, pause, stop handleOpenMenu2
 
@@ -462,16 +459,6 @@ public class PrincipalController implements Initializable
       public void run()
        {
         try {
-          String[] subtitle;
-          Item[][] idiomas;
-          Set<String>[] wordSet;
-          String[] phraseSet;
-          String[][] phraseString;
-          AudioClipWord[] audioClipsWords;
-          AudioClipPhrase[] audioClipsPhrases;
-          String subtitleAudio = "";
-          Item[] itemsOriginal;
-          Item[] itemsTranslation;
 
           int idiomasLength = 0;
 
@@ -561,6 +548,7 @@ public class PrincipalController implements Initializable
                 if (file.exists()) {
                   // Read the Json witn the Item[]
                   GetJson gj = new GetJson();
+                  // 196.4 MB
                   idiomas[x] = gj.getJson(file);
                   gj = null;
 
@@ -579,13 +567,11 @@ public class PrincipalController implements Initializable
                   setProgressBar(totalMessages, "Creando frases en " + subtitle[x]);
                   SortPhrase sp = new SortPhrase();
                   phraseSet = sp.sortPhrases(idiomas[x]);
-
+                  sp = null;
                   phraseString[x] = new String[phraseSet.length];
                   phraseString[x] = phraseSet;
                   //
                   idiomasLength = phraseString[x].length;
-
-
                 }
               }
 
@@ -611,10 +597,7 @@ public class PrincipalController implements Initializable
               itemsTranslation = idiomas[subTrans];
               itemsOriginal = idiomas[subOrig];
 
-              /* ********************* */
-              setItemsOriginal(itemsOriginal);
-              setItemsTranslation(itemsTranslation);
-
+             
               // fill a ListView with the phrases of the Items array
               FillListView flw = new FillListView();
               flw.setListView(listViewV, itemsOriginal);
@@ -630,36 +613,50 @@ public class PrincipalController implements Initializable
               // Set the MediaPlayer
               setMediaPlayer();
 
-              AudioClips ac = new AudioClips();
-
               // Setting audiclips
               for (int x = 0; x < subtitleLength; x++) {
 
                 setProgressBar(totalMessages, "Creando tablas de palabras en " + subtitle[x]);
 
+                //--
 
-                String direction = dire.getLastDirectory() + "Dictionaries\\" +
-                        subtitle[x] + "Dictionary\\Words";
+                Map<String, AudioClip> mapAdioClip =
+                        new HashMap<String, AudioClip>(wordSet[x].size());
 
+                for (String ws : wordSet[x]) {
 
-                audioClipsWords[x] = new AudioClipWord();
-                
-                audioClipsWords[x].setAudioClip(ac.setAudioClip(
-                        wordSet[x], direction,
-                        rateSliderReading, balanceSliderReading, volumeSliderReading));
+                  // This is to fix the forbbiden name con. in windows
+                  if (ws.equals("con")) ws = "connn";
+                  if (ws.equals("aux")) ws = "auxxx";
+                  String direction = dire.getLastDirectory() + "Dictionaries\\" +
+                          subtitle[x] + "Dictionary\\Words\\" + se + ws + ".mp3";
+                  File fileClip = new File(direction);
+
+                  if (!fileClip.exists()) {
+                    message.message(Alert.AlertType.ERROR, "Error de audio",
+                            "Falta el audio", direction, null);
+                    return;
+                  }
+
+                  mapAdioClip.put(ws, new AudioClip(new File(direction).toURI().toString()));
+                  setAudioClip(mapAdioClip.get(ws),
+                          rateSliderReading, balanceSliderReading, volumeSliderReading);
+                }
+
+                audioClipsWords[x] = new AudioClipWord(mapAdioClip);
+                //--
 
 
                 setProgressBar(totalMessages, "Creando tablas de frases en " + subtitle[x]);
 
-                direction = dire.getLastDirectory() + "Dictionaries\\" +
+                String direction = dire.getLastDirectory() + "Dictionaries\\" +
                         subtitle[x] + "Dictionary\\Phrases";
 
-                audioClipsPhrases[x] = new AudioClipPhrase(ac.setAudioMedia(
+                audioClipsPhrases[x] = new AudioClipPhrase(setAudioMedia(
                         phraseString[x], direction,
                         rateSliderReading, balanceSliderReading, volumeSliderReading));
 
               }
-              ac = null;
               System.gc();
               System.runFinalization();
               //</editor-fold>
@@ -714,21 +711,17 @@ public class PrincipalController implements Initializable
               setItemsOriginal(itemsOriginal);
               setItemsTranslation(itemsTranslation);
 
-
-              /*/*
-              for (Map.Entry<String, AudioClip> entry : clipMap.entrySet()) {
-                String key = entry.getKey();
-                clipMap.put(key, null);
-
-              }
-              for (Map.Entry<String, MediaPlayer> entry : mediaMap.entrySet()) {
-                String key = entry.getKey();
-                mediaMap.get(key).dispose();
-                mediaMap.put(key, null);
-              }
-               */
               
-              
+wordSet[0] = null;wordSet[1] = null;wordSet[2] = null;wordSet[3] = null;wordSet[4] = null;      
+idiomas[0] = null;idiomas[1] = null;idiomas[2] = null;idiomas[3] = null;idiomas[4] = null;   
+phraseSet[0] = null;phraseSet[1] = null;phraseSet[2] = null;phraseSet[3] = null;phraseSet[4] = null;
+phraseString[0] = null;phraseString[1] = null;phraseString[2] = null;phraseString[3] = null;phraseString[4] = null;   
+wordSet = null;
+idiomas = null;
+phraseSet = null;
+phraseString = null;
+System.gc();
+
               subtitle = null;
               idiomas = null;
               wordSet = null;
@@ -760,145 +753,6 @@ public class PrincipalController implements Initializable
 
     //</editor-fold>
 
-   }
-
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="Setters and Getters Thread handleOpenMenu2">
-
-  public void setSetterOpenMenu2(int subtitleLength, int idiomasLength)
-   {
-    subtitle = new String[subtitleLength];
-    idiomas = new Item[subtitleLength][idiomasLength];
-    wordSet = (Set<String>[]) new LinkedHashSet[subtitleLength];
-    /*/*phraseSet = new String[subtitleLength]; */
-    phraseString = new String[subtitleLength][];
-    audioClipsWords = new AudioClipWord[subtitleLength];
-    audioClipsPhrases = new AudioClipPhrase[subtitleLength];
-    subtitleAudio = "";
-    itemsOriginal = new Item[idiomasLength];
-    itemsTranslation = new Item[idiomasLength];
-   }
-
-
-  public Item[] getItemsOriginal()
-   {
-    return itemsOriginal;
-   }
-
-
-  public void setItemsOriginal(Item[] itemsOriginal)
-   {
-    this.itemsOriginal = itemsOriginal;
-   }
-
-
-  public Item[] getItemsTranslation()
-   {
-    return itemsTranslation;
-   }
-
-
-  public void setItemsTranslation(Item[] itemsTranslation)
-   {
-    this.itemsTranslation = itemsTranslation;
-   }
-
-
-  public Item[][] getIdiomas()
-   {
-    return idiomas;
-   }
-
-
-  public void setIdiomas(Item[][] idiomas)
-   {
-    this.idiomas = idiomas;
-   }
-
-
-  public String getSubtitleAudio()
-   {
-    return subtitleAudio;
-   }
-
-
-  public void setSubtitleAudio(String subtitleAudio)
-   {
-    this.subtitleAudio = subtitleAudio;
-   }
-
-
-  public String[] getSubtitle()
-   {
-    return subtitle;
-   }
-
-
-  public void setSubtitle(String[] subtitle)
-   {
-    this.subtitle = subtitle;
-   }
-
-
-  public Set<String>[] getWordSet()
-   {
-    return wordSet;
-   }
-
-
-  public void setWordSet(Set<String>[] wordSet)
-   {
-    this.wordSet = wordSet;
-   }
-
-
-  /*/*
-  public String[] getPhraseSet()
-   {
-    return phraseSet;
-   }
-
-
-  public void setPhraseSet(String[] phraseSet)
-   {
-    this.phraseSet = phraseSet;
-   }
-   */
-
-  public String[][] getPhraseString()
-   {
-    return phraseString;
-   }
-
-
-  public void setPhraseString(String[][] phraseString)
-   {
-    this.phraseString = phraseString;
-   }
-
-
-  public AudioClipWord[] getAudioClipsWords()
-   {
-    return audioClipsWords;
-   }
-
-
-  public void setAudioClipsWords(AudioClipWord[] audioClipsWords)
-   {
-    this.audioClipsWords = audioClipsWords;
-   }
-
-
-  public AudioClipPhrase[] getAudioClipsPhrases()
-   {
-    return audioClipsPhrases;
-   }
-
-
-  public void setAudioClipsPhrases(AudioClipPhrase[] audioClipsPhrases)
-   {
-    this.audioClipsPhrases = audioClipsPhrases;
    }
 
 //</editor-fold>
@@ -1156,13 +1010,13 @@ public class PrincipalController implements Initializable
   public void handleCloseMenu(String origen)
    {
     try {
-      if (mediaPlayer == null) {
-        return;
-      }
-      
+      if (mediaPlayer == null)  return;
+      // if the app is loading a film return
+      if (handleOpenMenu2Thread != null && handleOpenMenu2Thread.isAlive()) return;
+
       handleStopButton();
 
-      
+
       // Setting the listViewH and textField invisible or disable
       listViewH01Reading.setVisible(true);
       listViewH02Reading.setVisible(true);
@@ -1180,9 +1034,6 @@ public class PrincipalController implements Initializable
         wordSet[x] = null;
         /*/*phraseSet[x] = null; */
         phraseString[x] = null;
-
- 
-
 
         audioClipsWords[x] = null;
         audioClipsPhrases[x] = null;
@@ -1208,7 +1059,7 @@ public class PrincipalController implements Initializable
       mediaPlayer.dispose();
       mediaPlayer = null;
       media = null;
-      virtual.dispose();
+      *virtual.dispose();
       virtual = null;
       translatedVirtual.dispose();
       translatedVirtual = null;
@@ -2120,20 +1971,13 @@ public class PrincipalController implements Initializable
    */
   private void setVirtualMedia()
    {
-    if (phraseString == null) return;
-    String virtualString = phraseString[subOrig][indexItemV];
-    MediaPlayer mediaVirtual = audioClipsPhrases[subOrig].getAudioMedia().get(virtualString);
+    if (phraseString == null || audioClipsPhrases == null) return;
 
-    virtual = mediaVirtual;
+    String virtualString = phraseString[subOrig][indexItemV];
+    virtual = audioClipsPhrases[subOrig].getAudioMedia().get(virtualString);
 
     String virtualTranslateString = phraseString[subTrans][indexItemV];
-    MediaPlayer mediaTranslateVirtual = audioClipsPhrases[subTrans].getAudioMedia().get(virtualTranslateString);
-
-    translatedVirtual = mediaTranslateVirtual;
-
-
-    /*/* virtual = audioClipsPhrases[subOrig].getAudioMedia().get(phraseString[subOrig][indexItemV]);
-    translatedVirtual = audioClipsPhrases[subTrans].getAudioMedia().get(phraseString[subTrans][indexItemV]); */
+    translatedVirtual = audioClipsPhrases[subTrans].getAudioMedia().get(virtualTranslateString);
 
     startVirtual = new Duration(virtual.getStartTime().toMillis());
     endVirtual = new Duration(virtual.getStopTime().toMillis());
@@ -2533,6 +2377,114 @@ public class PrincipalController implements Initializable
    }
 
   //</editor-fold>
+
+//</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Setting Audioclips">
+
+  /**
+   * Setting the audioclips
+   *
+   * @param set a Set of String, result of creating a list of words of the media
+   * @param lastdirectory
+   * @param rateSlider
+   * @param balanceSlider
+   * @param volumeSlider
+   * @param lastFile
+   * @return A map with the name and the Audioclip
+   */
+  public void setAudioClip(AudioClip audioClips, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
+   {
+
+    try {
+
+      audioClips.setRate(rateSlider.getValue());
+      audioClips.setBalance(balanceSlider.getValue());
+      audioClips.setVolume(volumeSlider.getValue());
+      audioClips.rateProperty().bind(rateSlider.valueProperty());
+      audioClips.balanceProperty().bind(balanceSlider.valueProperty());
+      audioClips.volumeProperty().bind(volumeSlider.valueProperty().divide(100));
+
+    } catch (Exception e) {
+
+      Platform.runLater(() -> {
+        message.message(Alert.AlertType.ERROR, "Error message",
+                "PrincipalController / setAudioClip()", e.toString(), e);
+      });
+    }
+    System.gc();
+    System.runFinalization();
+
+   }
+
+
+  /**
+   *
+   * @param set
+   * @param lastdirectory
+   * @param rateSlider
+   * @param balanceSlider
+   * @param volumeSlider
+   * @return
+   */
+  public Map<String, MediaPlayer> setAudioMedia(String[] set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
+   {
+    // An unique audioclip
+    MediaPlayer me;
+
+    String s;
+
+    Map<String, MediaPlayer> audioMedia = new HashMap<>();
+
+    String audioError;
+
+    String se = System.getProperty("file.separator");
+
+    URI resource;
+    audioMedia.clear();
+
+    audioError = null;
+
+    se = System.getProperty("file.separator");
+
+    try {
+      for (String ws : set) {
+
+        // This is to fix the forbbiden name con. in windows
+        if (ws.equals("con")) ws = "connn";
+        if (ws.equals("aux")) ws = "auxxx";
+
+        audioError = ws; // if this audid doesn´t exist I show it in an message.
+
+        s = lastdirectory + se + ws + ".mp3";
+
+        resource = new File(s).toURI();
+
+        me = new MediaPlayer(new Media(resource.toString()));
+
+        audioMedia.put(ws, me);
+        // me.dispose();
+        // me = null;
+        audioMedia.get(ws).setRate(rateSlider.getValue());
+        audioMedia.get(ws).setBalance(balanceSlider.getValue());
+        audioMedia.get(ws).setVolume(volumeSlider.getValue());
+        audioMedia.get(ws).rateProperty().bind(rateSlider.valueProperty());
+        audioMedia.get(ws).balanceProperty().bind(balanceSlider.valueProperty());
+        audioMedia.get(ws).volumeProperty().bind(volumeSlider.valueProperty().divide(100));
+      }
+    } catch (Exception e) {
+      final String error = audioError;
+      Platform.runLater(() -> {
+        message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" +
+                error + "\"", "AudioClips.java / setAudioClip()", e);
+      });
+    }
+
+    System.gc();
+    System.runFinalization();
+    return audioMedia;
+   }
+
 
 //</editor-fold>
 
