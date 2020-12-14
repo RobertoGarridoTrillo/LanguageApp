@@ -44,10 +44,10 @@ public class Directorio
   String materia_nombre;
   int materia_activo;
 
-
+/*/*
   Connection conn = null;
   Statement stmt;
-  PreparedStatement pstmt;
+  PreparedStatement pstmt; */
   String sql;
 
   // pop-up messages
@@ -81,10 +81,10 @@ public class Directorio
 
 
     // Setting the connetion variables
-    conn = null;
-    stmt = null;
-    pstmt = null;
-    sql = null;
+    Connection conn = null;
+    Statement stmt = null;
+    PreparedStatement pstmt = null;
+    String sql = null;
    }
 
 
@@ -95,8 +95,8 @@ public class Directorio
    */
   public boolean checkIni(int usuario_id)
    {
-    conn = null;
-    pstmt = null;
+    Connection conn = null;
+    PreparedStatement pstmt = null;
     this.usuario_id = usuario_id;
 
     // Preparing statement
@@ -166,8 +166,8 @@ public class Directorio
    */
   public void createIni(int usuario_id)
    {
-    conn = null;
-    pstmt = null;
+    Connection conn = null;
+    PreparedStatement pstmt = null;
     this.usuario_id = usuario_id;
 
     try {
@@ -214,8 +214,8 @@ public class Directorio
   public void checkAndSetLastDirectory(String name, String lastDirectory, int usuario_id)
    {
     this.usuario_id = usuario_id;
-    conn = null;
-    pstmt = null;
+    Connection conn = null;
+    PreparedStatement pstmt = null;
     materia_id = 0;
     boolean salida = false; // flase create a new registre
 
@@ -336,8 +336,8 @@ public class Directorio
    */
   public void checkAndSetIdioma(String[] subtitle)
    {
-    conn = null;
-    pstmt = null;
+    Connection conn = null;
+    PreparedStatement pstmt = null;
 
     // Preparing statement
     try {
@@ -476,6 +476,8 @@ public class Directorio
    */
   public void delete(int usuario_id)
    {
+    Connection conn = null;
+    PreparedStatement pstmt = null;
     try {
       // Try connection
       conn = connect();
@@ -526,7 +528,7 @@ public class Directorio
    */
   public Connection connect()
    {
-    conn = null;
+    Connection conn = null;
 
 
     try {

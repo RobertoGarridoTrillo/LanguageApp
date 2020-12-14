@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import LanguageApp.util.Directorio;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -545,44 +546,79 @@ public class FormController implements Initializable
    */
   private void handlelogin()
    {
-    handleValidation(usuarioTextFieldLogin);
-    handleValidation(passwordTextFieldLogin);
+    try {
 
-    boolean activoBoolean = activoCheckBoxLogin.isSelected();
+      handleValidation(usuarioTextFieldLogin);
+      handleValidation(passwordTextFieldLogin);
 
-    // If user and password are valid
-    if (registro[0] == true && registro[1] == true) {
+      boolean activoBoolean = activoCheckBoxLogin.isSelected();
 
-      // Check if that user exits (One or more  exits, 0 doesn't exit)
-      Pair pair = mainScene.handleCheckUser(fieldString[0], fieldString[1]);
+      // If user and password are valid
+      if (registro[0] == true && registro[1] == true) {
 
-      int usuario_id = (Integer) pair.getKey();
-      String usuario_nombre = (String) pair.getValue();
+        // Check if that user exits (One or more  exits, 0 doesn't exit)
+        Pair pair = mainScene.handleCheckUser(fieldString[0], fieldString[1]);
 
-      // Put the number of user, just in case there was not active user
-      // Check if the new user and (assumig there was) the active user of the data base were the
-      if (usuario_id > 0) {
-        // id of the new user
-        mainScene.setUsuario_id(usuario_id);
-        mainScene.setUsuario_nombre(usuario_nombre);
+        boolean entrar = false;
+        int usuario_id = (Integer) pair.getKey();
+        String usuario_nombre = (String) pair.getValue();
 
-        // id of the old user active
-        Object old_id = mainScene.handleCheckNombre().getKey();// the user with the active user in the DDBB
-        int usuario_last_ddbb = (old_id != null) ? (Integer) old_id : 0;// From object to int (evito el null)
-        
-        // true if the old user has a materia_activo
-        boolean materia_activo = mainScene.handleCheckMateriaActivo(usuario_last_ddbb);
-        // if materia_activo exits delete the materia charged
-        if (materia_activo &&
-                usuario_last_ddbb != usuario_id) mainScene.handleCloseMenu("buttonLoginMenu");
-   
-        mainScene.handleEntrar(activoBoolean, usuario_last_ddbb == usuario_id);
-        
+        // Put the number of user, just in case there was not active user
+        // Check if the new user and (assumig there was) the active user of the data base were the
+        if (usuario_id > 0) {
+          // id of the new user
+          mainScene.setUsuario_id(usuario_id);
+          mainScene.setUsuario_nombre(usuario_nombre);
 
-      } else {
-        errorUserLabel.setManaged(true);
-        errorUserLabel.setText(resources.getString("El usuario no existe"));
+          // id of the old user active
+          int old_id_active = mainScene.handleCheckNombre().getKey();
+          int usuario_id_last = (old_id_active != 0) ? old_id_active : mainScene.getUsuario_ultimo();
+          
+          // Si empiezo la aplicacion y todos los usuarias estan inactivos
+          if (usuario_id_last == 0) {
+            usuario_id_last = usuario_id;
+            mainScene.handleEntrar(activoBoolean,
+                    !mainScene.handleCheckMateriaActivo(usuario_id_last).getKey());
+          } else {
+            
+            Pair<Boolean, String> mate_act_last = mainScene.handleCheckMateriaActivo(usuario_id_last);
+            Pair<Boolean, String> mate_act_new = mainScene.handleCheckMateriaActivo(usuario_id);
+
+
+            Directorio dire = new Directorio();
+            dire.getLastDirectory();
+
+            if (usuario_id_last != usuario_id) {
+
+              if (!mate_act_last.getKey() && !mate_act_new.getKey()) {
+                mainScene.handleCloseMenu("handlelogin");
+                entrar = true;
+
+              } else if (!mate_act_last.getKey() && mate_act_new.getKey()) {
+                entrar = false;
+
+              } else if (mate_act_last.getKey() && !mate_act_new.getKey()) {
+                mainScene.handleCloseMenu("handlelogin");
+                entrar = true;
+
+              } else if (mate_act_last.getKey() && mate_act_new.getKey()) {
+
+                entrar = mate_act_last.getValue().equals(mate_act_new.getValue());
+              }
+            }
+            if (usuario_id_last == usuario_id) {
+              entrar = true;
+            }
+            mainScene.handleEntrar(activoBoolean, entrar);
+          }
+        } else {
+          errorUserLabel.setManaged(true);
+          errorUserLabel.setText(resources.getString("El usuario no existe"));
+        }
       }
+    } catch (Exception e) {
+      message.message(Alert.AlertType.ERROR, "Error message",
+              "FormController / handlelogin()", e.toString(), e);
     }
    }
 

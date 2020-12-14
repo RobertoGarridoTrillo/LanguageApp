@@ -598,14 +598,9 @@ public class RegistrationController implements Initializable
         errorUserLabel.setManaged(true);
         errorUserLabel.setText(resources.getString("El usuario ya existe"));
       } else {
-        // Checking if there's some active user
-      /*/*Object id = mainScene.handleCheckNombre().getKey();
-
-      int usuario_last = ( id != null) ? (Integer) id : 0; 
-      
-      mainScene.handleEntrar(true, mainScene.handleCheckMateriaActivo(usuario_last)); */
-      
-      mainScene.handleEntrar(true,false);
+        mainScene.handleCloseMenu("RegistrationController.handleRegistro");
+        mainScene.handleClose();
+        mainScene.handleEntrar(true, true);
 
       }
     }

@@ -7,6 +7,7 @@ import LanguageApp.main.MainScene;
 import LanguageApp.model.AudioClipPhrase;
 import LanguageApp.model.AudioClipWord;
 import LanguageApp.model.Item;
+import LanguageApp.util.AudioClips;
 import LanguageApp.util.Directorio;
 import LanguageApp.util.FillListView;
 import LanguageApp.util.FormatTime;
@@ -20,10 +21,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
-import java.util.Map;
 
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -60,7 +59,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaErrorEvent;
 import javafx.scene.media.MediaMarkerEvent;
@@ -241,9 +239,8 @@ public class PrincipalController implements Initializable
 
   private String subtitleAudio;
 
-  File jsonBinder;
-
   String[] subtitle;
+  int subtitleLength;
 
 // Player
   private MediaPlayer mediaPlayer;
@@ -340,19 +337,19 @@ public class PrincipalController implements Initializable
   private double success;
 
   // Class instances
-  // private SelectedFile sf;
-  // private GetJson gj;
-  // private FillListView flw;
-  // private AudioClips ac;
-  // private SaveWordsAsList swal;
-  // private FormatTime ft;
+  private SelectedFile sf;
+  private GetJson gj;
+  private FillListView flw;
+  private AudioClips ac;
+  private SaveWordsAsList swal;
+  private FormatTime ft;
   private Directorio dire;
-  // private SortPhrase sp;
+  private SortPhrase sp;
 
   // Active user
   private int usuario_id;
   private String usuario_nombre;
-  private boolean materia_activo;
+  Pair<Boolean, String> materia_activo;
 
   // ProgressBar
   private double progressBarStep;
@@ -382,14 +379,14 @@ public class PrincipalController implements Initializable
    {
 
     //<editor-fold defaultstate="collapsed" desc="Instances">
-    // sf = new SelectedFile();
-    // gj = new GetJson();
-    // flw = new FillListView();
-    // ac = new AudioClips();
+    sf = new SelectedFile();
+    gj = new GetJson();
+    flw = new FillListView();
+    ac = new AudioClips();
     dire = new Directorio();
-    // swal = new SaveWordsAsList();
-    // ft = new FormatTime();
-    // sp = new SortPhrase();
+    swal = new SaveWordsAsList();
+    ft = new FormatTime();
+    sp = new SortPhrase();
 
     //</editor-fold>
 
@@ -420,7 +417,6 @@ public class PrincipalController implements Initializable
               // Extract the current time of the media and put in in the label
               currentTime = mediaPlayer.getCurrentTime();
               Platform.runLater(() -> {
-                FormatTime ft = new FormatTime();
                 timeLabelReading.setText(ft.formatting(currentTime, duration));
               });
 
@@ -460,8 +456,6 @@ public class PrincipalController implements Initializable
        {
         try {
 
-          int idiomasLength = 0;
-
           while (!handleOpenMenu2.equals("stop")) {
 
             //System.out.println("Entrando " + " " + handleOpenMenu2Thread.getName());
@@ -497,7 +491,7 @@ public class PrincipalController implements Initializable
             dire.checkAndSetLastDirectory(lf, ld, usuario_id);
 
             materia_activo = mainScene.handleCheckMateriaActivo(usuario_id);
-            if (materia_activo) {
+            if (materia_activo.getKey()) {
 
               // Lock the name of the file idiomas.Json in the directory Json and load the idiomas[][]
               File jsonBinder = new File(dire.getLastDirectory() + "Json\\\\");
@@ -510,7 +504,7 @@ public class PrincipalController implements Initializable
               if (subtitle == null) dire.delete(usuario_id);
               while (subtitle == null) {
               }
-              int subtitleLength = subtitle.length;
+              subtitleLength = subtitle.length;
 
               // Problemas with the generic array - fixed
               // Array of items[] -> idiomas[][]
@@ -523,7 +517,7 @@ public class PrincipalController implements Initializable
 
               phraseString = new String[subtitleLength][];
 
-              int totalMessages = 7 + (subtitleLength * 5);
+              totalMessages = 7 + (subtitleLength * 5);
 
               setProgressBar(totalMessages, "Creando Matrices");
 
@@ -547,10 +541,7 @@ public class PrincipalController implements Initializable
 
                 if (file.exists()) {
                   // Read the Json witn the Item[]
-                  GetJson gj = new GetJson();
-                  // 196.4 MB
                   idiomas[x] = gj.getJson(file);
-                  gj = null;
 
                   // Read the subtitle and capitalize
                   subtitle[x] = subtitle[x].replaceAll(".json", "");
@@ -561,17 +552,13 @@ public class PrincipalController implements Initializable
                   subtitleAudio = idiomas[x][idiomas[x].length - 1].getText();
 
                   setProgressBar(totalMessages, "Creando palabras en " + subtitle[x]);
-                  SaveWordsAsList swal = new SaveWordsAsList();
                   wordSet[x] = swal.saveWordsAsList(idiomas[x]);
 
                   setProgressBar(totalMessages, "Creando frases en " + subtitle[x]);
-                  SortPhrase sp = new SortPhrase();
                   phraseSet = sp.sortPhrases(idiomas[x]);
-                  sp = null;
+
                   phraseString[x] = new String[phraseSet.length];
                   phraseString[x] = phraseSet;
-                  //
-                  idiomasLength = phraseString[x].length;
                 }
               }
 
@@ -597,9 +584,8 @@ public class PrincipalController implements Initializable
               itemsTranslation = idiomas[subTrans];
               itemsOriginal = idiomas[subOrig];
 
-             
+
               // fill a ListView with the phrases of the Items array
-              FillListView flw = new FillListView();
               flw.setListView(listViewV, itemsOriginal);
 
               // Creating the path to the media
@@ -613,46 +599,31 @@ public class PrincipalController implements Initializable
               // Set the MediaPlayer
               setMediaPlayer();
 
+              ac = new AudioClips();
+
               // Setting audiclips
               for (int x = 0; x < subtitleLength; x++) {
 
                 setProgressBar(totalMessages, "Creando tablas de palabras en " + subtitle[x]);
 
-                //--
 
-                Map<String, AudioClip> mapAdioClip =
-                        new HashMap<String, AudioClip>(wordSet[x].size());
+                String direction = dire.getLastDirectory() + "Dictionaries\\" +
+                        subtitle[x] + "Dictionary\\Words";
 
-                for (String ws : wordSet[x]) {
 
-                  // This is to fix the forbbiden name con. in windows
-                  if (ws.equals("con")) ws = "connn";
-                  if (ws.equals("aux")) ws = "auxxx";
-                  String direction = dire.getLastDirectory() + "Dictionaries\\" +
-                          subtitle[x] + "Dictionary\\Words\\" + se + ws + ".mp3";
-                  File fileClip = new File(direction);
+                audioClipsWords[x] = new AudioClipWord();
 
-                  if (!fileClip.exists()) {
-                    message.message(Alert.AlertType.ERROR, "Error de audio",
-                            "Falta el audio", direction, null);
-                    return;
-                  }
-
-                  mapAdioClip.put(ws, new AudioClip(new File(direction).toURI().toString()));
-                  setAudioClip(mapAdioClip.get(ws),
-                          rateSliderReading, balanceSliderReading, volumeSliderReading);
-                }
-
-                audioClipsWords[x] = new AudioClipWord(mapAdioClip);
-                //--
+                audioClipsWords[x].setAudioClip(ac.setAudioClip(
+                        wordSet[x], direction,
+                        rateSliderReading, balanceSliderReading, volumeSliderReading));
 
 
                 setProgressBar(totalMessages, "Creando tablas de frases en " + subtitle[x]);
 
-                String direction = dire.getLastDirectory() + "Dictionaries\\" +
+                direction = dire.getLastDirectory() + "Dictionaries\\" +
                         subtitle[x] + "Dictionary\\Phrases";
 
-                audioClipsPhrases[x] = new AudioClipPhrase(setAudioMedia(
+                audioClipsPhrases[x] = new AudioClipPhrase(ac.setAudioMedia(
                         phraseString[x], direction,
                         rateSliderReading, balanceSliderReading, volumeSliderReading));
 
@@ -683,9 +654,12 @@ public class PrincipalController implements Initializable
               mediaPlayerSlider = "media"; // to the first lap
 
               // Setting the first itemInicio
-              indexItemV = 0;
-              listViewV.scrollTo(0);
-              listViewV.getSelectionModel().select(0);
+              Platform.runLater(() -> {
+                indexItemV = 0;
+                listViewV.scrollTo(0);
+                listViewV.getSelectionModel().select(0);
+              });
+              
 
 
               // Setting the initial pause
@@ -697,41 +671,6 @@ public class PrincipalController implements Initializable
               //and set it in  the label textLabel  
               setEndTimefile();
 
-
-              setSetterOpenMenu2(subtitleLength, idiomasLength);
-
-              setSubtitle(subtitle);
-              setIdiomas(idiomas);
-              setWordSet(wordSet);
-              /*/* setPhraseSet(phraseSet);*/
-              setPhraseString(phraseString);
-              setAudioClipsWords(audioClipsWords);
-              setAudioClipsPhrases(audioClipsPhrases);
-              setSubtitleAudio(subtitleAudio);
-              setItemsOriginal(itemsOriginal);
-              setItemsTranslation(itemsTranslation);
-
-              
-wordSet[0] = null;wordSet[1] = null;wordSet[2] = null;wordSet[3] = null;wordSet[4] = null;      
-idiomas[0] = null;idiomas[1] = null;idiomas[2] = null;idiomas[3] = null;idiomas[4] = null;   
-phraseSet[0] = null;phraseSet[1] = null;phraseSet[2] = null;phraseSet[3] = null;phraseSet[4] = null;
-phraseString[0] = null;phraseString[1] = null;phraseString[2] = null;phraseString[3] = null;phraseString[4] = null;   
-wordSet = null;
-idiomas = null;
-phraseSet = null;
-phraseString = null;
-System.gc();
-
-              subtitle = null;
-              idiomas = null;
-              wordSet = null;
-              phraseSet = null;
-              phraseString = null;
-              audioClipsWords = null;
-              audioClipsPhrases = null;
-              subtitleAudio = null;
-              itemsOriginal = null;
-              itemsTranslation = null;
               System.gc();
               showListViewH();
               setProgressBar(totalMessages, "Finalizado");
@@ -786,7 +725,8 @@ System.gc();
 
       // Creating multilingual constans
       Locale loc = new Locale(Locale.getDefault().getLanguage());
-      ResourceBundle rs = ResourceBundle.getBundle("LanguageApp.resources.bundles.LanguageApp", loc);
+      ResourceBundle rs = ResourceBundle
+              .getBundle("LanguageApp.resources.bundles.LanguageApp", loc);
 
       leer = rs.getString("Leer");
       escribir = rs.getString("Escribir");
@@ -936,8 +876,7 @@ System.gc();
     try {
 
       // Open a filechooser
-      SelectedFile selectedFile = new SelectedFile();
-      File file = selectedFile.getSelectedFile(mainStage, dire.getLastDirectory());
+      File file = sf.getSelectedFile(mainStage, dire.getLastDirectory());
       if (file == null) {
 
         return false;
@@ -1010,9 +949,11 @@ System.gc();
   public void handleCloseMenu(String origen)
    {
     try {
-      if (mediaPlayer == null)  return;
+      if (mediaPlayer == null) return;
       // if the app is loading a film return
-      if (handleOpenMenu2Thread != null && handleOpenMenu2Thread.isAlive()) return;
+      if (handleOpenMenu2Thread == null ||
+              !handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
+        return;
 
       handleStopButton();
 
@@ -1059,7 +1000,7 @@ System.gc();
       mediaPlayer.dispose();
       mediaPlayer = null;
       media = null;
-      *virtual.dispose();
+      virtual.dispose();
       virtual = null;
       translatedVirtual.dispose();
       translatedVirtual = null;
@@ -1070,7 +1011,6 @@ System.gc();
       itemsTranslation = new Item[1];
       itemsTranslation[0] = new Item(0, 0, " ");
 
-      FillListView flw = new FillListView();
       flw.setListView(listViewV, itemsOriginal);
       flw.setListView(listViewH01Reading, itemsOriginal);
       flw.setListView(listViewH02Reading, itemsOriginal);
@@ -1087,22 +1027,9 @@ System.gc();
       // Delete and create and empty initial file
       usuario_id = mainScene.getUsuario_id();
 
-
-      switch (origen) {
-        case "handleCloseMenu":
-          dire.createIni(usuario_id);
-          break;
-        case "buttonLoginMenu":
-          break;
-        case "buttonUnloginMenu":
-          /*/*System.out.println("Creando un nuevo principio");
-          dire.createIni(usuario_id);
-          handleOpenMenu2Salir();
-          mediaToSliderStop();
-          //handleOpenMenu2Play(); */
-          break;
-        default:
-          break;
+      // Put all the materias of that user to 0
+      if (origen.equals("handleCloseMenu")) {
+        dire.createIni(usuario_id);
       }
 
     } catch (Exception e) {
@@ -1327,7 +1254,6 @@ System.gc();
     mediaPlayer.setStopTime(Duration.seconds(end));
     // Label time to cero
     duration = mediaPlayer.getMedia().getDuration();
-    FormatTime ft = new FormatTime();
     timeLabelReading.setText(ft.formatting(Duration.seconds(start), duration));
 
     // Enable the scroll to markers
@@ -1375,7 +1301,6 @@ System.gc();
       setTicksSliderMedia(mediaSliderWriting, 100);
       setTicksSliderMedia(mediaSliderTranslation, 100);
       // Label time to cero
-      FormatTime ft = new FormatTime();
       timeLabelReading.setText(ft.formatting(Duration.ZERO, duration));
       // Enable the scroll to markers
       playButtonBoolean = true;
@@ -1773,7 +1698,6 @@ System.gc();
    {
     try {
       if (mediaPlayer == null) return; // if doesn't exits a media return
-      SaveWordsAsList swal = new SaveWordsAsList();
 
       listViewH02Reading.setVisible(true);
       getIndexitemV();
@@ -2380,114 +2304,6 @@ System.gc();
 
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Setting Audioclips">
-
-  /**
-   * Setting the audioclips
-   *
-   * @param set a Set of String, result of creating a list of words of the media
-   * @param lastdirectory
-   * @param rateSlider
-   * @param balanceSlider
-   * @param volumeSlider
-   * @param lastFile
-   * @return A map with the name and the Audioclip
-   */
-  public void setAudioClip(AudioClip audioClips, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
-   {
-
-    try {
-
-      audioClips.setRate(rateSlider.getValue());
-      audioClips.setBalance(balanceSlider.getValue());
-      audioClips.setVolume(volumeSlider.getValue());
-      audioClips.rateProperty().bind(rateSlider.valueProperty());
-      audioClips.balanceProperty().bind(balanceSlider.valueProperty());
-      audioClips.volumeProperty().bind(volumeSlider.valueProperty().divide(100));
-
-    } catch (Exception e) {
-
-      Platform.runLater(() -> {
-        message.message(Alert.AlertType.ERROR, "Error message",
-                "PrincipalController / setAudioClip()", e.toString(), e);
-      });
-    }
-    System.gc();
-    System.runFinalization();
-
-   }
-
-
-  /**
-   *
-   * @param set
-   * @param lastdirectory
-   * @param rateSlider
-   * @param balanceSlider
-   * @param volumeSlider
-   * @return
-   */
-  public Map<String, MediaPlayer> setAudioMedia(String[] set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
-   {
-    // An unique audioclip
-    MediaPlayer me;
-
-    String s;
-
-    Map<String, MediaPlayer> audioMedia = new HashMap<>();
-
-    String audioError;
-
-    String se = System.getProperty("file.separator");
-
-    URI resource;
-    audioMedia.clear();
-
-    audioError = null;
-
-    se = System.getProperty("file.separator");
-
-    try {
-      for (String ws : set) {
-
-        // This is to fix the forbbiden name con. in windows
-        if (ws.equals("con")) ws = "connn";
-        if (ws.equals("aux")) ws = "auxxx";
-
-        audioError = ws; // if this audid doesn´t exist I show it in an message.
-
-        s = lastdirectory + se + ws + ".mp3";
-
-        resource = new File(s).toURI();
-
-        me = new MediaPlayer(new Media(resource.toString()));
-
-        audioMedia.put(ws, me);
-        // me.dispose();
-        // me = null;
-        audioMedia.get(ws).setRate(rateSlider.getValue());
-        audioMedia.get(ws).setBalance(balanceSlider.getValue());
-        audioMedia.get(ws).setVolume(volumeSlider.getValue());
-        audioMedia.get(ws).rateProperty().bind(rateSlider.valueProperty());
-        audioMedia.get(ws).balanceProperty().bind(balanceSlider.valueProperty());
-        audioMedia.get(ws).volumeProperty().bind(volumeSlider.valueProperty().divide(100));
-      }
-    } catch (Exception e) {
-      final String error = audioError;
-      Platform.runLater(() -> {
-        message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" +
-                error + "\"", "AudioClips.java / setAudioClip()", e);
-      });
-    }
-
-    System.gc();
-    System.runFinalization();
-    return audioMedia;
-   }
-
-
-//</editor-fold>
-
 //<editor-fold defaultstate="collapsed" desc="Setting the listView">
 
   /**
@@ -2593,12 +2409,10 @@ System.gc();
 
     //changeListview(trans); // Reuse changeListView to show itemTranslation
     if (currentTab.equals(leer) || currentTab.equals(traducir)) {
-      FillListView flw = new FillListView();
       flw.setListView(listViewV, itemsOriginal);
       showListViewH();
     }
     if (currentTab.equals(escribir)) {
-      FillListView flw = new FillListView();
       flw.setListView(listViewV, itemsTranslation);
       showListViewH();
     }
@@ -2619,7 +2433,6 @@ System.gc();
     if (text.equals(leer)) {
       oldNode = rateSliderReading;
       if (mediaPlayer != null) { // if doesn't exits a media return
-        FillListView flw = new FillListView();
         flw.setListView(listViewV, itemsOriginal);
         currentTab = leer;
       }
@@ -2629,7 +2442,6 @@ System.gc();
       if (mediaPlayer != null) { // if doesn't exits a media return
         currentTab = escribir;
         // Setting the listViewH itemInicio
-        FillListView flw = new FillListView();
         flw.setListView(listViewV, itemsTranslation);
         /*/*
         tabPanelListViewH.getSelectionModel().clearAndSelect(1);// if comes from flag menuItem
@@ -2640,7 +2452,6 @@ System.gc();
       oldNode = rateSliderTranslation;
       if (mediaPlayer != null) { // if doesn't exits a media return
         currentTab = traducir;
-        FillListView flw = new FillListView();
         flw.setListView(listViewV, itemsOriginal);
       }
     }
@@ -2669,7 +2480,6 @@ System.gc();
    {
     try {
       if (mediaPlayer == null) return; // if doesn't exits a media return
-      SaveWordsAsList swal = new SaveWordsAsList();
 
       // Get the index of the clicked itemInicio
       getIndexitemV();
@@ -2704,9 +2514,9 @@ System.gc();
                 trans.concat(".json"), currentTab, indexItemV, 0);
         indicatorSuccessWriting.setProgress(Double.valueOf(p.getKey()));
         indicatorSuccessTranslation.setProgress(Double.valueOf(p.getValue()));
-        // Set the media virtual and translates
-        setVirtualMedia();
       });
+      // Set the media virtual and translates
+      setVirtualMedia();
 
 
     } catch (ArrayIndexOutOfBoundsException ex) {
@@ -3090,7 +2900,6 @@ System.gc();
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "PrincipalController.java / updateValues()", e.toString(), e);
     }
-    FormatTime ft = new FormatTime();
     timeLabelReading.setText(ft.formatting(currentTime, duration));
    }
 
@@ -3106,7 +2915,6 @@ System.gc();
       @Override
       public void run()
        {
-        FormatTime ft = new FormatTime();
         currentTime = Duration.ZERO;
         duration = mediaPlayer.getMedia().getDuration();
         timeLabelReading.setText(ft.formatting(currentTime, duration));

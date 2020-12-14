@@ -76,6 +76,7 @@ public class MainScene extends Application
   // The real usuario_id
   private static int usuario_id;
   private static String usuario_nombre;
+  private static int usuario_ultimo;
 
   // When I'm in the welcome screen
   boolean welcomeScreen;
@@ -102,14 +103,13 @@ public class MainScene extends Application
   private String[] subtitle;
 
   // Fade in / out
-  private String centerString;
   private Node centerNode;
 
   FadeTransition fIn, fadeLoginIn;
   FadeTransition fOut, fadeLoginOut;
 
   // the status of the media when change scene
-  private String key, look;
+  private String look;
 
   ChangeListener mainChangeListener;
 
@@ -141,7 +141,6 @@ public class MainScene extends Application
     labelText.setValue("");
 
     // Setting the status to the fade the change scene
-    key = "";
     look = "";
 
    }
@@ -188,7 +187,11 @@ public class MainScene extends Application
     Object id = pair.getKey();
     Object name = pair.getValue();
 
-    usuario_id = (id != null) ? (Integer) id : 0;
+    // in the init usuario_last and usuario_id are the same
+    /*/* usuario_id = (id != null) ? (Integer) id : 0; */
+    usuario_id = (Integer) id;
+    usuario_ultimo = usuario_id;
+
     // Put the name in the welcome label
     if (name == null) {
       usuario_nombre = null;
@@ -198,13 +201,8 @@ public class MainScene extends Application
       welcomeController.handlePutName(usuario_nombre);
     }
 
-
-
     // Checking the colour of the back progress bar
     centerNode = mainController.checkCenter();
-    centerString = centerNode.getId();
-
-
 
     this.mainStage.setResizable(false);
     //this.mainStage.setWidth(1215);
@@ -455,23 +453,26 @@ public class MainScene extends Application
 
     // In SQLinte doesn't exit boolean
     usuario_activo = (activoBoolean) ? 1 : 0;
-
+    usuario_ultimo = usuario_id;
+    
     try {
+      
       dataBaseController.handleBorrarMarcar(activoBoolean, usuario_id);
 
       if (!usuario_last) {
-        principalController.handleOpenMenu2Thread.start();
+        principalController.handleOpenMenu2Play();
       }
 
       // change the center
       welcomeScreen = false;
-      buttonDashBoardMenu();
+
+      setFadeLogin("dashboard");
 
       // change the color of the anchor panel bottom
       mainController.checkCenter();
 
       //Update the dashborad of the database
-      dataBaseController.mostrarUsuario();
+     /*/* dataBaseController.mostrarUsuario(); */
 
     } catch (Exception e) {
       message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
@@ -485,7 +486,6 @@ public class MainScene extends Application
    */
   public void handleCloseMenu(String origen)
    {
-    if (principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED)) return;
     principalController.handleCloseMenu(origen);
    }
 
@@ -638,7 +638,7 @@ public class MainScene extends Application
    * @param usuarioId
    * @return
    */
-  public boolean handleCheckMateriaActivo(int usuarioId)
+  public Pair<Boolean, String> handleCheckMateriaActivo(int usuarioId)
    {
     return dataBaseController.handleCheckMateriaActivo(usuarioId);
    }
@@ -688,6 +688,26 @@ public class MainScene extends Application
   public static String getUsuario_nombre()
    {
     return MainScene.usuario_nombre;
+   }
+
+
+  /**
+   *
+   * @param usuario_ultimo
+   */
+  public static void setUsuario_ultimo(int usuario_ultimo)
+   {
+    MainScene.usuario_ultimo = usuario_ultimo;
+   }
+
+
+  /**
+   *
+   * @return
+   */
+  public static int getUsuario_ultimo()
+   {
+    return usuario_ultimo;
    }
 
 
@@ -794,8 +814,8 @@ public class MainScene extends Application
         return;
       }
       // if the app is loading a film return
-      if (principalController.handleOpenMenu2Thread != null &&
-              !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      if (principalController.handleOpenMenu2Thread == null ||
+              !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
         return;
       fadeOldOut();
       helperFadePlayOut("withFileChooser");
@@ -838,8 +858,8 @@ public class MainScene extends Application
       // if doesn't be user, return
       if (welcomeScreen) return;
       // if the app is loading a film return
-      if (principalController.handleOpenMenu2Thread != null &&
-              !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+      if (principalController.handleOpenMenu2Thread == null ||
+              !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
         return;
 
       fadeOldOut();
@@ -891,8 +911,8 @@ public class MainScene extends Application
   public void buttonControlesMenu()
    {
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
 
     fadeOldOut();
@@ -919,8 +939,8 @@ public class MainScene extends Application
   public void buttonAboutMenu()
    {
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
@@ -938,14 +958,13 @@ public class MainScene extends Application
   public void buttonLoginMenu()
    {
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
     try {
       centerNode = mainController.checkCenter();
       if (centerNode.getId().equals("loginViewHbox") &&
               loginView.getChildren().get(1).getId().equals("anchorRightLogin")) return;
-
 
       setFadeLogin("login");
 
@@ -963,8 +982,8 @@ public class MainScene extends Application
     // if doesn't be user, return
     if (welcomeScreen) return;
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
 
     fadeOldOut();
@@ -989,7 +1008,6 @@ public class MainScene extends Application
 
       // Deleting the active in the database
       dataBaseController.handleBorrarMarcar(false, usuario_id);
-      /*/*      handlBorrarMarcar(false);*/
 
       // Deleting the global variables
       usuario_id = 0;
@@ -1015,8 +1033,8 @@ public class MainScene extends Application
   public void buttonRegistro()
    {
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
     try {
       centerNode = mainController.checkCenter();
@@ -1042,8 +1060,8 @@ public class MainScene extends Application
             mainController.checkCenter().getId().equals("principalViewAnchorPane"))
       return;
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-             !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
 
     try {
@@ -1067,8 +1085,8 @@ public class MainScene extends Application
       return;
     }
     // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
+    if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
       return;
     try {
 
@@ -1090,16 +1108,13 @@ public class MainScene extends Application
 
   public void setFadeLogin(String destiny)
    {
-    // if the app is loading a film return
-    if (principalController.handleOpenMenu2Thread != null &&
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.BLOCKED))
-      return;
     try {
 
       mainChangeListener = new ChangeListener<Double>()
        {
         @Override
-        public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue)
+        public void changed(ObservableValue<? extends Double> observable, Double oldValue,
+                Double newValue)
          {
           //System.out.println("newValue " + newValue);
           if (newValue <= 0) {
