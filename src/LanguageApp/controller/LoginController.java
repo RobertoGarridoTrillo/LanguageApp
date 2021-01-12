@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 //</editor-fold>
@@ -43,7 +42,7 @@ public class LoginController implements Initializable
    *
    * @param aThis
    */
-  public void setMainScene(MainScene aThis)
+  public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
@@ -63,10 +62,10 @@ public class LoginController implements Initializable
 
       // Create the locale for the pop up messages
       /*/*HandleLocale01.handleLocale01();*/
-      message = new Message(resources);
+      message = new Message(mainStage,resources);
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "LoginController / initialize()", e.toString(), e);
+      Message.showException(e);
     }
    }
 

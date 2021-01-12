@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
  *
  * @author Roberto Garrido Trillo
  */
-public class HandleLocale01
+public class HandleLocale
  {
 
   public static ResourceBundle resources;
@@ -17,8 +17,9 @@ public class HandleLocale01
   /**
    *
    * @return
+   * @throws java.lang.Exception
    */
-  public static ResourceBundle handleLocale01()
+  public static ResourceBundle getResource() throws Exception
    {
     resources = ResourceBundle.getBundle(
             "LanguageApp.resources.bundles.LanguageApp", getLocaleDefault());
@@ -31,7 +32,7 @@ public class HandleLocale01
    * @return Locale. Return the local language. If it's different to the five 
    * languages of the variable LANGUAGES return "en
    */
-  static public Locale getLocaleDefault()
+  public static Locale getLocaleDefault()
    {
     // Locale.getDefault() -> en_GB
     // Locale.getDefault().getLanguage() -> en
@@ -51,11 +52,25 @@ public class HandleLocale01
     }
     return locale;
    }
+  
 
-
-  static public String[] getLANGUAGES()
+  /**
+   * 
+   * @return 
+   */
+  public static String[] getLANGUAGES()
    {
     return LANGUAGES;
    }
+  
+  /**
+   * 
+   * @param s
+   * @return 
+   */
+  public static String toLocale(String s){
+    return resources.getString(s);
+  }
 
+  
  }

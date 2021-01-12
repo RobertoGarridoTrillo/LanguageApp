@@ -1,6 +1,6 @@
 package LanguageApp.util;
 
-import LanguageApp.util.HandleLocale01;
+import LanguageApp.util.HandleLocale;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -17,11 +17,6 @@ public class Tools
   public static final Locale SPANISH = new Locale("sp");
 
 
-  public Tools()
-   {
-   }
-
-
   /**
    * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
    *
@@ -35,9 +30,10 @@ public class Tools
    }
 
 
+
   public static String getLanguageDefault()
    {
-    Locale locale = HandleLocale01.getLocaleDefault();
+    Locale locale = HandleLocale.getLocaleDefault();
     if (locale.getLanguage().equals(new Locale("en").getLanguage())) return "English";
     if (locale.getLanguage().equals(new Locale("es").getLanguage())) return "Spanish";
     if (locale.getLanguage().equals(new Locale("ja").getLanguage())) return "Japanese";
@@ -45,6 +41,35 @@ public class Tools
     if (locale.getLanguage().equals(new Locale("fr").getLanguage())) return "French";
     return null;
    }
+
+
+  /**
+   * Compare two doubles.TThe result is between the minimum and the maximum, including the maximum
+   *
+   * @param i The double to compare
+   * @param minValueIncluded the minimum range inclusive
+   * @param maxValueIncluded the maximum range inclusive
+   * @return
+   */
+  public static boolean rangeInc(double i, double minValueIncluded, double maxValueIncluded)
+   {
+    return (i >= minValueIncluded && i <= maxValueIncluded);
+   }
+
+
+  /**
+   * Compare two doubles.TThe result is between the minimum and the maximum, including the maximum
+   *
+   * @param i The double to compare
+   * @param minValueIncluded the minimum range inclusive
+   * @param maxValueExcluded the maximum range inclusive
+   * @return
+   */
+  public static boolean rangeExc(double i, double minValueIncluded, double maxValueExcluded)
+   {
+    return (i >= minValueIncluded && i < maxValueExcluded);
+   }
+
 
   private static void main(String args[])
    {

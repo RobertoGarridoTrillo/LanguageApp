@@ -14,7 +14,7 @@ import javafx.scene.control.ListView;
 public class FillListView {
 
    // pop-up messages
-   Message message = new Message(HandleLocale01.handleLocale01());
+   Message message = new Message(HandleLocale.getResource());
 
    /**
     * Fill a listview with items
@@ -42,7 +42,7 @@ public class FillListView {
 
       } catch (Exception e) {
          Platform.runLater(() -> {
-         message.message(Alert.AlertType.ERROR, "Error message", "FillListView.java / setListView()", e.toString(), e); 
+         message.message(Alert.AlertType.ERROR, "Mensaje de error", "FillListView.java / setListView()", e.toString(), e); 
          });
          return "";
       }

@@ -16,7 +16,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -117,11 +116,13 @@ public class MainController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
+
   /**
    *
    * @param aThis
+   * @throws java.lang.Exception
    */
-  public void setMainScene(MainScene aThis)
+  public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
@@ -130,57 +131,58 @@ public class MainController implements Initializable
   //<editor-fold defaultstate="collapsed" desc="Initialize">
 
   /**
-   * When the method is initialize
+   * When the method is initialize 
    */
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
-    this.resources = resources;
+    try {
+      this.resources = resources;
+      message = new Message(mainStage, resources);
 
-    // References to mainStage
-    mainStage = MainScene.getMainStage();
+      // References to mainStage
+      mainStage = MainScene.getMainStage();
 
-    // Fade In / Out
-    /*/*    setMainFade(); */
+      // Initial value of the progressBar and label
+      progressBarValue = new SimpleDoubleProperty(0.0);
+      labelText = "";
 
-    // Initial value of the progressBar and label
-    progressBarValue = new SimpleDoubleProperty(0.0);
-    labelText = "";
-
-    mainProgressBarBottom.setProgress(progressBarValue.getValue());
-    mainProgressBarBottom.setVisible(false);
-    mainLabelBottom.setText(labelText);
-    mainLabelBottom.setVisible(false);
-
-    // Create the locale for the pop up messages
-    message = new Message(resources);
-
-    // Setting the flags of the menu item
-    setImageFlags();
-    setEventFlags();
-
-    // Effect fade
-    fadeProgressBar = new FadeTransition(Duration.millis(2000), mainProgressBarBottom);
-    fadeLabel = new FadeTransition(Duration.millis(2000), mainLabelBottom);
-    fadeProgressBar.setFromValue(1.0);
-    fadeProgressBar.setToValue(0.0);
-    fadeLabel.setFromValue(1.0);
-    fadeLabel.setToValue(0.0);
-    fadeProgressBar.setDelay(Duration.millis(2000));
-    fadeLabel.setDelay(Duration.millis(2000));
-    fadeProgressBar.setOnFinished((e) -> {
+      mainProgressBarBottom.setProgress(progressBarValue.getValue());
       mainProgressBarBottom.setVisible(false);
+      mainLabelBottom.setText(labelText);
       mainLabelBottom.setVisible(false);
-      mainProgressBarBottom.setOpacity(1);
-      mainLabelBottom.setOpacity(1);
-    });
+
+      // Create the locale for the pop up messages
+
+      // Setting the flags of the menu item
+      setImageFlags();
+      setEventFlags();
+
+      // Effect fade
+      fadeProgressBar = new FadeTransition(Duration.millis(2000), mainProgressBarBottom);
+      fadeLabel = new FadeTransition(Duration.millis(2000), mainLabelBottom);
+      fadeProgressBar.setFromValue(1.0);
+      fadeProgressBar.setToValue(0.0);
+      fadeLabel.setFromValue(1.0);
+      fadeLabel.setToValue(0.0);
+      fadeProgressBar.setDelay(Duration.millis(2000));
+      fadeLabel.setDelay(Duration.millis(2000));
+      fadeProgressBar.setOnFinished((e) -> {
+        mainProgressBarBottom.setVisible(false);
+        mainLabelBottom.setVisible(false);
+        mainProgressBarBottom.setOpacity(1);
+        mainLabelBottom.setOpacity(1);
+      });
 
 
-    // The value of the progressBar in mainScene
-    //inicioButtonWelcome.visibleProperty().bind(progressBarValue.greaterThanOrEqualTo(1));
-    progressBarValue.addListener((observable, oldValue, newValue) -> {
-      menuBar.setDisable(progressBarValue.lessThan(1).get());
-    });
+      // The value of the progressBar in mainScene
+      //inicioButtonWelcome.visibleProperty().bind(progressBarValue.greaterThanOrEqualTo(1));
+      progressBarValue.addListener((observable, oldValue, newValue) -> {
+        menuBar.setDisable(progressBarValue.lessThan(1).get());
+      });
+    } catch (Exception e) {
+      Message.showException(e);
+    }
    }
 
   //</editor-fold>
@@ -189,37 +191,32 @@ public class MainController implements Initializable
 
   /**
    * Setting the image int the flags
+      * @throws java.lang.Exception 
    */
-  private void setImageFlags()
+  private void setImageFlags() throws Exception
    {
+    imageViews = new ImageView[5];
+    menuItemFlags = new MenuItem[]{EnglishMenu, SpanishMenu,
+      FrenchMenu, ItalianMenu, JapaneseMenu};
 
-    try {
-
-      imageViews = new ImageView[5];
-      menuItemFlags = new MenuItem[]{EnglishMenu, SpanishMenu,
-        FrenchMenu, ItalianMenu, JapaneseMenu};
-
-      String[] ruta = {
-        "English.png", "Spanish.png", "French.png", "Italian.png", "Japanese.png"};
-      for (int i = 0; i < imageViews.length; i++) {
-        Image image = new Image(getClass().getResource("/LanguageApp/resources/images/" + ruta[i]).toExternalForm());
-        imageViews[i] = new ImageView(image);
-        imageViews[i].setFitWidth(40);
-        imageViews[i].setFitHeight(25);
-        menuItemFlags[i].setGraphic(imageViews[i]);
-        menuItemFlags[i].setVisible(false);
-      }
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainController / setImageFlags()", e.toString(), e);
+    String[] ruta = {
+      "English.png", "Spanish.png", "French.png", "Italian.png", "Japanese.png"};
+    for (int i = 0; i < imageViews.length; i++) {
+      Image image = new Image(getClass().getResource("/LanguageApp/resources/images/" + ruta[i]).toExternalForm());
+      imageViews[i] = new ImageView(image);
+      imageViews[i].setFitWidth(40);
+      imageViews[i].setFitHeight(25);
+      menuItemFlags[i].setGraphic(imageViews[i]);
+      menuItemFlags[i].setVisible(false);
     }
    }
 
 
-  /**
-   *
-   */
-  private void setEventFlags()
+/**
+ * 
+ * @throws Exception 
+ */
+  private void setEventFlags() throws Exception
    {
     eventHandlerFlags = setEventHandlerFlags(); // Creo a new EventHandler
     EnglishMenu.setOnAction(eventHandlerFlags);
@@ -233,8 +230,9 @@ public class MainController implements Initializable
   /**
    *
    * @return
+      * @throws java.lang.Exception 
    */
-  private EventHandler<ActionEvent> setEventHandlerFlags()
+  private EventHandler<ActionEvent> setEventHandlerFlags() throws Exception
    {
     return new EventHandler<ActionEvent>()
      {
@@ -242,20 +240,28 @@ public class MainController implements Initializable
       @Override
       public void handle(ActionEvent event)
        {
+        try {
+          MenuItem menuItemitem = (MenuItem) event.getSource();
+          String flag = menuItemitem.getId();
 
-        MenuItem menuItemitem = (MenuItem) event.getSource();
-        String flag = menuItemitem.getId();
-
-        mainScene.setButtonSubtitle(flag);
+          mainScene.setButtonSubtitle(flag);
+        } catch (Exception e) {
+          Message.showException(e);
+        }
        }
 
      };
    }
 
-
-  public void setInvisibleFlagMenu(String[] s, String ss)
+/**
+ * 
+ * @param s
+ * @param ss
+ * @throws Exception 
+ */
+  public void setInvisibleFlagMenu(String[] s, String ss) throws Exception
    {
-    
+
     for (String menuItem : s) {
       menuItemFlags[Arrays.asList(s).indexOf(menuItem)].setVisible(false);
     }
@@ -263,14 +269,16 @@ public class MainController implements Initializable
     menuItemFlags[Arrays.asList(s).indexOf(ss)].setDisable(false);
    }
 
+
   /**
    *
    * @param s Array of String with the names of languages loaded.
    * @param ss String, the audio lenguage
+   * @throws java.lang.Exception
    */
-  public void setVisibleFlagMenu(String[] s, String ss)
+  public void setVisibleFlagMenu(String[] s, String ss) throws Exception
    {
-    
+
     for (String menuItem : s) {
       menuItemFlags[Arrays.asList(s).indexOf(menuItem)].setVisible(true);
     }
@@ -284,8 +292,9 @@ public class MainController implements Initializable
 
   /**
    * Open a SelectFile and seek a json to load the phrases
+   * @throws java.lang.Exception 
    */
-  @FXML private void handleOpenMenu()
+  @FXML private void handleOpenMenu() throws Exception
    {
     mainScene.buttonOpenMenu();
 
@@ -296,8 +305,9 @@ public class MainController implements Initializable
 
   /**
    * When click on the close menu
+   * @throws java.lang.Exception 
    */
-  @FXML private void handleCloseMenu()
+  @FXML private void handleCloseMenu() throws Exception
    {
     mainScene.buttonCloseMenu();
    }
@@ -305,8 +315,10 @@ public class MainController implements Initializable
 
   /**
    * When click on the close menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleExitMenu()
+  @FXML private void handleExitMenu() throws Exception
    {
     mainScene.buttonExitMenu();
 
@@ -317,8 +329,10 @@ public class MainController implements Initializable
 
   /**
    * handle of the login menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleLoginMenu()
+  @FXML private void handleLoginMenu() throws Exception
    {
     mainScene.buttonLoginMenu();
 
@@ -329,8 +343,10 @@ public class MainController implements Initializable
 
   /**
    * handle of the Unlogin menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleUnloginMenu()
+  @FXML private void handleUnloginMenu() throws Exception
    {
     mainScene.buttonUnloginMenu();
 
@@ -341,8 +357,10 @@ public class MainController implements Initializable
 
   /**
    * handle of the login menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleNuevoUsuario()
+  @FXML private void handleNuevoUsuario() throws Exception
    {
     mainScene.buttonRegistro();
 
@@ -353,17 +371,21 @@ public class MainController implements Initializable
 
   /**
    * When click on the close menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleControlesMenu()
+  @FXML private void handleControlesMenu() throws Exception
    {
     mainScene.buttonControlesMenu();
    }
 
 
   /**
-   * handle of the About menu"
+   * handle of the About menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleAboutMenu()
+  @FXML private void handleAboutMenu() throws Exception
    {
     mainScene.buttonAboutMenu();
    }
@@ -371,8 +393,10 @@ public class MainController implements Initializable
 
   /**
    * handle of the Resultados menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleDatabaseMenu()
+  @FXML private void handleDatabaseMenu() throws Exception
    {
     mainScene.buttonDatabaseMenu();
 
@@ -383,8 +407,10 @@ public class MainController implements Initializable
 
   /**
    * handle of the Dashboard menu
+   *
+   * @throws java.lang.Exception
    */
-  @FXML private void handleDashBoardMenu()
+  @FXML private void handleDashBoardMenu() throws Exception
    {
     mainScene.buttonDashBoardMenu();
 
@@ -399,8 +425,9 @@ public class MainController implements Initializable
   /**
    *
    * @return Node, The central node in mainview. Also change the colour of the bottom bar (blue or gray)
+   * @throws java.lang.Exception
    */
-  public Node checkCenter()
+  public Node checkCenter() throws Exception
    {
     centerNode = mainViewBorderPane.getCenter();
     centerString = centerNode.getId();
@@ -425,8 +452,9 @@ public class MainController implements Initializable
   /**
    *
    * @return double, the value of the progressBar
+   * @throws java.lang.Exception
    */
-  public double getProgressBarValue()
+  public double getProgressBarValue() throws Exception
    {
     return mainProgressBarBottom.getProgress();
    }
@@ -435,10 +463,10 @@ public class MainController implements Initializable
   /**
    *
    * @param progressBarValue
+   * @throws java.lang.Exception
    */
-  public void setProgressBarValue(DoubleProperty progressBarValue)
+  public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
-    //Platform.runLater(() -> {
 
     mainProgressBarBottom.setVisible(true);
     mainProgressBarBottom.setProgress(progressBarValue.getValue());
@@ -448,15 +476,15 @@ public class MainController implements Initializable
       fadeLabel.play();
       fadeProgressBar.play();
     }
-    //});
    }
 
 
   /**
    *
    * @return double, the value of the progressBar
+   * @throws java.lang.Exception
    */
-  public String getLabelText()
+  public String getLabelText() throws Exception
    {
     return mainLabelBottom.getText();
    }
@@ -465,12 +493,17 @@ public class MainController implements Initializable
   /**
    *
    * @param text
+   * @throws Exception
    */
-  public void setLabelText(String text)
+  public void setLabelText(String text) throws Exception
    {
     Platform.runLater(() -> {
-      mainLabelBottom.setVisible(true);
-      mainLabelBottom.setText(text);
+      try {
+        mainLabelBottom.setVisible(true);
+        mainLabelBottom.setText(text);
+      } catch (Exception e) {
+        Message.showException(e);
+      }
     });
    }
 
@@ -480,8 +513,9 @@ public class MainController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  public void mainFadeNewIn()
+  public void mainFadeNewIn() throws Exception
    {
     centerNode = checkCenter();
 
@@ -500,8 +534,9 @@ public class MainController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  public void mainFadeOldIn()
+  public void mainFadeOldIn() throws Exception
    {
 
     //mainFadeOldIn.setFromValue(0.0);
@@ -515,8 +550,9 @@ public class MainController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  public void mainFadeOldOut()
+  public void mainFadeOldOut() throws Exception
    {
     centerNode = checkCenter();
     centerNodeOld = centerNode;
@@ -537,7 +573,11 @@ public class MainController implements Initializable
    }
 
 
-  public void fadeLabel()
+  /**
+   *
+   * @throws Exception
+   */
+  public void fadeLabel() throws Exception
    {
     fadeLabel.play();
    }

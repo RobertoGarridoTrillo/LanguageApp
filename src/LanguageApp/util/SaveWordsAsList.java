@@ -20,7 +20,7 @@ import javafx.scene.control.Alert;
 public class SaveWordsAsList {
 
    // pop-up messages
-   Message message = new Message(HandleLocale01.handleLocale01());
+   Message message = new Message(HandleLocale.getResource());
    
    // There is another simil pattern in SortPhrase.java
    Pattern pattern = Pattern.compile(
@@ -67,7 +67,7 @@ public class SaveWordsAsList {
 
          }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "SaveWordsAsList.java / handleSaveAsList()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Mensaje de error", "SaveWordsAsList.java / handleSaveAsList()", e.toString(), e);
       }
       return ws;
    }
@@ -150,7 +150,7 @@ public class SaveWordsAsList {
             }
          }
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "SaveWordsAsList.java / cleanWords()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Mensaje de error", "SaveWordsAsList.java / cleanWords()", e.toString(), e);
       }
       return wordPhrase;
    }

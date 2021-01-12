@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import static LanguageApp.util.HandleLocale.toLocale;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -141,7 +142,7 @@ public class WelcomeController implements Initializable
       });
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "WelcomeController / initialize()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "WelcomeController / initialize()", e.toString(), e);
     }
    }
 
@@ -258,7 +259,7 @@ public class WelcomeController implements Initializable
         }
       });
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "WelcomeController / eventButton()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "WelcomeController / eventButton()", e.toString(), e);
     }
    }
 
@@ -351,10 +352,10 @@ public class WelcomeController implements Initializable
       if (nombre != null) {
         nameUserLabel.setText(nombre);
       } else {
-        nameUserLabel.setText(resources.getString("Usuario no identificado"));
+        nameUserLabel.setText(toLocale("Usuario no identificado"));
       }
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "handlePutName / eventButton()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "handlePutName / eventButton()", e.toString(), e);
     }
    }
 

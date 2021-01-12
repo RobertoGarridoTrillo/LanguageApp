@@ -38,7 +38,7 @@ public class AudioClips
       audioClips.clear();
 
     // pop-up mes-sages
-    Message message = new Message(HandleLocale01.handleLocale01());
+    Message message = new Message(HandleLocale.getResource());
 
     String s;
 
@@ -78,7 +78,7 @@ public class AudioClips
     } catch (Exception e) {
       final String error = audioError;
       Platform.runLater(() -> {
-        message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" +
+        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Falta el audio: \"" +
                 error + "\"", "AudioClips.java / setAudioClip()", e);
       });
     }
@@ -104,7 +104,7 @@ public class AudioClips
     MediaPlayer me;
 
     // pop-up messages
-    Message message = new Message(HandleLocale01.handleLocale01());
+    Message message = new Message(HandleLocale.getResource());
 
     String s;
 
@@ -149,7 +149,7 @@ public class AudioClips
     } catch (Exception e) {
       final String error = audioError;
       Platform.runLater(() -> {
-        message.message(Alert.AlertType.ERROR, "Error message", "Falta el audio: \"" +
+        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Falta el audio: \"" +
                 error + "\"", "AudioClips.java / setAudioClip()", e);
       });
     }

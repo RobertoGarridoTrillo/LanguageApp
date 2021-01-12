@@ -4,6 +4,7 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import LanguageApp.util.Directorio;
+import static LanguageApp.util.HandleLocale.toLocale;
 import LanguageApp.util.Message;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -99,8 +100,9 @@ public class FormController implements Initializable
   /**
    *
    * @param aThis
+   * @throws java.lang.Exception
    */
-  public void setMainScene(MainScene aThis)
+  public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
@@ -117,6 +119,7 @@ public class FormController implements Initializable
     try {
 
       this.resources = resources;
+      message = new Message(mainStage, resources);
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
@@ -130,9 +133,7 @@ public class FormController implements Initializable
         newUserButtonLogin
       };
 
-      // Create the locale for the pop up messages
-      /*/*HandleLocale01.handleLocale01();*/
-      message = new Message(resources);
+
 
       // Setting the current node
       currentNode = usuarioTextFieldLogin;
@@ -165,7 +166,7 @@ public class FormController implements Initializable
         loginButtonLogin.setDisable(progressBarValue.lessThan(1).get());
       });
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "FormController / initialize()", e.toString(), e);
+      Message.showException(e);
     }
    }
 
@@ -175,8 +176,9 @@ public class FormController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  private void setJFXTextField()
+  private void setJFXTextField() throws Exception
    {
     eventButton(usuarioTextFieldLogin, 5, 1);
     eventButton(passwordTextFieldLogin, 0, 2);
@@ -189,8 +191,9 @@ public class FormController implements Initializable
 
   /**
    *
+   * @throws java.lang.Exception
    */
-  public void setText()
+  public void setText() throws Exception
    {
     usuarioTextFieldLogin.setText("");
     passwordTextFieldLogin.setText("");
@@ -210,24 +213,29 @@ public class FormController implements Initializable
    * @param right the right node
    * @param left the left node
    * @param button The play button
+   * @throws Exception
    */
-  private void eventButton(Node n, int up, int down)
+  private void eventButton(Node n, int up, int down) throws Exception
    {
-    try {
-
-      // setting onFocus (USe of Tab)
-      n.focusedProperty().addListener((o, oldVal, newVal) ->
-      {
+    // setting onFocus (USe of Tab)
+    n.focusedProperty().addListener((o, oldVal, newVal) ->
+    {
+      try {
         handleEraseError();
         setBorder(n);
-      });
+      } catch (Exception e) {
+        Message.showException(e);
+      }
+    });
 
-      // setting onKey
-      n.setOnKeyPressed(new EventHandler<KeyEvent>()
+    // setting onKey
+    n.setOnKeyPressed(new EventHandler<KeyEvent>()
+     {
+      @Override
+      public void handle(KeyEvent ke)
        {
-        @Override
-        public void handle(KeyEvent ke)
-         {
+        try {
+
           handleEraseError();
 
           int i = -1;
@@ -283,12 +291,16 @@ public class FormController implements Initializable
             //oldNode = n;
 
           }
-         }
+        } catch (Exception e) {
+          Message.showException(e);
+        }
+       }
 
-       });
+     });
 
-      // setting onClick
-      n.setOnMouseClicked((MouseEvent) -> {
+    // setting onClick
+    n.setOnMouseClicked((MouseEvent) -> {
+      try {
         if (n.isDisable()) return;
 
         // HBoxError disabled
@@ -315,10 +327,11 @@ public class FormController implements Initializable
           default:
             break;
         }
-      });
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "FormController / eventButton()", e.toString(), e);
-    }
+      } catch (Exception e) {
+        Message.showException(e);
+      }
+
+    });
    }
 
   //</editor-fold>
@@ -327,8 +340,9 @@ public class FormController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  private void handleEraseError()
+  private void handleEraseError() throws Exception
    {
     errorUserLabel.setManaged(false);
     errorUserLabel.setText(null);
@@ -344,8 +358,9 @@ public class FormController implements Initializable
    * Setting the border (cursor) of the node
    *
    * @param n the node to put the border
+   * @throws Exception
    */
-  private void setBorder(Node n)
+  private void setBorder(Node n) throws Exception
    {
     HashMap<Node, Node> m = new HashMap<>();
     m.put(usuarioTextFieldLogin, HBoxUsuarioLogin);
@@ -355,62 +370,10 @@ public class FormController implements Initializable
     m.put(recuperarButtonLogin, HBoxRecuperarLogin);
     m.put(newUserButtonLogin, HBoxNuevoUsuarioLogin);
 
-    try {
-      eraserBorder();
-      m.get(n).getStyleClass().add("borderLoginVisible");
-      /*/*HboxPasswordLogin.getStyleClass().add("borderLoginVisible"); */
-      oldNode = currentNode;
-      currentNode = n;
-
-      /*/*
-      if (n.equals(usuarioTextFieldLogin)) {
-        eraserBorder();
-        HBoxUsuarioLogin.getStyleClass().add("borderLoginVisible");
-        oldNode = currentNode;
-        currentNode = n;
-        return;
-      }
-
-    
-
-      if (n.equals(loginButtonLogin)) {
-        eraserBorder();
-        HBoxLoginLogin.getStyleClass().add("borderLoginVisible");
-        oldNode = currentNode;
-        currentNode = n;
-        return;
-      }
-
-      if (n.equals(activoCheckBoxLogin)) {
-        eraserBorder();
-        HBoxActivoLogin.getStyleClass().add("borderLoginVisible");
-        oldNode = currentNode;
-        currentNode = n;
-        return;
-      }
-
-      if (n.equals(recuperarButtonLogin)) {
-        eraserBorder();
-        HBoxRecuperarLogin.getStyleClass().add("borderLoginVisible");
-        oldNode = currentNode;
-        currentNode = n;
-        return;
-      }
-      if (n.equals(newUserButtonLogin)) {
-        eraserBorder();
-        HBoxNuevoUsuarioLogin.getStyleClass().add("borderLoginVisible");
-        oldNode = currentNode;
-        currentNode = n;
-        return;
-      }
-      eraserBorder();
-      n.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n; */
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "FormController / setBorder()", e.toString(), e);
-    }
-
+    eraserBorder();
+    m.get(n).getStyleClass().add("borderLoginVisible");
+    oldNode = currentNode;
+    currentNode = n;
    }
 
   //</editor-fold>
@@ -418,9 +381,12 @@ public class FormController implements Initializable
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
 
   /**
+   *
    * Helper to setting Color Border
+   *
+   * @throws Exception
    */
-  private void eraserBorder()
+  private void eraserBorder() throws Exception
    {
     currentNode.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
@@ -446,8 +412,9 @@ public class FormController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  private void handleForget()
+  private void handleForget() throws Exception
    {
     mainScene.handleForgetUsuario();
    }
@@ -457,23 +424,20 @@ public class FormController implements Initializable
    *
    * @param n
    * @return
+   * @throws Exception
    */
-  private int handleValidation(Node n)
+  private int handleValidation(Node n) throws Exception
    {
-    try {
-      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
 
-      handleValidation02(n, true);
-      if (registro[indNode] == false) return indNode;
+    handleValidation02(n, true);
+    if (registro[indNode] == false) return indNode;
 
-      for (int i = 0; i < fieldsNumber; i++) {
-        if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i], false);
+    for (int i = 0; i < fieldsNumber; i++) {
+      if (i != Arrays.asList(fieldsChecked)
+              .indexOf(n)) handleValidation02(fieldsChecked[i], false);
 
-        if (registro[i] == false) return i;
-      }
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "FormController / handleValidation()", e.toString(), e);
+      if (registro[i] == false) return i;
     }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
@@ -482,10 +446,10 @@ public class FormController implements Initializable
   /**
    *
    * @param n
-   * @param indNode
    * @param show
+   * @throws Exception
    */
-  private void handleValidation02(Node n, boolean show)
+  private void handleValidation02(Node n, boolean show) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
     String instance = "";
@@ -535,7 +499,7 @@ public class FormController implements Initializable
       if (show) {
         Label tempLabel = (Label) errorLabelMap.get(indNode);
         tempLabel.setManaged(true);
-        tempLabel.setText(resources.getString(text));
+        tempLabel.setText(toLocale(text));
       }
     }
    }
@@ -543,90 +507,86 @@ public class FormController implements Initializable
 
   /**
    *
+   * @throws Exception
    */
-  private void handlelogin()
+  private void handlelogin() throws Exception
    {
-    try {
+    handleValidation(usuarioTextFieldLogin);
+    handleValidation(passwordTextFieldLogin);
 
-      handleValidation(usuarioTextFieldLogin);
-      handleValidation(passwordTextFieldLogin);
+    boolean activoBoolean = activoCheckBoxLogin.isSelected();
 
-      boolean activoBoolean = activoCheckBoxLogin.isSelected();
+    // If user and password are valid
+    if (registro[0] == true && registro[1] == true) {
 
-      // If user and password are valid
-      if (registro[0] == true && registro[1] == true) {
+      // Check if that user exits (One or more  exits, 0 doesn't exit)
+      Pair pair = mainScene.handleCheckUser(fieldString[0], fieldString[1]);
 
-        // Check if that user exits (One or more  exits, 0 doesn't exit)
-        Pair pair = mainScene.handleCheckUser(fieldString[0], fieldString[1]);
+      boolean entrar = false;
+      int usuario_id = (Integer) pair.getKey();
+      String usuario_nombre = (String) pair.getValue();
 
-        boolean entrar = false;
-        int usuario_id = (Integer) pair.getKey();
-        String usuario_nombre = (String) pair.getValue();
+      // Put the number of user, just in case there was not active user
+      // Check if the new user and (assumig there was) the active user of the data base were the
+      if (usuario_id > 0) {
+        // id of the new user
+        mainScene.setUsuario_id(usuario_id);
+        mainScene.setUsuario_nombre(usuario_nombre);
 
-        // Put the number of user, just in case there was not active user
-        // Check if the new user and (assumig there was) the active user of the data base were the
-        if (usuario_id > 0) {
-          // id of the new user
-          mainScene.setUsuario_id(usuario_id);
-          mainScene.setUsuario_nombre(usuario_nombre);
+        // id of the old user active
+        int old_id_active = mainScene.handleCheckNombre().getKey();
+        int usuario_id_last = (old_id_active != 0) ? old_id_active : mainScene.getUsuario_ultimo();
 
-          // id of the old user active
-          int old_id_active = mainScene.handleCheckNombre().getKey();
-          int usuario_id_last = (old_id_active != 0) ? old_id_active : mainScene.getUsuario_ultimo();
-          
-          // Si empiezo la aplicacion y todos los usuarias estan inactivos
-          if (usuario_id_last == 0) {
-            usuario_id_last = usuario_id;
-            mainScene.handleEntrar(activoBoolean,
-                    !mainScene.handleCheckMateriaActivo(usuario_id_last).getKey());
-          } else {
-            
-            Pair<Boolean, String> mate_act_last = mainScene.handleCheckMateriaActivo(usuario_id_last);
-            Pair<Boolean, String> mate_act_new = mainScene.handleCheckMateriaActivo(usuario_id);
-
-
-            Directorio dire = new Directorio();
-            dire.getLastDirectory();
-
-            if (usuario_id_last != usuario_id) {
-
-              if (!mate_act_last.getKey() && !mate_act_new.getKey()) {
-                mainScene.handleCloseMenu("handlelogin");
-                entrar = true;
-
-              } else if (!mate_act_last.getKey() && mate_act_new.getKey()) {
-                entrar = false;
-
-              } else if (mate_act_last.getKey() && !mate_act_new.getKey()) {
-                mainScene.handleCloseMenu("handlelogin");
-                entrar = true;
-
-              } else if (mate_act_last.getKey() && mate_act_new.getKey()) {
-
-                entrar = mate_act_last.getValue().equals(mate_act_new.getValue());
-              }
-            }
-            if (usuario_id_last == usuario_id) {
-              entrar = true;
-            }
-            mainScene.handleEntrar(activoBoolean, entrar);
-          }
+        // Si empiezo la aplicacion y todos los usuarias estan inactivos
+        if (usuario_id_last == 0) {
+          usuario_id_last = usuario_id;
+          mainScene.handleEntrar(activoBoolean,
+                  !mainScene.handleCheckMateriaActivo(usuario_id_last).getKey());
         } else {
-          errorUserLabel.setManaged(true);
-          errorUserLabel.setText(resources.getString("El usuario no existe"));
+
+          Pair<Boolean, String> mate_act_last = mainScene.handleCheckMateriaActivo(usuario_id_last);
+          Pair<Boolean, String> mate_act_new = mainScene.handleCheckMateriaActivo(usuario_id);
+
+
+          Directorio dire = new Directorio();
+          dire.getLastDirectory();
+
+          if (usuario_id_last != usuario_id) {
+
+            if (!mate_act_last.getKey() && !mate_act_new.getKey()) {
+              mainScene.handleCloseMenu("handlelogin");
+              entrar = true;
+
+            } else if (!mate_act_last.getKey() && mate_act_new.getKey()) {
+              entrar = false;
+
+            } else if (mate_act_last.getKey() && !mate_act_new.getKey()) {
+              mainScene.handleCloseMenu("handlelogin");
+              entrar = true;
+
+            } else if (mate_act_last.getKey() && mate_act_new.getKey()) {
+
+              entrar = mate_act_last.getValue().equals(mate_act_new.getValue());
+            }
+          }
+          if (usuario_id_last == usuario_id) {
+            entrar = true;
+          }
+          mainScene.handleEntrar(activoBoolean, entrar);
         }
+      } else {
+        errorUserLabel.setManaged(true);
+        errorUserLabel.setText(toLocale("El usuario no existe"));
       }
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message",
-              "FormController / handlelogin()", e.toString(), e);
     }
    }
 
 
   /**
    *
+   * @throws Exception
    */
-  private void handleNuevoUsuario()
+  private void handleNuevoUsuario() throws Exception
    {
     mainScene.buttonRegistro();
 
@@ -636,8 +596,9 @@ public class FormController implements Initializable
   /**
    *
    * @param progressBarValue
+   * @throws java.lang.Exception
    */
-  public void setProgressBarValue(DoubleProperty progressBarValue)
+  public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
     this.progressBarValue.setValue(progressBarValue.getValue());
    }

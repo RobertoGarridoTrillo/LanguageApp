@@ -20,6 +20,8 @@
   -fx-font-weight: bold;
   -fx-font-style: normal;
   -fx-text-fill: white;
+  -fx-pref-width: 1000px;
+
 }
 
 .dialog-pane .label , 

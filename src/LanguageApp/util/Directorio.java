@@ -65,7 +65,7 @@ public class Directorio
     initial = new Initial();
 
     // pop-up messages
-    message = new Message(HandleLocale01.handleLocale01());
+    message = new Message(HandleLocale.getResource());
 
     // The path is an absolute path (retarive to the initial instalation)    
     path = System.getProperty("user.dir");
@@ -145,14 +145,14 @@ public class Directorio
       pstmt.close();
       conn.close();
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkIni()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "Directorio / checkIni()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkIni()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Directorio / checkIni()", e.toString(), e);
       }
     }
     return false;
@@ -192,14 +192,14 @@ public class Directorio
       conn.close();
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "MainScene / handleEntrar()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "MainScene / handleEntrar()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Mensaje de error", "MainScene / handleEntrar()", e.toString(), e);
       }
     }
    }
@@ -317,14 +317,14 @@ public class Directorio
         conn.close();
       }
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Directorio / checkAndSetLastDirectory()", e.toString(), e);
       }
     }
    }
@@ -384,15 +384,17 @@ public class Directorio
       conn.close();
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message",
+      Platform.runLater(() -> {
+      message.message(Alert.AlertType.ERROR, "Mensaje de error",
               "Directorio / checkAndSetIdioma()", e.toString(), e);
+      });
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message",
+        message.message(Alert.AlertType.ERROR, "Mensaje de error",
                 "Directorio / checkAndSetLastDirectory()", e.toString(), e);
       }
     }
@@ -484,7 +486,7 @@ public class Directorio
       conn.setAutoCommit(false);
       Platform.runLater(() -> {
         message.message(Alert.AlertType.INFORMATION,
-                "Error message",
+                "Mensaje de error",
                 "Archivos multimedia movidos o perdidos",
                 "", null);
         Platform.exit();
@@ -507,14 +509,14 @@ public class Directorio
       pstmt.close();
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "Directorio / delete()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "Directorio / delete()", e.toString(), e);
     } finally {
       try {
         if (conn != null) {
           conn.close();
         }
       } catch (Exception e) {
-        message.message(Alert.AlertType.ERROR, "Error message", "Directorio / delete()", e.toString(), e);
+        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Directorio / delete()", e.toString(), e);
       }
     }
    }
@@ -539,7 +541,7 @@ public class Directorio
       // if doesn't exit it's create the database
       Class.forName("org.sqlite.JDBC");
     } catch (ClassNotFoundException | SQLException e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "DataBaseController / connect()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "DataBaseController / connect()", e.toString(), e);
     }
     return conn;
    }

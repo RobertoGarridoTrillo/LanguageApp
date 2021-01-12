@@ -3,6 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
+import static LanguageApp.util.HandleLocale.toLocale;
 import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
@@ -133,7 +134,7 @@ public class RegistrationController implements Initializable
 
       // Create the locale for the pop up messages
       /*/*HandleLocale01.handleLocale01();*/
-      message = new Message(resources);
+      message = new Message(mainStage,resources);
 
       node = new Node[]{
         usuarioTextFieldRegistro,
@@ -162,11 +163,11 @@ public class RegistrationController implements Initializable
       // Setting the ConboBox options
       preguntaComboBoxRegistro.getItems().removeAll(preguntaComboBoxRegistro.getItems());
       preguntaComboBoxRegistro.getItems().addAll(
-              resources.getString(preguntasRegistro.get(0)),
-              resources.getString(preguntasRegistro.get(1)),
-              resources.getString(preguntasRegistro.get(2)),
-              resources.getString(preguntasRegistro.get(3)),
-              resources.getString(preguntasRegistro.get(4)));
+              toLocale(preguntasRegistro.get(0)),
+              toLocale(preguntasRegistro.get(1)),
+              toLocale(preguntasRegistro.get(2)),
+              toLocale(preguntasRegistro.get(3)),
+              toLocale(preguntasRegistro.get(4)));
       // preguntaComboBoxRegistro.getSelectionModel().select("Option B");
 
       // HBoxError disabled
@@ -190,7 +191,7 @@ public class RegistrationController implements Initializable
       });
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / initialize()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / initialize()", e.toString(), e);
     }
    }
 
@@ -344,7 +345,7 @@ public class RegistrationController implements Initializable
       }
       );
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / eventButton()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / eventButton()", e.toString(), e);
     }
    }
 
@@ -444,7 +445,7 @@ public class RegistrationController implements Initializable
     oldNode = currentNode;
     currentNode = n; */
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "RegistratioController / setBorder()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistratioController / setBorder()", e.toString(), e);
     }
 
    }
@@ -501,7 +502,7 @@ public class RegistrationController implements Initializable
       }
 
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / handleValidation()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / handleValidation()", e.toString(), e);
     }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
@@ -565,11 +566,11 @@ public class RegistrationController implements Initializable
         if (show) {
           Label tempLabel = (Label) errorLabelMap.get(indNode);
           tempLabel.setManaged(true);
-          tempLabel.setText(resources.getString(text));
+          tempLabel.setText(toLocale(text));
         }
       }
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Error message", "RegistrationController / handleValidation02()", e.toString(), e);
+      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / handleValidation02()", e.toString(), e);
     }
    }
 
@@ -596,7 +597,7 @@ public class RegistrationController implements Initializable
 
       if (userExist != 0) {
         errorUserLabel.setManaged(true);
-        errorUserLabel.setText(resources.getString("El usuario ya existe"));
+        errorUserLabel.setText(toLocale("El usuario ya existe"));
       } else {
         mainScene.handleCloseMenu("RegistrationController.handleRegistro");
         mainScene.handleClose();

@@ -12,7 +12,7 @@ import javafx.util.Duration;
 public class FormatTime {
 
    // pop-up messages
-   Message message = new Message(HandleLocale01.handleLocale01());
+   Message message = new Message(HandleLocale.getResource());
 
    /**
     * Format the Duration object elapsedToSeconds
@@ -30,7 +30,7 @@ public class FormatTime {
          intDuration = (int) floor(duration.toSeconds());
 
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "FormatTime / formatting()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Mensaje de error", "FormatTime / formatting()", e.toString(), e);
       }
       return format("%d:%02d:%02d %d:%02d:%02d", intElapsed / 3600, (intElapsed % 3600) / 60,
               (intElapsed % 60), intDuration / 3600, (intDuration % 3600) / 60, (intDuration % 60));

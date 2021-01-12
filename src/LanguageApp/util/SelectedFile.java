@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 public class SelectedFile {
 
    // pop-up messages
-   Message message = new Message(HandleLocale01.handleLocale01());
+   Message message = new Message(HandleLocale.getResource());
 
    /**
     * Show a filechooser
@@ -51,7 +51,7 @@ public class SelectedFile {
          file = fch.showOpenDialog(mainStage);
 
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "\nSelectedFile.java / Filechooser()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Mensaje de error", "\nSelectedFile.java / Filechooser()", e.toString(), e);
       }
       return file;
    }

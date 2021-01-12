@@ -19,7 +19,7 @@ import javafx.scene.control.Alert;
 public class GetJson {
 
    // pop-up messages
-   Message message = new Message(HandleLocale01.handleLocale01());
+   Message message = new Message(HandleLocale.getResource());
 
    /**
     * Read a json file and return an Array of Items object
@@ -51,7 +51,7 @@ public class GetJson {
          }
 
       } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Error message", "GetJson.java / getJson()", e.toString(), e);
+         message.message(Alert.AlertType.ERROR, "Mensaje de error", "GetJson.java / getJson()", e.toString(), e);
       }
       return is;
    }
