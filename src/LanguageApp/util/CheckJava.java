@@ -37,7 +37,8 @@ public class CheckJava {
       value = null;
 
       Process keyReader = Runtime.getRuntime().exec(command);
-      BufferedReader br = new BufferedReader(new InputStreamReader(keyReader.getInputStream()));
+      BufferedReader br = new BufferedReader(
+              new InputStreamReader(keyReader.getInputStream()));
 
       StringBuilder builder = new StringBuilder();
       while ((temp = br.readLine()) != null) {

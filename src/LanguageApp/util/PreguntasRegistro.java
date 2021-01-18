@@ -25,8 +25,10 @@ public class PreguntasRegistro {
    /**
     * 
     * @return 
+   * @throws java.lang.Exception 
     */
-   public static HashMap preguntas(){
+   public static HashMap preguntas() throws Exception
+    {
       return preguntasRegistro;
    }
 }

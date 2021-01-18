@@ -20,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
@@ -35,10 +36,12 @@ public class Message
 
   // Reference to the main Stage from the main Scene
   private static Stage mainStage;
+  // Reference to the main Scene
+  private static MainScene mainScene;
 
   // For the bounle of idioms
   private static ResourceBundle resources;
-
+  
   // For the list of classes of the app
   private static String[] classesApp;
 
@@ -52,9 +55,7 @@ public class Message
   private static final String KEY_JAVA_DEVELOPMENT = "SOFTWARE\\JavaSoft\\Java Development Kit";
   private static final String SUBKEY_LANGUAGEAPP = "InstallPath";
   private static final String SUBKEY_JAVA = "CurrentVersion";
-
   //</editor-fold>
-
 
   //<editor-fold defaultstate="collapsed" desc="Constructors">
 
@@ -64,22 +65,35 @@ public class Message
    * @param resources
    * @throws java.lang.Exception
    */
-  public Message(Stage mainStage, ResourceBundle resources) throws Exception
+  public Message(ResourceBundle resources) throws Exception
    {
-    
-    this.mainStage = mainStage;
+
+    // References to mainStage
+    this.mainStage = MainScene.getMainStage();
+
     this.resources = resources;
-    
+
     handleCreateClassesList();
 
     handleCheckJava();
-    
+
+   }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
+  /**
+   *
+   * @param aThis
+   * @throws java.lang.Exception
+   */
+  public void setMainScene(MainScene aThis) throws Exception
+   {
+    mainScene = aThis;
    }
 
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Check if Java exists">
-  
   /**
    *
    */
@@ -89,7 +103,6 @@ public class Message
     //<editor-fold defaultstate="collapsed" desc="FileNameFilter and FileFilter">
 
     // The filter used to get all the classes of the app
-
     FilenameFilter nameFilter = new FilenameFilter()
      {
       @Override
@@ -113,7 +126,6 @@ public class Message
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="make a array with the classes of the app">
-
     // The path is an absolute path (retarive to the initial instalation)    
     String pathApp = System.getProperty("user.dir");
     // Only for testing in IDE
@@ -141,7 +153,7 @@ public class Message
 
         String[] ss = dirApp.list(nameFilter);
         for (int i = 0; i < ss.length; i++) {
-          ss[i] = packet.concat( ss[i].substring(0, ss[i].lastIndexOf(".java")) );
+          ss[i] = packet.concat(ss[i].substring(0, ss[i].lastIndexOf(".java")));
         }
         al.addAll(Arrays.asList(ss));
 
@@ -149,9 +161,9 @@ public class Message
       // The java classese of the application
       classesApp = al.toArray(new String[al.size()]);
     }
-    
+
     //</editor-fold>
-    
+
    }
 
 
@@ -210,8 +222,7 @@ public class Message
                   toLocale("Java no encontrado"),
                   toLocale("Mensaje de error"),
                   JOptionPane.ERROR_MESSAGE);
-          Platform.exit();
-          System.exit(0);
+          exit();
         }
       }
     }
@@ -245,10 +256,23 @@ public class Message
     } catch (Exception ex) {
       // show message, if the exception is in message.java the exit  
       if (!showMessage(header, body, ex)) {
-        Platform.exit();
-        System.exit(0);
+        try {
+          mainScene.shutdown();
+          exit();
+        } catch (Exception e1) {          
+          exit();
+        }
       }
     }
+   }
+
+  /**
+   * 
+   */
+  private static void exit()
+   {
+    Platform.exit();
+    System.exit(0);
    }
 
 
@@ -282,7 +306,7 @@ public class Message
       eMessage = toLocale("El origen es inexistente o desconocido");
 
     header = toLocale("Error") + ": " + e.getClass().getSimpleName() +
-            "  --  " + eMessage;
+            "   " + eMessage;
 
     return header;
 
@@ -332,9 +356,9 @@ public class Message
       }
       if (b) {
         if (body == null) body = "";
-        body += toLocale("Clase") + "-> " + className + " -- " +
-                toLocale("Archivo") + "-> " + fileName + " -- " +
-                toLocale("Metodo") + "-> " + methodName + "()" + " -- " +
+        body += toLocale("Clase") + "-> " + className + " " +
+                toLocale("Archivo") + "-> " + fileName + " " +
+                toLocale("Metodo") + "-> " + methodName + "()" + " " +
                 toLocale("Numero de linea") + "-> " + lineNumber + "\n\n";
       }
     }
@@ -416,8 +440,7 @@ public class Message
    * @return
    * @throws java.lang.Exception
    */
-  public static boolean message(
-          Alert.AlertType alertType, String title,
+  public static boolean message(Alert.AlertType alertType, String title,
           String header, String body, Exception e) throws Exception
    {
 
@@ -426,7 +449,7 @@ public class Message
 
     Alert alert = new Alert(alertType);
 
-    alert.setResizable(true);
+    alert.setResizable(false);
     alert.initModality(Modality.APPLICATION_MODAL);
 
     if (!mainStage.getModality().equals(Modality.NONE))
@@ -442,7 +465,12 @@ public class Message
     } else {
       alert.getDialogPane().setHeaderText(header);
     }
-
+    double largo = header.length();
+    for (String s : body.split("\\r\\n|\\n|\\r")) {
+      if (s.length() > largo) largo = s.length();
+    }
+    alert.getDialogPane().setPrefWidth(largo * 8.5);
+    alert.getDialogPane().setMinWidth(500);
     if (body.equals("Autor: Roberto Garrido Trillo")) {
       alert.getDialogPane().setContentText(toLocale(body));
     } else {
@@ -498,14 +526,13 @@ public class Message
    * @throws HeadlessException
    */
   private static boolean message(Exception e)
-          
    {
     String string = getHeader(e) + "\n";
 
     for (StackTraceElement ste : e.getStackTrace()) {
 
-      if (ste != null) string += ste.getFileName() + "  --  " +
-                ste.getMethodName() + "()  --  " +
+      if (ste != null) string += ste.getFileName() + "   " +
+                ste.getMethodName() + "()   " +
                 ste.getLineNumber() + "\n";
       else string += toLocale("El origen es inexistente o desconocido") + "\n";
 

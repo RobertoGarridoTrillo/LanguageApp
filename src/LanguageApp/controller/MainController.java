@@ -3,7 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -71,9 +71,6 @@ public class MainController implements Initializable
   @FXML private MenuItem controlesMenu;
   @FXML private MenuItem aboutMenu;
 
-  // pop-up messages
-  Message message;
-
   // Reference to the main Stage from the main Scene
   private Stage mainStage;
 
@@ -116,7 +113,6 @@ public class MainController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-
   /**
    *
    * @param aThis
@@ -131,14 +127,13 @@ public class MainController implements Initializable
   //<editor-fold defaultstate="collapsed" desc="Initialize">
 
   /**
-   * When the method is initialize 
+   * When the method is initialize
    */
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
     try {
       this.resources = resources;
-      message = new Message(mainStage, resources);
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
@@ -152,14 +147,13 @@ public class MainController implements Initializable
       mainLabelBottom.setText(labelText);
       mainLabelBottom.setVisible(false);
 
-      // Create the locale for the pop up messages
-
       // Setting the flags of the menu item
       setImageFlags();
       setEventFlags();
 
       // Effect fade
-      fadeProgressBar = new FadeTransition(Duration.millis(2000), mainProgressBarBottom);
+      fadeProgressBar = new FadeTransition(Duration.millis(2000),
+              mainProgressBarBottom);
       fadeLabel = new FadeTransition(Duration.millis(2000), mainLabelBottom);
       fadeProgressBar.setFromValue(1.0);
       fadeProgressBar.setToValue(0.0);
@@ -181,17 +175,17 @@ public class MainController implements Initializable
         menuBar.setDisable(progressBarValue.lessThan(1).get());
       });
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
 
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Setting menu-item flags">
-
   /**
    * Setting the image int the flags
-      * @throws java.lang.Exception 
+   *
+   * @throws java.lang.Exception
    */
   private void setImageFlags() throws Exception
    {
@@ -212,10 +206,10 @@ public class MainController implements Initializable
    }
 
 
-/**
- * 
- * @throws Exception 
- */
+  /**
+   *
+   * @throws Exception
+   */
   private void setEventFlags() throws Exception
    {
     eventHandlerFlags = setEventHandlerFlags(); // Creo a new EventHandler
@@ -229,8 +223,7 @@ public class MainController implements Initializable
 
   /**
    *
-   * @return
-      * @throws java.lang.Exception 
+   * @return @throws java.lang.Exception
    */
   private EventHandler<ActionEvent> setEventHandlerFlags() throws Exception
    {
@@ -246,19 +239,19 @@ public class MainController implements Initializable
 
           mainScene.setButtonSubtitle(flag);
         } catch (Exception e) {
-          Message.showException(e);
+          showException(e);
         }
        }
 
      };
    }
 
-/**
- * 
- * @param s
- * @param ss
- * @throws Exception 
- */
+  /**
+   *
+   * @param s
+   * @param ss
+   * @throws Exception
+   */
   public void setInvisibleFlagMenu(String[] s, String ss) throws Exception
    {
 
@@ -289,139 +282,160 @@ public class MainController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Buttond Menu">
-
   /**
    * Open a SelectFile and seek a json to load the phrases
-   * @throws java.lang.Exception 
+   *
    */
-  @FXML private void handleOpenMenu() throws Exception
+  @FXML private void handleOpenMenu()
    {
-    mainScene.buttonOpenMenu();
+    try {
+      mainScene.buttonOpenMenu();
+      // change the color of the bottom depens its place
+      checkCenter();
+    } catch (Exception e) {
+      showException(e);
+    }
 
-    // change the color of the bottom depens its place
-    checkCenter();
-   }
-
-
-  /**
-   * When click on the close menu
-   * @throws java.lang.Exception 
-   */
-  @FXML private void handleCloseMenu() throws Exception
-   {
-    mainScene.buttonCloseMenu();
    }
 
 
   /**
    * When click on the close menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleExitMenu() throws Exception
+  @FXML private void handleCloseMenu()
    {
-    mainScene.buttonExitMenu();
+    try {
+      mainScene.buttonCloseMenu();
+    } catch (Exception e) {
+      showException(e);
+    }
+   }
 
-    // change the color of the bottom depens its place
-    checkCenter();
+
+  /**
+   * When click on the close menu
+   *
+   */
+  @FXML private void handleExitMenu()
+   {
+    try {
+      mainScene.buttonExitMenu();
+      // change the color of the bottom depens its place
+      checkCenter();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * handle of the login menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleLoginMenu() throws Exception
+  @FXML private void handleLoginMenu()
    {
-    mainScene.buttonLoginMenu();
-
-    // change the color of the bottom depens its place
-    checkCenter();
+    try {
+      mainScene.buttonLoginMenu();
+      // change the color of the bottom depens its place
+      checkCenter();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * handle of the Unlogin menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleUnloginMenu() throws Exception
+  @FXML private void handleUnloginMenu()
    {
-    mainScene.buttonUnloginMenu();
-
-    // change the color of the bottom depens its place
-    /*/*checkCenter(); */
+    try {
+      mainScene.buttonUnloginMenu();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * handle of the login menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleNuevoUsuario() throws Exception
+  @FXML private void handleNuevoUsuario()
    {
-    mainScene.buttonRegistro();
-
-    // change the color of the bottom depens its place
-    checkCenter();
+    try {
+      mainScene.buttonRegistro();
+      // change the color of the bottom depens its place
+      checkCenter();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * When click on the close menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleControlesMenu() throws Exception
+  @FXML private void handleControlesMenu()
    {
-    mainScene.buttonControlesMenu();
+    try {
+      mainScene.buttonControlesMenu();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * handle of the About menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleAboutMenu() throws Exception
+  @FXML private void handleAboutMenu()
    {
-    mainScene.buttonAboutMenu();
+    try {
+      mainScene.buttonAboutMenu();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * handle of the Resultados menu
-   *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleDatabaseMenu() throws Exception
+  @FXML private void handleDatabaseMenu()
    {
-    mainScene.buttonDatabaseMenu();
-
-    // change the color of the bottom depens its place
-    checkCenter();
+    try {
+      mainScene.buttonDatabaseMenu();
+      // change the color of the bottom depens its place
+      checkCenter();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
 
   /**
    * handle of the Dashboard menu
    *
-   * @throws java.lang.Exception
    */
-  @FXML private void handleDashBoardMenu() throws Exception
+  @FXML private void handleDashBoardMenu()
    {
-    mainScene.buttonDashBoardMenu();
-
-    // change the color of the bottom depens its place
-    checkCenter();
+    try {
+      mainScene.buttonDashBoardMenu();
+      // change the color of the bottom depens its place
+      checkCenter();
+    } catch (Exception e) {
+      showException(e);
+    }
    }
 
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="checkCenter">
-
   /**
    *
    * @return Node, The central node in mainview. Also change the colour of the bottom bar (blue or gray)
@@ -448,7 +462,6 @@ public class MainController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
-
   /**
    *
    * @return double, the value of the progressBar
@@ -502,7 +515,7 @@ public class MainController implements Initializable
         mainLabelBottom.setVisible(true);
         mainLabelBottom.setText(text);
       } catch (Exception e) {
-        Message.showException(e);
+        showException(e);
       }
     });
    }
@@ -510,7 +523,6 @@ public class MainController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Fade in / out openMenu and Label-progressBar">
-
   /**
    *
    * @throws Exception
@@ -590,5 +602,4 @@ public class MainController implements Initializable
 
 
   //</editor-fold>  
-
  }

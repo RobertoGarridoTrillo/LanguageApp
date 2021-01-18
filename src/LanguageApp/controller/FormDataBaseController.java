@@ -3,7 +3,8 @@ package LanguageApp.controller;
 import LanguageApp.main.MainScene;
 import LanguageApp.model.Usuario;
 import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.message;
+import static LanguageApp.util.Message.showException;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
@@ -76,9 +77,6 @@ public class FormDataBaseController implements Initializable
 
   private Usuario user;
 
-  // pop-up messages
-  Message message;
-
   // The nodes of the view
   private Node[] node;
   private HashMap<Integer, Node> errorLabelMap;
@@ -111,6 +109,7 @@ public class FormDataBaseController implements Initializable
   /**
    *
    * @param aThis
+   * @throws java.lang.Exception
    */
   public void setMainScene(MainScene aThis) throws Exception
    {
@@ -132,7 +131,6 @@ public class FormDataBaseController implements Initializable
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
-      message = new Message(mainStage, resources);
 
       node = new Node[]{
         usuarioTextFieldFormDataBase,
@@ -185,14 +183,13 @@ public class FormDataBaseController implements Initializable
       Arrays.fill(registro, false);
 
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
 
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-
   /**
    *
    */
@@ -212,9 +209,7 @@ public class FormDataBaseController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
-
   //<editor-fold defaultstate="collapsed" desc="Button">
-
   /**
    * Helper to the play button event
    *
@@ -226,37 +221,38 @@ public class FormDataBaseController implements Initializable
    */
   private void eventButton(Node n, int up, int right, int down, int left) throws Exception
    {
-    try {
+    // setting onFocus (USe of Tab)
+    n.focusedProperty().addListener((o, oldVal, newVal) ->
+    {
+      try {
+        handleEraseError();
+        if (!n.equals(eliminarButtonFormDataBase) &&
+                (!n.equals(confirmarButtonFormDataBase))) {
+          handleEraseEliminar(true);
+        }
+        setBorder(n);
+      } catch (Exception e) {
+        showException(e);
+      }
+    });
 
-      // setting onFocus (USe of Tab)
-      n.focusedProperty().addListener((o, oldVal, newVal) ->
-      {
+    // setting onKey
+    n.setOnKeyPressed(new EventHandler<KeyEvent>()
+     {
+      @Override
+      public void handle(KeyEvent ke)
+       {
         try {
           handleEraseError();
-          if (!n.equals(eliminarButtonFormDataBase) && (!n.equals(confirmarButtonFormDataBase))) {
-            handleEraseEliminar(true);
-          }
-          setBorder(n);
-        } catch (Exception e) {
-          Message.showException(e);
-        }
-      });
-
-      // setting onKey
-      n.setOnKeyPressed(new EventHandler<KeyEvent>()
-       {
-        @Override
-        public void handle(KeyEvent ke)
-         {
-          try {
-          handleEraseError();
-          if (!n.equals(eliminarButtonFormDataBase) && (!n.equals(confirmarButtonFormDataBase))) {
+          if (!n.equals(eliminarButtonFormDataBase) &&
+                  (!n.equals(confirmarButtonFormDataBase))) {
             handleEraseEliminar(true);
           }
 
           int i = -1;
 
-          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN))
+            ke.consume();
 
           if (ke.getCode().equals(KeyCode.UP) && up != -1) {
             ke.consume();
@@ -293,10 +289,12 @@ public class FormDataBaseController implements Initializable
             }
           }
 
-          if (ke.getCode().equals(KeyCode.SPACE) || ke.getCode().equals(KeyCode.ENTER)) {
+          if (ke.getCode().equals(KeyCode.SPACE) ||
+                  ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
               case "activoCheckBoxFormDataBase":
-                activoCheckBoxFormDataBase.setSelected(!activoCheckBoxFormDataBase.isSelected());
+                activoCheckBoxFormDataBase
+                        .setSelected(!activoCheckBoxFormDataBase.isSelected());
                 ke.consume();
                 break;
               case "actualizarButtonFormDataBase":
@@ -321,23 +319,23 @@ public class FormDataBaseController implements Initializable
             setBorder(node[i]);
             ke.consume();
             //oldNode = n;
-
           }
-              } catch (Exception e) {
-      Message.showException(e);
-    }
-         }
+        } catch (Exception e) {
+          showException(e);
+        }
+       }
 
-       });
+     });
 
-      // setting onClick
-      n.setOnMouseClicked((MouseEvent) -> {
-        try {
+    // setting onClick
+    n.setOnMouseClicked((MouseEvent) -> {
+      try {
         if (n.isDisable()) return;
 
         // HBoxError disabled
         handleEraseError();
-        if (!n.equals(eliminarButtonFormDataBase) && (!n.equals(confirmarButtonFormDataBase))) {
+        if (!n.equals(eliminarButtonFormDataBase) &&
+                (!n.equals(confirmarButtonFormDataBase))) {
           handleEraseEliminar(true);
         }
 
@@ -348,7 +346,8 @@ public class FormDataBaseController implements Initializable
 
         switch (n.getId()) {
           case "activoCheckBoxFormDataBase":
-            activoCheckBoxFormDataBase.setSelected(activoCheckBoxFormDataBase.isSelected());
+            activoCheckBoxFormDataBase
+                    .setSelected(activoCheckBoxFormDataBase.isSelected());
             break;
           case "actualizarButtonFormDataBase":
             handleUpdateCreate("update");
@@ -365,19 +364,15 @@ public class FormDataBaseController implements Initializable
           default:
             break;
         }
-            } catch (Exception e) {
-      Message.showException(e);
-    }
-      });
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "FormController / eventButton()", e.toString(), e);
-    }
+      } catch (Exception e) {
+        showException(e);
+      }
+    });
    }
 
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Erase Error / button eliminar">
-
   /**
    *
    */
@@ -410,7 +405,6 @@ public class FormDataBaseController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-
   /**
    * Setting the border (cursor) of the node
    *
@@ -429,16 +423,15 @@ public class FormDataBaseController implements Initializable
     m.put(confirmarButtonFormDataBase, HBoxEliminarFormDataBase);
     m.put(crearButtonFormDataBase, HBoxCrearFormDataBase);
 
-      eraserBorder();
-      m.get(n).getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
+    eraserBorder();
+    m.get(n).getStyleClass().add("borderLoginVisible");
+    oldNode = currentNode;
+    currentNode = n;
    }
 
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-
   /**
    * Helper to setting Color Border
    */
@@ -465,34 +458,33 @@ public class FormDataBaseController implements Initializable
    }
 
   //</editor-fold>
-
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handles">   
-
   /**
    *
    * @param n
    * @return
+   * @throws Exception
    */
   private int handleValidation(Node n) throws Exception
    {
 
-      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
 
-      handleValidation02(n, true);
-      if (registro[indNode] == false) {
-        if (indNode >= 2) indNode = indNode + 2;
-        return indNode;
-      }
+    handleValidation02(n, true);
+    if (registro[indNode] == false) {
+      if (indNode >= 2) indNode = indNode + 2;
+      return indNode;
+    }
 
-      for (int i = 0; i < fieldsNumber; i++) {
-        if (i != Arrays.asList(fieldsChecked).indexOf(n)) handleValidation02(fieldsChecked[i],
-                  false);
+    for (int i = 0; i < fieldsNumber; i++) {
+      if (i != Arrays.asList(fieldsChecked).indexOf(n))
+        handleValidation02(fieldsChecked[i], false);
 
-        if (registro[i] == false)
-          return (i >= 2) ? i + 2 : i;
-      }
+      if (registro[i] == false)
+        return (i >= 2) ? i + 2 : i;
+    }
 
     return (node[fieldsNumber].isDisable() ? -1 : 5);
    }
@@ -501,8 +493,8 @@ public class FormDataBaseController implements Initializable
   /**
    *
    * @param n
-   * @param indNode
    * @param show
+   * @throws Exception
    */
   private void handleValidation02(Node n, boolean show) throws Exception
    {
@@ -538,10 +530,12 @@ public class FormDataBaseController implements Initializable
     if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
       text = "No puede estar vacío";
     }
-    if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
+    if (fieldString[indNode].length() > 100 &&
+            instance.equals("JFXTextField")) {
       text = "No puede tener mas de 100 letras";
     }
-    if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
+    if (fieldString[indNode].length() > 20 &&
+            instance.equals("JFXPasswordField")) {
       text = "No puede tener mas de 20 letras";
     }
     if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
@@ -563,66 +557,70 @@ public class FormDataBaseController implements Initializable
   /**
    *
    * @param select
+   * @throws Exception
    */
   private void handleUpdateCreate(String select) throws Exception
    {
-      String preguntaString = "";
-      Object preguntaObject = null;
+    String preguntaString = "";
+    Object preguntaObject = null;
 
-      handleValidation(usuarioTextFieldFormDataBase);
-      handleValidation(passwordTextFieldFormDataBase);
-      /*/*handleValidation(preguntaComboBoxFormDataBase);*/
-      handleValidation(respuestaTextFieldFormDataBase);
+    handleValidation(usuarioTextFieldFormDataBase);
+    handleValidation(passwordTextFieldFormDataBase);
+    /*/*handleValidation(preguntaComboBoxFormDataBase);*/
+    handleValidation(respuestaTextFieldFormDataBase);
 
-      //int activoBoolean = (activoCheckBoxFormDataBase.isSelected()) ? 1 : 0;
-      boolean activoBoolean = activoCheckBoxFormDataBase.isSelected();
+    //int activoBoolean = (activoCheckBoxFormDataBase.isSelected()) ? 1 : 0;
+    boolean activoBoolean = activoCheckBoxFormDataBase.isSelected();
 
-      // change the question into a "original language" question
-      int original = preguntaComboBoxFormDataBase.getSelectionModel().getSelectedIndex();
-      /*/*fieldString[2] = preguntasRegistro.get(original);*/
+    // change the question into a "original language" question
+    int original = preguntaComboBoxFormDataBase.getSelectionModel().getSelectedIndex();
+    /*/*fieldString[2] = preguntasRegistro.get(original);*/
 
-      int newUser = (Integer) mainScene.handleCheckUser(fieldString[0], fieldString[1]).getKey();
-      // if the fields aren't valid then return
-      if (!(registro[0] == true && registro[1] == true && registro[2] == true)) {
-        return;
-      }
-      if ((newUser != 0 && select.equals("create")) ||
-              (newUser != user.getUsuario_id() && newUser > 0 && select.equals("update"))) {
-        errorUserLabel.setManaged(true);
-        errorUserLabel.setText(toLocale("El usuario ya existe"));
-        return;
-      }
+    int newUser = (Integer) mainScene.handleCheckUser(fieldString[0],
+            fieldString[1]).getKey();
+    // if the fields aren't valid then return
+    if (!(registro[0] == true && registro[1] == true && registro[2] == true))
+      return;
 
-      preguntaString = "";
-      preguntaObject = ((JFXComboBox) preguntaComboBoxFormDataBase).getValue();
-      if (preguntaObject != null) {
-        preguntaString = preguntaObject.toString();
-      }
-
-      switch (select) {
-        case "update":
-          Usuario u = new Usuario();
-          u.setUsuario_id(user.getUsuario_id());
-          u.setUsuario_nombre(fieldString[0]);
-          u.setPassword(fieldString[1]);
-          u.setUsuario_activo(activoBoolean);
-          u.setPregunta(preguntaString);
-          u.setRespuesta(fieldString[2]);
-
-          mainScene.handleUpdate(u);
-          break;
-        case "create":
-          mainScene.handleCreate(fieldString[0], fieldString[1], activoBoolean, preguntaString, fieldString[2]);
-          break;
-        default:
-          break;
-      }
+    if ((newUser != 0 && select.equals("create")) ||
+            (newUser != user.getUsuario_id() && newUser > 0 &&
+            select.equals("update"))) {
+      errorUserLabel.setManaged(true);
+      errorUserLabel.setText(toLocale("El usuario ya existe"));
+      return;
     }
-   
+
+    preguntaString = "";
+    preguntaObject = ((JFXComboBox) preguntaComboBoxFormDataBase).getValue();
+    if (preguntaObject != null) {
+      preguntaString = preguntaObject.toString();
+    }
+
+    switch (select) {
+      case "update":
+        Usuario u = new Usuario();
+        u.setUsuario_id(user.getUsuario_id());
+        u.setUsuario_nombre(fieldString[0]);
+        u.setPassword(fieldString[1]);
+        u.setUsuario_activo(activoBoolean);
+        u.setPregunta(preguntaString);
+        u.setRespuesta(fieldString[2]);
+
+        mainScene.handleUpdate(u);
+        break;
+      case "create":
+        mainScene.handleCreate(fieldString[0], fieldString[1], activoBoolean,
+                preguntaString, fieldString[2]);
+        break;
+      default:
+        break;
+    }
+   }
 
 
   /**
    *
+   * @throws Exception
    */
   private void handleDelete() throws Exception
    {
@@ -645,10 +643,8 @@ public class FormDataBaseController implements Initializable
   /**
    *
    * @param user
-   * @param index
    * @param root
-   * @throws java.lang.Exception
-   * @par
+   * @throws Exception
    */
   public void setRowIntoModal(Usuario user, boolean root) throws Exception
    {
@@ -667,7 +663,8 @@ public class FormDataBaseController implements Initializable
     usuarioTextFieldFormDataBase.setText(user.getUsuario_nombre());
     passwordTextFieldFormDataBase.setText(user.getPassword());
     activoCheckBoxFormDataBase.setSelected(user.getUsuario_activo());
-    preguntaComboBoxFormDataBase.getSelectionModel().select(toLocale(user.getPregunta()));
+    preguntaComboBoxFormDataBase.getSelectionModel()
+            .select(toLocale(user.getPregunta()));
     respuestaTextFieldFormDataBase.setText(user.getRespuesta());
 
     // Setting the current node

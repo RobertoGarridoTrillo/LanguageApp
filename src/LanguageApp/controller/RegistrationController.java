@@ -4,7 +4,7 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -21,7 +21,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -67,9 +66,6 @@ public class RegistrationController implements Initializable
   @FXML private HBox HBoxAntiguoUsuarioRegistro;
   @FXML private JFXButton oldUserButtonRegistro;
 
-  // pop-up messages
-  Message message;
-
   // The nodes of the view
   private Node[] node;
   private HashMap<Integer, Node> errorLabelMap;
@@ -102,12 +98,12 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-
   /**
    *
    * @param aThis
+   * @throws java.lang.Exception
    */
-  public void setMainScene(MainScene aThis)
+  public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
@@ -115,7 +111,6 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
-
   /**
    * When the method is initialize
    *
@@ -128,13 +123,9 @@ public class RegistrationController implements Initializable
     try {
 
       this.resources = resources;
-
+      
       // References to mainStage
       mainStage = MainScene.getMainStage();
-
-      // Create the locale for the pop up messages
-      /*/*HandleLocale01.handleLocale01();*/
-      message = new Message(mainStage,resources);
 
       node = new Node[]{
         usuarioTextFieldRegistro,
@@ -161,7 +152,8 @@ public class RegistrationController implements Initializable
       preguntasRegistro = PreguntasRegistro.preguntas();
 
       // Setting the ConboBox options
-      preguntaComboBoxRegistro.getItems().removeAll(preguntaComboBoxRegistro.getItems());
+      preguntaComboBoxRegistro.getItems()
+              .removeAll(preguntaComboBoxRegistro.getItems());
       preguntaComboBoxRegistro.getItems().addAll(
               toLocale(preguntasRegistro.get(0)),
               toLocale(preguntasRegistro.get(1)),
@@ -189,20 +181,18 @@ public class RegistrationController implements Initializable
       progressBarValue.addListener((observable, oldValue, newValue) -> {
         registroButtonRegistro.setDisable(progressBarValue.lessThan(1).get());
       });
-
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / initialize()", e.toString(), e);
+      showException(e);
     }
    }
 
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-
   /**
    *
    */
-  private void setJFXTextField()
+  private void setJFXTextField() throws Exception
    {
     eventButton(usuarioTextFieldRegistro, 5, 1);
     eventButton(passwordTextFieldRegistro, 0, 2);
@@ -215,8 +205,9 @@ public class RegistrationController implements Initializable
 
   /**
    *
+   * @throws java.lang.Exception
    */
-  public void setText()
+  public void setText() throws Exception
    {
     usuarioTextFieldRegistro.setText("");
     passwordTextFieldRegistro.setText("");
@@ -226,9 +217,7 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
-
   //<editor-fold defaultstate="collapsed" desc="Button">
-
   /**
    * Helper to the play button event
    *
@@ -238,27 +227,32 @@ public class RegistrationController implements Initializable
    * @param left the left node
    * @param button The play button
    */
-  private void eventButton(Node n, int up, int down)
+  private void eventButton(Node n, int up, int down) throws Exception
    {
-    try {
 
-      // setting onFocus (USe of Tab)
-      n.focusedProperty().addListener((o, oldVal, newVal) ->
-      {
+    // setting onFocus (USe of Tab)
+    n.focusedProperty().addListener((o, oldVal, newVal) ->
+    {
+      try {
         handleEraseError();
         setBorder(n);
-      });
+      } catch (Exception e) {
+        showException(e);
+      }
+    });
 
-      // setting setOnKeyPressed
-      n.setOnKeyPressed(new EventHandler<KeyEvent>()
+    // setting setOnKeyPressed
+    n.setOnKeyPressed(new EventHandler<KeyEvent>()
+     {
+      @Override
+      public void handle(KeyEvent ke)
        {
-        @Override
-        public void handle(KeyEvent ke)
-         {
+        try {
           handleEraseError();
 
           int i = -1;
-          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN))
+            ke.consume();
 
           if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
             i = up;
@@ -290,7 +284,8 @@ public class RegistrationController implements Initializable
             ke.consume();
           }
 
-          if (ke.getCode().equals(KeyCode.SPACE) || ke.getCode().equals(KeyCode.ENTER)) {
+          if (ke.getCode().equals(KeyCode.SPACE) ||
+                  ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
               case "registroButtonRegistro":
                 handleRegistro();
@@ -304,7 +299,8 @@ public class RegistrationController implements Initializable
             ke.consume();
           }
 
-          if (ke.getCode().equals(KeyCode.SPACE) && n.getId().equals("preguntaComboBoxRegistro")) {
+          if (ke.getCode().equals(KeyCode.SPACE) &&
+                  n.getId().equals("preguntaComboBoxRegistro")) {
             preguntaComboBoxRegistro.show();
             ke.consume();
           }
@@ -316,13 +312,16 @@ public class RegistrationController implements Initializable
             //oldNode = n;
 
           }
-         }
-
+        } catch (Exception e) {
+          showException(e);
+        }
        }
-      );
 
-      // setting onClick
-      n.setOnMouseClicked((MouseEvent) -> {
+     });
+
+    // setting onClick
+    n.setOnMouseClicked((MouseEvent) -> {
+      try {
         if (n.isDisable()) return;
         // HBoxError disabled
         handleEraseError();
@@ -342,21 +341,19 @@ public class RegistrationController implements Initializable
           default:
             break;
         }
+      } catch (Exception e) {
+        showException(e);
       }
-      );
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / eventButton()", e.toString(), e);
-    }
+    });
    }
 
 //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Erase Error">
-
   /**
    *
    */
-  private void handleEraseError()
+  private void handleEraseError() throws Exception
    {
     errorUserLabel.setManaged(false);
     errorUserLabel.setText(null);
@@ -369,13 +366,12 @@ public class RegistrationController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-
   /**
    * Setting the border (cursor) of the node
    *
    * @param n the node to put the border
    */
-  private void setBorder(Node n)
+  private void setBorder(Node n) throws Exception
    {
     HashMap<Node, Node> m = new HashMap<>();
     m.put(usuarioTextFieldRegistro, HBoxUsuarioRegistro);
@@ -385,80 +381,19 @@ public class RegistrationController implements Initializable
     m.put(registroButtonRegistro, HBoxRegistrarRegistro);
     m.put(oldUserButtonRegistro, HBoxAntiguoUsuarioRegistro);
 
-    try {
-      eraserBorder();
-      m.get(n).getStyleClass().add("borderLoginVisible");
-      /*/*HboxPasswordLogin.getStyleClass().add("borderLoginVisible"); */
-      oldNode = currentNode;
-      currentNode = n;
-      /*/*    
-    
-    
-    if (n.equals(usuarioTextFieldRegistro)) {
-      eraserBorder();
-      HBoxUsuarioRegistro.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
-      return;
-    }
-
-    if (n.equals(passwordTextFieldRegistro)) {
-      eraserBorder();
-      HBoxPasswordRegistro.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
-      return;
-    }
-    if (n.equals(preguntaComboBoxRegistro)) {
-      eraserBorder();
-      HBoxPreguntaRegistro.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
-      return;
-    }
-
-    if (n.equals(respuestaTextFieldRegistro)) {
-      eraserBorder();
-      HBoxRespuestaRegistro.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
-      return;
-    }
-
-    if (n.equals(registroButtonRegistro)) {
-      eraserBorder();
-      HBoxRegistrarRegistro.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
-      return;
-    }
-
-    if (n.equals(oldUserButtonRegistro)) {
-      eraserBorder();
-      HBoxAntiguoUsuarioRegistro.getStyleClass().add("borderLoginVisible");
-      oldNode = currentNode;
-      currentNode = n;
-      return;
-    }
     eraserBorder();
-    n.getStyleClass().add("borderLoginVisible");
+    
+    m.get(n).getStyleClass().add("borderLoginVisible");
     oldNode = currentNode;
-    currentNode = n; */
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistratioController / setBorder()", e.toString(), e);
-    }
-
+    currentNode = n;
    }
-
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-
   /**
    * Helper to setting Color Border
    */
-  private void eraserBorder()
+  private void eraserBorder() throws Exception
    {
     currentNode.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
@@ -475,21 +410,18 @@ public class RegistrationController implements Initializable
     HBoxAntiguoUsuarioRegistro.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
-
   //</editor-fold>
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handlers">
-
   /**
    *
    * @param n
    * @return
    */
-  private int handleValidation(Node n)
+  private int handleValidation(Node n) throws Exception
    {
-    try {
       int indNode = Arrays.asList(fieldsChecked).indexOf(n);
 
       handleValidation02(n, true);
@@ -500,10 +432,6 @@ public class RegistrationController implements Initializable
 
         if (registro[i] == false) return i;
       }
-
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / handleValidation()", e.toString(), e);
-    }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
 
@@ -514,9 +442,8 @@ public class RegistrationController implements Initializable
    * @param indNode
    * @param show
    */
-  private void handleValidation02(Node n, boolean show)
+  private void handleValidation02(Node n, boolean show) throws Exception
    {
-    try {
       int indNode = Arrays.asList(fieldsChecked).indexOf(n);
       String instance = "";
       Object preguntaObject = null;
@@ -569,16 +496,13 @@ public class RegistrationController implements Initializable
           tempLabel.setText(toLocale(text));
         }
       }
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "RegistrationController / handleValidation02()", e.toString(), e);
-    }
    }
 
 
   /**
    *
    */
-  private void handleRegistro()
+  private void handleRegistro() throws Exception
    {
     handleValidation(usuarioTextFieldRegistro);
     handleValidation(passwordTextFieldRegistro);
@@ -590,10 +514,11 @@ public class RegistrationController implements Initializable
     fieldString[2] = preguntasRegistro.get(original);
 
     /*/*boolean activoBoolean = activoCheckBox.isSelected(); */
-    if (registro[0] == true && registro[1] == true && registro[2] == true && registro[3] == true) {
+    if (registro[0] == true && registro[1] == true && 
+            registro[2] == true && registro[3] == true) {
 
-      int userExist = mainScene.handleRegistro(
-              fieldString[0], fieldString[1], true, fieldString[2], fieldString[3]);
+      int userExist = mainScene.handleRegistro(fieldString[0], fieldString[1],
+              true, fieldString[2], fieldString[3]);
 
       if (userExist != 0) {
         errorUserLabel.setManaged(true);
@@ -611,7 +536,7 @@ public class RegistrationController implements Initializable
   /**
    *
    */
-  private void handleAntiguoUsuario()
+  private void handleAntiguoUsuario() throws Exception
    {
     mainScene.buttonLoginMenu();
    }
@@ -620,8 +545,9 @@ public class RegistrationController implements Initializable
   /**
    *
    * @param progressBarValue
+   * @throws java.lang.Exception
    */
-  public void setProgressBarValue(DoubleProperty progressBarValue)
+  public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
     this.progressBarValue.setValue(progressBarValue.getValue());
    }

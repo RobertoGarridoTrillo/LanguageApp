@@ -3,7 +3,7 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -28,9 +28,6 @@ public class LoginController implements Initializable
   private Stage mainStage;
   // Reference to the main Scene
   private MainScene mainScene;
-
-  // pop-up messages
-  Message message;
 
   // For the bounle of idioms
   ResourceBundle resources;
@@ -59,13 +56,9 @@ public class LoginController implements Initializable
     try {
       // References to mainStage
       mainStage = MainScene.getMainStage();
-
-      // Create the locale for the pop up messages
-      /*/*HandleLocale01.handleLocale01();*/
-      message = new Message(mainStage,resources);
-
+      
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
 

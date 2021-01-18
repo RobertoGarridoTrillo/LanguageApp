@@ -4,7 +4,7 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import java.net.URL;
@@ -16,7 +16,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -50,9 +49,6 @@ public class WelcomeController implements Initializable
   @FXML private HBox HBoxCrearWelcome;
   @FXML private JFXButton crearButtonWelcome;
 
-  // pop-up messages
-  Message message;
-
   // The nodes of the view
   private Node[] node;
 
@@ -83,12 +79,12 @@ public class WelcomeController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-
   /**
    *
    * @param aThis
+   * @throws java.lang.Exception
    */
-  public void setMainScene(MainScene aThis)
+  public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
@@ -96,7 +92,6 @@ public class WelcomeController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
-
   /**
    * When the method is initialize
    */
@@ -109,10 +104,6 @@ public class WelcomeController implements Initializable
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
-
-      // Create the locale for the pop up messages
-      /*/*HandleLocale01.handleLocale01();*/
-      message = new Message(resources);
 
       node = new Node[]{
         inicioButtonWelcome,
@@ -136,37 +127,38 @@ public class WelcomeController implements Initializable
       nombre = null;
 
       // The value of the progressBar in mainScene
-      //inicioButtonWelcome.visibleProperty().bind(progressBarValue.greaterThanOrEqualTo(1));
+      /*/*inicioButtonWelcome.visibleProperty().bind(progressBarValue.
+             greaterThanOrEqualTo(1)); */
       progressBarValue.addListener((observable, oldValue, newValue) -> {
-        inicioButtonWelcome.setDisable(progressBarValue.lessThan(1).get());
+        try {
+          inicioButtonWelcome.setDisable(progressBarValue.lessThan(1).get());
+        } catch (Exception e) {
+          showException(e);
+        }
       });
-
     } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "WelcomeController / initialize()", e.toString(), e);
+      showException(e);
     }
    }
 
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-
   /**
    *
    */
-  private void setJFXTextField()
+  private void setJFXTextField() throws Exception
    {
     eventButton(inicioButtonWelcome, 3, 1);
     eventButton(activoCheckBoxWelcome, 0, 2);
     eventButton(loginButtonWelcome, 1, 3);
     eventButton(crearButtonWelcome, 2, 0);
    }
-
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
   //<editor-fold defaultstate="collapsed" desc="Button">
-
   /**
    * Helper to the play button event
    *
@@ -176,22 +168,25 @@ public class WelcomeController implements Initializable
    * @param left the left node
    * @param button The play button
    */
-  private void eventButton(Node n, int up, int down)
+  private void eventButton(Node n, int up, int down) throws Exception
    {
-    try {
-
-      // setting onFocus (USe of Tab)
-      n.focusedProperty().addListener((o, oldVal, newVal) ->
-      {
+    // setting onFocus (USe of Tab)
+    n.focusedProperty().addListener((o, oldVal, newVal) ->
+    {
+      try {
         setBorder(n);
-      });
+      } catch (Exception e) {
+        showException(e);
+      }
+    });
 
-      // setting onKey
-      n.setOnKeyPressed(new EventHandler<KeyEvent>()
+    // setting onKey
+    n.setOnKeyPressed(new EventHandler<KeyEvent>()
+     {
+      @Override
+      public void handle(KeyEvent ke)
        {
-        @Override
-        public void handle(KeyEvent ke)
-         {
+        try {
           int i = -1;
 
           if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
@@ -202,15 +197,18 @@ public class WelcomeController implements Initializable
             ke.consume();
             i = down;
           }
-          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) 
+            ke.consume();
 
-          if (ke.getCode().equals(KeyCode.ENTER) || ke.getCode().equals(KeyCode.SPACE)) {
+          if (ke.getCode().equals(KeyCode.ENTER) ||
+                  ke.getCode().equals(KeyCode.SPACE)) {
             switch (n.getId()) {
               case "inicioButtonWelcome":
                 handleEntrar();
                 break;
               case "activoCheckBoxWelcome":
-                activoCheckBoxWelcome.setSelected(!activoCheckBoxWelcome.isSelected());
+                activoCheckBoxWelcome
+                        .setSelected(!activoCheckBoxWelcome.isSelected());
                 ke.consume();
                 break;
               case "loginButtonWelcome":
@@ -229,12 +227,16 @@ public class WelcomeController implements Initializable
             ke.consume();
             //oldNode = n;
           }
-         }
+        } catch (Exception e) {
+          showException(e);
+        }
+       }
 
-       });
+     });
 
-      // setting onClick
-      n.setOnMouseClicked((MouseEvent) -> {
+    // setting onClick
+    n.setOnMouseClicked((MouseEvent) -> {
+      try {
         if (n.isDisable()) return;
         n.requestFocus();
         setBorder(n);
@@ -257,22 +259,20 @@ public class WelcomeController implements Initializable
           default:
             break;
         }
-      });
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "WelcomeController / eventButton()", e.toString(), e);
-    }
+      } catch (Exception e) {
+        showException(e);
+      }
+    });
    }
-
-  //</editor-fold>
+//</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-
   /**
    * Setting the border (cursor) of the node
    *
    * @param n the node to put the border
    */
-  private void setBorder(Node n)
+  private void setBorder(Node n) throws Exception
    {
 
     if (n.equals(inicioButtonWelcome)) {
@@ -312,15 +312,13 @@ public class WelcomeController implements Initializable
     currentNode = n;
 
    }
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="eraser Border">
-
   /**
    * Helper to setting Color Border
    */
-  private void eraserBorder()
+  private void eraserBorder() throws Exception
    {
     currentNode.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
@@ -333,7 +331,6 @@ public class WelcomeController implements Initializable
     HBoxCrearWelcome.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
-
   //</editor-fold>
 
 //</editor-fold>
@@ -343,34 +340,30 @@ public class WelcomeController implements Initializable
    * It's called from mainScene to put the name of the user in the label
    *
    * @param nombre
+   * @throws java.lang.Exception
    */
-  public void handlePutName(String nombre)
+  public void handlePutName(String nombre) throws Exception
    {
-    try {
-      this.nombre = nombre;
+    this.nombre = nombre;
 
-      if (nombre != null) {
-        nameUserLabel.setText(nombre);
-      } else {
-        nameUserLabel.setText(toLocale("Usuario no identificado"));
-      }
-    } catch (Exception e) {
-      message.message(Alert.AlertType.ERROR, "Mensaje de error", "handlePutName / eventButton()", e.toString(), e);
+    if (nombre != null) {
+      nameUserLabel.setText(nombre);
+    } else {
+      nameUserLabel.setText(toLocale("Usuario no identificado"));
     }
    }
-
 
   /**
    *
    */
-  private void handleEntrar()
+  private void handleEntrar() throws Exception
    {
 
     boolean activoBoolean = activoCheckBoxWelcome.isSelected();
 
     if (nombre != null) {
 
-      mainScene.handleEntrar(activoBoolean, true); 
+      mainScene.handleEntrar(activoBoolean, true);
     } else {
       mainScene.buttonLoginMenu();
     }
@@ -380,7 +373,7 @@ public class WelcomeController implements Initializable
   /**
    *
    */
-  private void handleLogin()
+  private void handleLogin() throws Exception
    {
     mainScene.buttonLoginMenu();
    }
@@ -389,20 +382,19 @@ public class WelcomeController implements Initializable
   /**
    *
    */
-  private void handleRegistro()
+  private void handleRegistro() throws Exception
    {
     mainScene.buttonRegistro();
    }
-
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
-
   /**
    *
    * @param progressBarValue
+   * @throws java.lang.Exception
    */
-  public void setProgressBarValue(DoubleProperty progressBarValue)
+  public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
     this.progressBarValue.setValue(progressBarValue.getValue());
     //System.out.println("welcome " + this.progressBarValue.getValue());

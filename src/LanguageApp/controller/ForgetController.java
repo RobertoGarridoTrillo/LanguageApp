@@ -4,7 +4,7 @@ package LanguageApp.controller;
 
 import LanguageApp.main.MainScene;
 import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import LanguageApp.util.PreguntasRegistro;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -63,9 +63,6 @@ public class ForgetController implements Initializable
   @FXML private HBox HBoxAntiguoUsuarioForget;
   @FXML private JFXButton oldUserButtonForget;
 
-  // pop-up messages
-  Message message;
-
   // The nodes of the view
   private Node[] node;
   private HashMap<Integer, Node> errorLabelMap;
@@ -98,7 +95,6 @@ public class ForgetController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-
   /**
    *
    * @param aThis
@@ -112,7 +108,6 @@ public class ForgetController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
-
   /**
    * When the method is initialize
    *
@@ -125,12 +120,9 @@ public class ForgetController implements Initializable
     try {
 
       this.resources = resources;
-      message = new Message(mainStage, resources);
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
-
-
 
       node = new Node[]{
         usuarioTextFieldForget,
@@ -183,18 +175,18 @@ public class ForgetController implements Initializable
       Arrays.fill(registro, false);
 
       progressBarValue.addListener((observable, oldValue, newValue) -> {
-        recuperarButtonForget.setDisable(progressBarValue.lessThan(1).get());
+        recuperarButtonForget.setDisable(progressBarValue.lessThan(1)
+                .get());
       });
 
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
 
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-
   /**
    *
    * @throws Exception
@@ -223,7 +215,6 @@ public class ForgetController implements Initializable
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
   //<editor-fold defaultstate="collapsed" desc="Button">
-
   /**
    *
    * @param n
@@ -241,7 +232,7 @@ public class ForgetController implements Initializable
         handleEraseError();
         setBorder(n);
       } catch (Exception e) {
-        Message.showException(e);
+        showException(e);
       }
     });
 
@@ -256,7 +247,8 @@ public class ForgetController implements Initializable
 
           int i = -1;
 
-          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN))
+            ke.consume();
 
           if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
             i = up;
@@ -284,7 +276,8 @@ public class ForgetController implements Initializable
             ke.consume();
           }
 
-          if (ke.getCode().equals(KeyCode.SPACE) || ke.getCode().equals(KeyCode.ENTER)) {
+          if (ke.getCode().equals(KeyCode.SPACE) ||
+                  ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
               case "recuperarButtonForget":
                 handleEnviar();
@@ -298,7 +291,7 @@ public class ForgetController implements Initializable
             ke.consume();
           }
 
-          if (ke.getCode().equals(KeyCode.SPACE) && 
+          if (ke.getCode().equals(KeyCode.SPACE) &&
                   n.getId().equals("preguntaComboBoxForget")) {
             preguntaComboBoxForget.show();
             ke.consume();
@@ -312,7 +305,7 @@ public class ForgetController implements Initializable
           }
 
         } catch (Exception e) {
-          Message.showException(e);
+          showException(e);
         }
        }
 
@@ -343,7 +336,7 @@ public class ForgetController implements Initializable
             break;
         }
       } catch (Exception e) {
-        Message.showException(e);
+        showException(e);
       }
     }
     );
@@ -352,7 +345,6 @@ public class ForgetController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="EraseError">
-
   /**
    *
    * @throws Exception
@@ -370,7 +362,6 @@ public class ForgetController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-
   /**
    * Setting the border (cursor) of the node
    *
@@ -395,7 +386,6 @@ public class ForgetController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-
   /**
    *
    * @throws Exception
@@ -415,9 +405,7 @@ public class ForgetController implements Initializable
     HBoxAntiguoUsuarioForget.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
-
   //</editor-fold>
-
 
 //</editor-fold>
 
@@ -488,10 +476,12 @@ public class ForgetController implements Initializable
     if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
       text = "No puede estar vacío";
     }
-    if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
+    if (fieldString[indNode].length() > 100 &&
+            instance.equals("JFXTextField")) {
       text = "No puede tener mas de 100 letras";
     }
-    if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
+    if (fieldString[indNode].length() > 20 &&
+            instance.equals("JFXPasswordField")) {
       text = "No puede tener mas de 20 letras";
     }
     if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
@@ -528,7 +518,8 @@ public class ForgetController implements Initializable
       int original = preguntaComboBoxForget.getSelectionModel().getSelectedIndex();
       fieldString[1] = preguntasRegistro.get(original);
 
-      result = mainScene.handleRecordar(fieldString[0], fieldString[1], fieldString[2]);
+      result = mainScene.handleRecordar(
+              fieldString[0], fieldString[1], fieldString[2]);
 
       if (result != null) {
         errorPasswordLabel.setManaged(true);
@@ -539,7 +530,6 @@ public class ForgetController implements Initializable
         errorPasswordLabel.setText(toLocale("El usuario no existe"));
 
       }
-      // }
     }
    }
 
@@ -563,7 +553,6 @@ public class ForgetController implements Initializable
    {
     this.progressBarValue.setValue(progressBarValue.getValue());
    }
-
 //</editor-fold>
 
  }

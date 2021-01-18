@@ -1,5 +1,7 @@
 package LanguageApp.util;
 
+import static LanguageApp.util.Message.message;
+import static LanguageApp.util.Message.showException;
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
@@ -34,11 +36,8 @@ public class AudioClips
   public HashMap<String, AudioClip> setAudioClip(Set<String> set, String lastdirectory, Slider rateSlider, Slider balanceSlider, Slider volumeSlider)
    {
 
-      Map<String, AudioClip> audioClips = new HashMap<>();
-      audioClips.clear();
-
-    // pop-up mes-sages
-    Message message = new Message(HandleLocale.getResource());
+    Map<String, AudioClip> audioClips = new HashMap<>();
+    audioClips.clear();
 
     String s;
 
@@ -73,19 +72,33 @@ public class AudioClips
         audioClips.get(ws).setVolume(volumeSlider.getValue());
         audioClips.get(ws).rateProperty().bind(rateSlider.valueProperty());
         audioClips.get(ws).balanceProperty().bind(balanceSlider.valueProperty());
-        audioClips.get(ws).volumeProperty().bind(volumeSlider.valueProperty().divide(100));
+        audioClips.get(ws).volumeProperty().bind(volumeSlider.valueProperty()
+                .divide(100));
       }
     } catch (Exception e) {
       final String error = audioError;
       Platform.runLater(() -> {
-        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Falta el audio: \"" +
-                error + "\"", "AudioClips.java / setAudioClip()", e);
+        try {
+          message(
+                  Alert.AlertType.ERROR,
+                  "Error message", "Falta el audio: \"" + error + "\"",
+                  "AudioClips.java / setAudioClip()",
+                  null);
+        } catch (Exception ex) {
+          showException(ex);
+        }
       });
     }
     System.gc();
     System.runFinalization();
-    
-    return new HashMap<String, AudioClip>(){{putAll(audioClips);}};
+
+    return new HashMap<String, AudioClip>()
+     {
+      {
+        putAll(audioClips);
+      }
+
+     };
    }
 
 
@@ -102,9 +115,6 @@ public class AudioClips
    {
     // An unique audioclip
     MediaPlayer me;
-
-    // pop-up messages
-    Message message = new Message(HandleLocale.getResource());
 
     String s;
 
@@ -144,19 +154,33 @@ public class AudioClips
         audioMedia.get(ws).setVolume(volumeSlider.getValue());
         audioMedia.get(ws).rateProperty().bind(rateSlider.valueProperty());
         audioMedia.get(ws).balanceProperty().bind(balanceSlider.valueProperty());
-        audioMedia.get(ws).volumeProperty().bind(volumeSlider.valueProperty().divide(100));
+        audioMedia.get(ws).volumeProperty().bind(volumeSlider.valueProperty()
+                .divide(100));
       }
     } catch (Exception e) {
       final String error = audioError;
       Platform.runLater(() -> {
-        message.message(Alert.AlertType.ERROR, "Mensaje de error", "Falta el audio: \"" +
-                error + "\"", "AudioClips.java / setAudioClip()", e);
+        try {
+          message(
+                  Alert.AlertType.ERROR,
+                  "Error message", "Falta el audio: \"" + error + "\"",
+                  "AudioClips.java / setAudioClip()",
+                  null);
+        } catch (Exception ex) {
+          showException(ex);
+        }
       });
     }
 
     System.gc();
     System.runFinalization();
-    return new HashMap<String, MediaPlayer>(){{putAll(audioMedia);}};
+    return new HashMap<String, MediaPlayer>()
+     {
+      {
+        putAll(audioMedia);
+      }
+
+     };
    }
 
  }

@@ -9,19 +9,15 @@ import LanguageApp.controller.PrincipalController;
 import LanguageApp.controller.RegistrationController;
 import LanguageApp.controller.WelcomeController;
 import LanguageApp.model.Usuario;
+import LanguageApp.util.ConnectionsPool;
 import LanguageApp.util.HandleLocale;
 import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
-import LanguageApp.util.CheckJava;
-import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Tools;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
+import static LanguageApp.util.Message.message;
+import static LanguageApp.util.Message.showException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.Savepoint;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.animation.FadeTransition;
@@ -46,7 +42,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-import javax.swing.JOptionPane;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 
@@ -60,7 +55,9 @@ public class MainScene extends Application
 
 //<editor-fold defaultstate="collapsed" desc="fileds class">
   private static Stage mainStage;
-  public Scene mainScene;
+  private static MainScene mainScene;
+  private static Scene scene;
+
   private MainController mainController;
   private PrincipalController principalController;
   private LoginController loginController;
@@ -94,6 +91,9 @@ public class MainScene extends Application
   Locale locale;
   FXMLLoader loader;
 
+  // The pool connections
+  ConnectionsPool connectionsPool;
+
   // pop-up messages
   Message message;
 
@@ -124,7 +124,6 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="init">
-
   /**
    * load the initial configuration before all the other things loads
    *
@@ -138,10 +137,17 @@ public class MainScene extends Application
     try {
       super.init();
 
+      // setting a referenc to mainScene (me)
+      setMainScene(this);
+
       // Create the locale for the pop up messages
       resources = HandleLocale.getResource();
-      message = new Message(mainStage, resources);
+      message = new Message(resources);
 
+      // Creating the pool conections
+      connectionsPool = ConnectionsPool.create();
+
+      // Load the text fonts
       Font.loadFont(MainScene.class
               .getResource("/LanguageApp/resources/fonts/freefont/FreeSans.ttf")
               .toExternalForm(), 10);
@@ -150,7 +156,8 @@ public class MainScene extends Application
       usuario_activo = 0;
       welcomeScreen = true;
 
-      // setting progressbar. I use a doubleProperty (it's a class wrapper) instead double.
+      // setting progressbar. I use a doubleProperty (it's a class wrapper) 
+      // instead double.
       progressBarValue = new SimpleDoubleProperty();
       labelText = new SimpleStringProperty();
       progressBarValue.setValue(0.0);
@@ -158,18 +165,15 @@ public class MainScene extends Application
 
       // Setting the status to the fade the change scene
       look = "";
-      /*/*
-      // Instances
-      dire = new Directorio();*/
+
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="start">
-
   /**
    * It setting and showing the stage.
    *
@@ -188,7 +192,9 @@ public class MainScene extends Application
 
       // Set the application icon.
       this.mainStage.getIcons().add(new Image(getClass()
-              .getResourceAsStream("/LanguageApp/resources/images/languages_128.png")));
+              .getResourceAsStream("/LanguageApp/resources/images/" +
+                      "languages_128.png")));
+
 
       // Setting the close button
       handleClose();
@@ -232,7 +238,7 @@ public class MainScene extends Application
 
       principalView();
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
 
@@ -257,7 +263,6 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="FormView">
-
   /**
    *
    */
@@ -271,12 +276,9 @@ public class MainScene extends Application
     formController = loader.getController();
     formController.setMainScene(this);
    }
-
-
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="RegisterView">
-
   private void registrationView() throws Exception
    {
     handleLoadViewAndResource("RegistrationView");
@@ -291,7 +293,6 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="RecordarView">
-
   private void forgetView() throws Exception
    {
     handleLoadViewAndResource("ForgetView");
@@ -307,7 +308,6 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="LoginView">
-
   private void loginView() throws Exception
    {
     handleLoadViewAndResource("LoginView");
@@ -328,7 +328,6 @@ public class MainScene extends Application
 //</editor-fold>  
 
 //<editor-fold defaultstate="collapsed" desc="mainView">
-
   /**
    * It managed the load of the main fxml into the border panel that I use it like root.
    *
@@ -341,12 +340,12 @@ public class MainScene extends Application
     mainView = (BorderPane) loader.load();
 
     // Set the Scene to the Stage (It the main wiew)
-    mainScene = new Scene(mainView);
-    mainStage.setScene(mainScene);
+    scene = new Scene(mainView);
+    mainStage.setScene(scene);
 
     // Default color
     //mainScene.setFill(Color.rgb(0, 79, 138));
-    mainScene.setFill(Color.rgb(37, 37, 37));
+    scene.setFill(Color.rgb(37, 37, 37));
 
     // Give the mainController access to the main app (It´s like a instance)
     mainController = loader.getController();
@@ -354,13 +353,12 @@ public class MainScene extends Application
 
     // Adding dark style
     JMetro jMetro = new JMetro(Style.DARK);
-    jMetro.setScene(mainScene);
+    jMetro.setScene(scene);
    }
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="principalView">
-
   /**
    *
    * @throws java.lang.Exception
@@ -378,7 +376,6 @@ public class MainScene extends Application
 //</editor-fold>  
 
 //<editor-fold defaultstate="collapsed" desc="DataBaseView">
-
   private void dataBaseView() throws Exception
    {
     handleLoadViewAndResource("DataBaseView");
@@ -387,13 +384,12 @@ public class MainScene extends Application
 
     // Give the mainController access to the main app (It´s like a instance)
     dataBaseController = loader.getController();
-    dataBaseController.setMainScene(this);
+    /*/*dataBaseController.setMainScene(this);*/
    }
 
 //</editor-fold>  
 
 //<editor-fold defaultstate="collapsed" desc="Handles">
-
   /**
    *
    * @return @throws java.lang.Exception
@@ -467,9 +463,12 @@ public class MainScene extends Application
    * @return
    * @throws java.lang.Exception
    */
-  public int handleRegistro(String usuarioString, String passwordString, boolean activoBoolean, String preguntaString, String respuestaString) throws Exception
+  public int handleRegistro(String usuarioString, String passwordString,
+          boolean activoBoolean, String preguntaString,
+          String respuestaString) throws Exception
    {
-    int ret = dataBaseController.handleRegistro(usuarioString, passwordString, activoBoolean, preguntaString, respuestaString);
+    int ret = dataBaseController.handleRegistro(usuarioString, passwordString,
+            activoBoolean, preguntaString, respuestaString);
     dataBaseController.handleRegistro02(usuarioString, passwordString, activoBoolean);
 
     return ret;
@@ -548,7 +547,6 @@ public class MainScene extends Application
 
 
   /* ------------------------there are two methods of close*/
-
   /**
    *
    * @throws java.lang.Exception
@@ -560,7 +558,7 @@ public class MainScene extends Application
         e.consume();
         fadeOldOut();
         helperFadePlayOut("withFileChooser");
-        if (!Message.message(Alert.AlertType.CONFIRMATION, "Salir",
+        if (!message(Alert.AlertType.CONFIRMATION, "Salir",
                 "¿Quieres salir de la aplicación?", "", null)) {
           fadeNewIn();
           fadeOldIn();
@@ -568,7 +566,7 @@ public class MainScene extends Application
           return;
         }
       } catch (Exception ex) {
-        Message.showException(ex);
+        showException(ex);
       }
       Platform.exit();
       System.exit(0);
@@ -605,11 +603,30 @@ public class MainScene extends Application
    {
     return dataBaseController.handleCheckMateriaActivo(usuarioId);
    }
+//</editor-fold> 
 
+//<editor-fold defaultstate="collapsed" desc="PoolConnections">
+  /**
+   *
+   * @param conn
+   */
+  public void releaseConnection(Connection conn)
+   {
+    connectionsPool.releaseConnection(conn);
+   }
+
+  /**
+   *
+   * @throws Exception
+   */
+  public void shutdown() throws Exception
+   {
+    dataBaseController.resourcesClose();
+    connectionsPool.shutdown();
+   }
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
-
   /**
    *
    * @param usuario_id
@@ -703,7 +720,7 @@ public class MainScene extends Application
     registrationController.setProgressBarValue(progressBarValue);
     forgetController.setProgressBarValue(progressBarValue);
     principalController.setProgressBarValue(progressBarValue);
-    //System.out.println("mainScene " + progressBarValue.getValue());
+    //System.out.println("scene " + progressBarValue.getValue());
 
     if (progressBarValue.getValue() >= 1) progressBarValue.set(0.0);
    }
@@ -769,6 +786,16 @@ public class MainScene extends Application
 
 
   /**
+   *
+   * @return @throws Exception
+   */
+  public Connection getConnection() throws Exception
+   {
+    return connectionsPool.getConnection();
+   }
+
+
+  /**
    * Returns the main stage, if you need it, for example to use it with the filechooser in the mainController class
    *
    * @return An object of type Stage
@@ -779,10 +806,31 @@ public class MainScene extends Application
     return mainStage;
    }
 
+
+  /**
+   * Returns the scene
+   *
+   * @return An object of type Scene
+   * @throws java.lang.Exception
+   */
+  public static MainScene getMainScene() throws Exception
+   {
+    return mainScene;
+   }
+
+
+  /**
+   *
+   * @param ms
+   * @throws Exception
+   */
+  public static void setMainScene(MainScene ms) throws Exception
+   {
+    mainScene = ms;
+   }
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Menu Buttons">
-
   /**
    * it's called by mainController when i click in the open menu
    *
@@ -842,8 +890,9 @@ public class MainScene extends Application
 
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
-    //Message m = new Message(resources);
-    if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
+
+    if (!message(
+            Alert.AlertType.CONFIRMATION, "Salir",
             "¿Quieres cerrar el archivo?", "", null)) {
       fadeOldIn();
       helperFadePlayIn("withFileChooser");
@@ -869,7 +918,7 @@ public class MainScene extends Application
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
 
-    if (!message.message(Alert.AlertType.CONFIRMATION, "Salir",
+    if (!message(Alert.AlertType.CONFIRMATION, "Salir",
             "¿Quieres salir de la aplicación?", "", null)) {
 
       fadeOldIn();
@@ -896,7 +945,7 @@ public class MainScene extends Application
 
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
-    message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
+    message(Alert.AlertType.INFORMATION, "LanguageApp", "Ayuda",
             "Controles: \n\n" +
             "Cursores:  para desplazarte por los diferentes " +
             "elementos.\n\n" +
@@ -926,7 +975,7 @@ public class MainScene extends Application
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
 
-    message.message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:", "Autor: Roberto Garrido Trillo", null);
+    message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:", "Autor: Roberto Garrido Trillo", null);
     fadeNewIn();
     fadeOldIn();
     helperFadePlayIn("withFileChooser");
@@ -970,7 +1019,7 @@ public class MainScene extends Application
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
 
-    boolean salida = message.message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "¿Quieres cerrar la sesión?", "", null);
+    boolean salida = message(Alert.AlertType.CONFIRMATION, "Cerrar sesión", "¿Quieres cerrar la sesión?", "", null);
     if (!salida) {
       fadeOldIn();
       fadeNewIn();
@@ -1070,17 +1119,15 @@ public class MainScene extends Application
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Total Fade In / Out">
-
   //<editor-fold defaultstate="collapsed" desc="Setting fade without filechooser">
-
   public void setFadeLogin(String destiny) throws Exception
    {
 
     mainChangeListener = new ChangeListener<Double>()
      {
       @Override
-      public void changed(ObservableValue<? extends Double> observable, Double oldValue,
-              Double newValue)
+      public void changed(ObservableValue<? extends Double> observable,
+              Double oldValue, Double newValue)
        {
         try {
           //System.out.println("newValue " + newValue);
@@ -1090,7 +1137,8 @@ public class MainScene extends Application
             centerNode.opacityProperty().removeListener(mainChangeListener);
 
             mainView.getChildren().removeAll(loginView, principalView, dataBaseView);
-            loginView.getChildren().removeAll(welcomeView, formView, registrationView, forgetView);
+            loginView.getChildren().removeAll(welcomeView, formView,
+                    registrationView, forgetView);
 
 
             // Temporal nodes
@@ -1152,7 +1200,7 @@ public class MainScene extends Application
           }
 
         } catch (Exception e) {
-          throw new RuntimeException(e);
+          showException(e);
         }
        }
 
@@ -1166,7 +1214,6 @@ public class MainScene extends Application
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Fade in / out of the scene with filechooser">
-
   /**
    *
    * @throws java.lang.Exception
@@ -1199,7 +1246,6 @@ public class MainScene extends Application
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Fade in / out of the scene without filechooser">
-
   private FadeTransition handleSetFadeIn() throws Exception
    {
     centerNode = mainController.checkCenter();
@@ -1227,7 +1273,6 @@ public class MainScene extends Application
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="helper Fade Play In Out">
-
   /**
    *
    */
@@ -1258,7 +1303,7 @@ public class MainScene extends Application
   private void helperFadePlayOut(String key) throws Exception
    {
     String result = principalController.getMediaStatus();
-    result = null;
+
     if (!key.equals(look) && !look.equals("")) return;
 
     if (result.equals("pause")) {
@@ -1283,7 +1328,6 @@ public class MainScene extends Application
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Fade out of the label and progressbar">
-
   public void fadeLabel() throws Exception
    {
     mainController.fadeLabel();
@@ -1298,7 +1342,6 @@ public class MainScene extends Application
   //</editor-fold>
 
 //</editor-fold>
-
   public static void main(String[] args)
    {
     launch(args);

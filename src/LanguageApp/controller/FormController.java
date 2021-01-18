@@ -3,9 +3,9 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
-import LanguageApp.util.Directorio;
+import LanguageApp.util.Directory;
 import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -21,7 +21,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -64,9 +63,6 @@ public class FormController implements Initializable
 
   @FXML private HBox HBoxNuevoUsuarioLogin;
   @FXML private JFXButton newUserButtonLogin;
-
-  // pop-up messages
-  Message message;
 
   // The nodes of the view
   private Node[] node;
@@ -119,7 +115,6 @@ public class FormController implements Initializable
     try {
 
       this.resources = resources;
-      message = new Message(mainStage, resources);
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
@@ -132,7 +127,6 @@ public class FormController implements Initializable
         recuperarButtonLogin,
         newUserButtonLogin
       };
-
 
 
       // Setting the current node
@@ -166,14 +160,12 @@ public class FormController implements Initializable
         loginButtonLogin.setDisable(progressBarValue.lessThan(1).get());
       });
     } catch (Exception e) {
-      Message.showException(e);
+      showException(e);
     }
    }
-
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-
   /**
    *
    * @throws Exception
@@ -198,13 +190,11 @@ public class FormController implements Initializable
     usuarioTextFieldLogin.setText("");
     passwordTextFieldLogin.setText("");
    }
-
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
   //<editor-fold defaultstate="collapsed" desc="Button">
-
   /**
    * Helper to the play button event
    *
@@ -224,7 +214,7 @@ public class FormController implements Initializable
         handleEraseError();
         setBorder(n);
       } catch (Exception e) {
-        Message.showException(e);
+        showException(e);
       }
     });
 
@@ -240,7 +230,8 @@ public class FormController implements Initializable
 
           int i = -1;
 
-          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN)) ke.consume();
+          if (ke.getCode().equals(KeyCode.UP) || ke.getCode().equals(KeyCode.DOWN))
+            ke.consume();
 
           if (ke.getCode().equals(KeyCode.UP) && !node[up].isDisable()) {
             ke.consume();
@@ -264,7 +255,8 @@ public class FormController implements Initializable
             }
           }
 
-          if (ke.getCode().equals(KeyCode.SPACE) || ke.getCode().equals(KeyCode.ENTER)) {
+          if (ke.getCode().equals(KeyCode.SPACE) ||
+                  ke.getCode().equals(KeyCode.ENTER)) {
             switch (n.getId()) {
               case "loginButtonLogin":
                 handlelogin();
@@ -292,7 +284,7 @@ public class FormController implements Initializable
 
           }
         } catch (Exception e) {
-          Message.showException(e);
+          showException(e);
         }
        }
 
@@ -328,16 +320,14 @@ public class FormController implements Initializable
             break;
         }
       } catch (Exception e) {
-        Message.showException(e);
+        showException(e);
       }
 
     });
    }
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Erase Error">
-
   /**
    *
    * @throws Exception
@@ -349,11 +339,9 @@ public class FormController implements Initializable
     errorPasswordLabel.setManaged(false);
     errorPasswordLabel.setText(null);
    }
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-
   /**
    * Setting the border (cursor) of the node
    *
@@ -375,11 +363,9 @@ public class FormController implements Initializable
     oldNode = currentNode;
     currentNode = n;
    }
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-
   /**
    *
    * Helper to setting Color Border
@@ -403,13 +389,11 @@ public class FormController implements Initializable
     HBoxNuevoUsuarioLogin.getStyleClass()
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
-
   //</editor-fold>
 
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handles">   
-
   /**
    *
    * @throws Exception
@@ -527,7 +511,8 @@ public class FormController implements Initializable
       String usuario_nombre = (String) pair.getValue();
 
       // Put the number of user, just in case there was not active user
-      // Check if the new user and (assumig there was) the active user of the data base were the
+      // Check if the new user and (assumig there was) the active user of the 
+      // data base were the
       if (usuario_id > 0) {
         // id of the new user
         mainScene.setUsuario_id(usuario_id);
@@ -535,7 +520,8 @@ public class FormController implements Initializable
 
         // id of the old user active
         int old_id_active = mainScene.handleCheckNombre().getKey();
-        int usuario_id_last = (old_id_active != 0) ? old_id_active : mainScene.getUsuario_ultimo();
+        int usuario_id_last = (old_id_active != 0) ?
+                old_id_active : mainScene.getUsuario_ultimo();
 
         // Si empiezo la aplicacion y todos los usuarias estan inactivos
         if (usuario_id_last == 0) {
@@ -544,11 +530,12 @@ public class FormController implements Initializable
                   !mainScene.handleCheckMateriaActivo(usuario_id_last).getKey());
         } else {
 
-          Pair<Boolean, String> mate_act_last = mainScene.handleCheckMateriaActivo(usuario_id_last);
-          Pair<Boolean, String> mate_act_new = mainScene.handleCheckMateriaActivo(usuario_id);
+          Pair<Boolean, String> mate_act_last =
+                  mainScene.handleCheckMateriaActivo(usuario_id_last);
+          Pair<Boolean, String> mate_act_new =
+                  mainScene.handleCheckMateriaActivo(usuario_id);
 
-
-          Directorio dire = new Directorio();
+          Directory dire = new Directory();
           dire.getLastDirectory();
 
           if (usuario_id_last != usuario_id) {

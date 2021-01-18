@@ -10,79 +10,72 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javafx.scene.control.Alert;
 
 
 /**
  *
  * @author Roberto Garrido Trillo
  */
-public class SaveWordsAsList {
+public class SaveWordsAsList
+ {
 
-   // pop-up messages
-   Message message = new Message(HandleLocale.getResource());
-   
-   // There is another simil pattern in SortPhrase.java
-   Pattern pattern = Pattern.compile(
-           "\\[|\\]|\\º|\\ª|\\@|\\·|\\#|\\$|\\~|\\%|\\€|\\&|\\¬|\\/|\\(|\\)|\\=|\\?|\\¿|\\¡" +
-           "|\\^|\\+|\\*|\\||\\{|\\}|\\_|\\-|\\.|\\:|\\,|\\;|\\<|\\>|\\«|\"|\\ |\\»|\\!|\\。");
-   Matcher matcherFirst, matcherLast;
+  // There is another simil pattern in SortPhrase.java
+  Pattern pattern = Pattern.compile(
+          "\\[|\\]|\\º|\\ª|\\@|\\·|\\#|\\$|\\~|\\%|\\€|\\&|\\¬|\\/|\\(|\\)|\\=|\\?|\\¿|\\¡" +
+          "|\\^|\\+|\\*|\\||\\{|\\}|\\_|\\-|\\.|\\:|\\,|\\;|\\<|\\>|\\«|\"|\\ |\\»|\\!|\\。");
+  Matcher matcherFirst, matcherLast;
 
 
-   /**
-    * Save in a File a list of words
-    *
-    * @param items An item of item objects
-    * @return
-    */
-   public Set<String> saveWordsAsList (Item[] items)
+  /**
+   * Save in a File a list of words
+   *
+   * @param items An item of item objects
+   * @return
+   * @throws java.lang.Exception
+   */
+  public Set<String> saveWordsAsList(Item[] items) throws Exception
    {
 
-      // Array with the words of one phrase
-      String[] wordPhrase;
-      // Set with all the words (no repeat words)
-      Set<String> ws = new LinkedHashSet<>();
-      // The "words set" above pased to String, to save in disk
-      String wString = "";
+    // Array with the words of one phrase
+    String[] wordPhrase;
+    // Set with all the words (no repeat words)
+    Set<String> ws = new LinkedHashSet<>();
+    // The "words set" above pased to String, to save in disk
+    String wString = "";
 
-      try {
+    for (int i = 0; i < items.length - 1; i++) {
 
-         for (int i = 0; i < items.length - 1; i++) {
+      String phrase = items[i].getText();
 
-            String phrase = items[i].getText();
+      wordPhrase = cleanWords(phrase);
+      // Adding the words of this phrase to the List
+      ws.addAll(Arrays.asList(wordPhrase));
+    }
 
-            wordPhrase = cleanWords(phrase);
-            // Adding the words of this phrase to the List
-            ws.addAll(Arrays.asList(wordPhrase));
-         }
+    // Sorting the Set (Set doesn´t sort, I put it in a list)
+    List<String> wordList = new ArrayList<>(ws);
+    Collections.sort(wordList);
 
-         // Sorting the Set (Set doesn´t sort, I put it in a list)
-         List<String> wordList = new ArrayList<>(ws);
-         Collections.sort(wordList);
+    // Passing the List to String to save into a file
+    for (Iterator<String> iterator = wordList.iterator();
+            iterator.hasNext();) {
+      wString = wString.concat(iterator.next()).concat("\n");
 
-         // Passing the List to String to save into a file
-         for (Iterator<String> iterator = wordList.iterator();
-                 iterator.hasNext();) {
-            wString = wString.concat(iterator.next()).concat("\n");
-
-         }
-      } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Mensaje de error", "SaveWordsAsList.java / handleSaveAsList()", e.toString(), e);
-      }
-      return ws;
+    }
+    return ws;
    }
 
 
-   public String[] cleanWords (String phrase)
+  public String[] cleanWords(String phrase) throws Exception
    {
 
-      String[] wordPhrase = null;
-      String sub;
-      String s;
-      try {
-         // I'm going to probe without the normalizer
-         s = phrase;
-         /*
+    String[] wordPhrase = null;
+    String sub;
+    String s;
+
+    // I'm going to probe without the normalizer
+    s = phrase;
+    /*
             // Deleting accents
             s = Normalizer.normalize(phrase, Normalizer.Form.NFD);
             s = s.replaceAll("\\p{InCombiningDiacriticalMarks}+",
@@ -123,35 +116,35 @@ public class SaveWordsAsList {
 
             }
             
-          */
-         // To lowerCase
-         phrase = s.toLowerCase();
-         phrase = phrase.replace("  ", "");
+     */
+    // To lowerCase
+    phrase = s.toLowerCase();
+    phrase = phrase.replace("  ", "");
 
-         // Breaking down the phrase in words aput then in a Array
-         wordPhrase = phrase.split(" ");
-         // Deleting the first and last 'dot, comma, acent... of every
-         // word of the phrase
-         for (int k = 0; k < wordPhrase.length; k++) {
+    // Breaking down the phrase in words aput then in a Array
+    wordPhrase = phrase.split(" ");
+    // Deleting the first and last 'dot, comma, acent... of every
+    // word of the phrase
+    for (int k = 0; k < wordPhrase.length; k++) {
 
 
-            for (int i = 0; i < 4; i++) {
-               String first = wordPhrase[k].substring(0, 1);
-               String last = wordPhrase[k].substring(wordPhrase[k].length() - 1);
+      for (int i = 0; i < 4; i++) {
+        String first = wordPhrase[k].substring(0, 1);
+        String last = wordPhrase[k].substring(wordPhrase[k].length() - 1);
 
-               matcherFirst = pattern.matcher(first);
-               matcherLast = pattern.matcher(last);
-               if (matcherFirst.find()) {
-                  wordPhrase[k] = wordPhrase[k].substring(1, wordPhrase[k].length());
-               }
-               if (matcherLast.find()) {
-                  wordPhrase[k] = wordPhrase[k].substring(0, wordPhrase[k].length() - 1);
-               }
-            }
-         }
-      } catch (Exception e) {
-         message.message(Alert.AlertType.ERROR, "Mensaje de error", "SaveWordsAsList.java / cleanWords()", e.toString(), e);
+        matcherFirst = pattern.matcher(first);
+        matcherLast = pattern.matcher(last);
+        if (matcherFirst.find()) {
+          wordPhrase[k] = wordPhrase[k].substring(1, wordPhrase[k]
+                  .length());
+        }
+        if (matcherLast.find()) {
+          wordPhrase[k] = wordPhrase[k].substring(0, wordPhrase[k]
+                  .length() - 1);
+        }
       }
-      return wordPhrase;
+    }
+    return wordPhrase;
    }
-}
+
+ }

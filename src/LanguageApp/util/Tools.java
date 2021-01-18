@@ -1,6 +1,5 @@
 package LanguageApp.util;
 
-import LanguageApp.util.HandleLocale;
 import java.util.Arrays;
 import java.util.Locale;
 

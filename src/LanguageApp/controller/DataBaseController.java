@@ -9,13 +9,13 @@ import static LanguageApp.main.MainScene.setUsuario_nombre;
 import LanguageApp.model.Idioma;
 import LanguageApp.model.Materia;
 import LanguageApp.model.Usuario;
+import LanguageApp.util.ConnectionsPool;
 import static LanguageApp.util.HandleLocale.toLocale;
-import LanguageApp.util.Message;
+import static LanguageApp.util.Message.showException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -108,18 +108,18 @@ public class DataBaseController implements Initializable
 
   // Helper to directoriy
   private String path;
-  String se;
+  private String se;
 
   // Savepoint
-  Savepoint sp;
+  private Savepoint sp;
 
-  //Global varibles
-  /*/* Connection conn, conn02;
-  Statement stmt;
-  PreparedStatement pstmt;*/
-
-  // pop-up messages
-  Message message;
+  // Connetion varibles
+  private Connection conn;
+  private Statement stmt;
+  private PreparedStatement pstmt;
+  private String sql;
+  // Resulset of the tableview
+  private ResultSet rs, rsUsuario, rsMateria, rsIdioma, rsIdiomaSuma;
 
   // Tab text constants multilanguge
   private String usuario, materias, datosMaterias;
@@ -154,25 +154,21 @@ public class DataBaseController implements Initializable
   private List<Materia> materiaArrayList;
   private List<Idioma> idiomaArrayList;
 
-  // Resulset of the tableview
-  ResultSet rsUsuario, rsMateria, rsIdioma, rsIdiomaSuma;
-
   private ObservableList<Usuario> usuarioObservableList;
   private ObservableList<Materia> materiaObservableList;
   private ObservableList<Idioma> idiomaObservableList;
 
-  int indiceUsuario, indiceMateria, indiceIdioma;
+  private int indiceUsuario, indiceMateria, indiceIdioma;
 
   // If the user is root or not
   private boolean root;
 
   // For the bounle of idioms
-  ResourceBundle resources;
+  private ResourceBundle resources;
 
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-
   /**
    *
    * @param aThis
@@ -186,7 +182,6 @@ public class DataBaseController implements Initializable
   //</editor-fold>  
 
   //<editor-fold defaultstate="collapsed" desc="Initialize">
-
   /**
    * When the method is initialize
    */
@@ -200,18 +195,19 @@ public class DataBaseController implements Initializable
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
-      // Create the locale for the pop up messages
-      /*/*  = new Message(mainStage, resources); */
-
-      // creating the path
+      // References to mainScene
+      mainScene = MainScene.getMainScene();
 
       // The path is an absolute path (relarive to the initial instalation)    
       path = System.getProperty("user.dir");
       se = System.getProperty("file.separator");
 
+      // Creating the conection
+      conn = mainScene.getConnection();
+
       // Creating the initial database
-      createDatabase(connect());
-      //insertData(connect()); // Only for testing purpose
+      createDatabase();
+      //insertData(); // Only for testing purpose
 
 
       // Creating multilingual constans
@@ -234,6 +230,10 @@ public class DataBaseController implements Initializable
       oldNode = tabPanelDataBase;
       tabPanelDataBase.requestFocus();
 
+      // Setting the connetion variables
+      stmt = null;
+      pstmt = null;
+      sql = null;
       // Resulset of the tableview
       rsUsuario = null;
       rsMateria = null;
@@ -245,52 +245,50 @@ public class DataBaseController implements Initializable
       // Settiong the intial border
       setBorder(tabPanelDataBase);
     } catch (Exception e) {
-      Message.showException(e);
+      resourcesClose();
+      mainScene.releaseConnection(conn);
+      showException(e);
+    }
+   }
+
+  /**
+   *
+   * @throws Exception
+   */
+  public void resourcesClose()
+   {
+    try {
+      if (!isNull(stmt)) stmt.close();
+      if (!isNull(pstmt)) pstmt.close();
+      if (!isNull(rs)) rs.close();
+      if (!isNull(rsUsuario)) rsUsuario.close();
+      if (!isNull(rsMateria)) rsMateria.close();
+      if (!isNull(rsIdioma)) rsIdioma.close();
+      if (!isNull(rsIdiomaSuma)) rsIdiomaSuma.close();
+    } catch (Exception e) {
+      showException(e);
     }
    }
 
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="Connect">
-
-  /**
-   *
-   * @return @throws java.lang.Exception
-   */
-  public Connection connect() throws Exception
-   {
-    /*/* conn = null; */
-    Connection conn = null;
-    // path to the database
-    String url = "jdbc:sqlite:" + path + se + "database.db";
-    conn = DriverManager.getConnection(url);
-    conn.createStatement().execute("PRAGMA foreign_keys = ON");
-    // if doesn't exit it's create the database
-    Class.forName("org.sqlite.JDBC");
-    return conn;
-   }
-
-  //</editor-fold>
-
   //<editor-fold defaultstate="collapsed" desc="CreateDataBase">
-
   /**
    *
    * @param conn
    * @throws SQLException
    * @throws Exception
    */
-  private void createDatabase(Connection conn) throws SQLException, Exception
+  private void createDatabase() throws SQLException, Exception
    {
-
-    Statement stmt = null;
+    stmt = null;
 
     try {
 
       conn.setAutoCommit(false);
       sp = conn.setSavepoint("crear_database");
 
-      String sql = "PRAGMA foreign_keys = ON;";
+      sql = "PRAGMA foreign_keys = ON;";
 
       sql += "CREATE TABLE IF NOT EXISTS usuarios ( " +
               "usuario_id INTEGER  NOT NULL, " +
@@ -345,28 +343,22 @@ public class DataBaseController implements Initializable
       conn.rollback(sp);
       throw new Exception(e);
     } finally {
-      if (!isNull(conn)) {
-        conn.close();
-        stmt.close();
-      }
+      resourcesClose();
     }
    }
-
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="insertData">
-
   /**
    *
    * @param conn
    * @throws SQLException
    * @throws Exception
    */
-  private void insertData(Connection conn) throws SQLException, Exception
+  private void insertData() throws SQLException, Exception
    {
 
-    Statement stmt = null;
+    stmt = null;
 
     try {
 
@@ -790,18 +782,15 @@ public class DataBaseController implements Initializable
 
       //</editor-fold>
 
-      sp = conn.setSavepoint("insertar_tablas");
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
       conn.commit();
-
-      stmt.close();
 
     } catch (Exception e) {
       conn.rollback(sp);
       throw new Exception(e);
     } finally {
-      conn.close();
+      if (!isNull(stmt)) stmt.close();
     }
    }
 
@@ -814,21 +803,17 @@ public class DataBaseController implements Initializable
    */
   public Pair<Integer, String> handleCheckNombre() throws SQLException, Exception
    {
-    Connection conn = null;
-    Statement stmt = null;
+    stmt = null;
     int id = 0;
     String nombre = null;
 
     // Preparing statement
-
-    String sql = "SELECT usuario_id, usuario_nombre, password FROM usuarios " +
+    sql = "SELECT usuario_id, usuario_nombre, password FROM usuarios " +
             "WHERE usuario_activo = 1";
-    // Try connection
-    conn = connect();
 
     stmt = conn.createStatement();
     //
-    ResultSet rs = stmt.executeQuery(sql);
+    rs = stmt.executeQuery(sql);
 
     if (rs.next()) {
       id = rs.getInt("usuario_id");
@@ -838,8 +823,8 @@ public class DataBaseController implements Initializable
       id = 0;
     }
 
-    stmt.close();
-    conn.close();
+    resourcesClose();
+
     return new Pair(id, nombre);
    }
 
@@ -854,14 +839,13 @@ public class DataBaseController implements Initializable
   public Pair<Boolean, String> handleCheckMateriaActivo(int usuarioId)
           throws SQLException, Exception
    {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
+
+    pstmt = null;
     usuario_id = 0;
     Pair<Boolean, String> pair = new Pair<>(false, null);
 
     // Preparing statement
-    conn = connect();
-    String sql = "SELECT m.directorio, m.materia_nombre, m.materia_activo FROM materias m " +
+    sql = "SELECT m.directorio, m.materia_nombre, m.materia_activo FROM materias m " +
             "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
             "WHERE u.usuario_id = ? AND m.materia_activo = 1";
 
@@ -870,7 +854,7 @@ public class DataBaseController implements Initializable
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, usuarioId);
 
-    ResultSet rs = pstmt.executeQuery();
+    rs = pstmt.executeQuery();
     conn.commit();
 
     while (rs.next()) {
@@ -880,8 +864,7 @@ public class DataBaseController implements Initializable
               rs.getString("materia_nombre"));
     }
 
-    pstmt.close();
-    conn.close();
+    resourcesClose();
 
     return pair;
    }
@@ -897,22 +880,18 @@ public class DataBaseController implements Initializable
           throws SQLException, Exception
    {
 
-    Connection conn = null;
-    Statement stmt = null;
-    PreparedStatement pstmt = null;
+    stmt = null;
+    pstmt = null;
 
     // In SQLinte doesn't exit boolean
     usuario_activo = activoBoolean;
 
-    // Try connection
-    conn = connect();
     conn.setAutoCommit(false);
 
-    String sql = "UPDATE usuarios SET usuario_activo = 0;";
+    sql = "UPDATE usuarios SET usuario_activo = 0;";
     stmt = conn.createStatement();
     stmt.executeUpdate(sql);
     conn.commit();
-    stmt.close();
     // set the value
     sql = "UPDATE usuarios SET usuario_activo = ? WHERE usuario_id = ?";
     pstmt = conn.prepareStatement(sql);
@@ -921,8 +900,7 @@ public class DataBaseController implements Initializable
     pstmt.executeUpdate();
     conn.commit();
 
-    pstmt.close();
-    conn.close();
+    resourcesClose();
    }
 
 
@@ -934,20 +912,18 @@ public class DataBaseController implements Initializable
    * @throws java.sql.SQLException
    * @throws java.lang.Exception
    */
-  public Pair<Integer, String> handleCheckUser(String usuarioString, String passwordString)
-          throws SQLException, Exception
+  public Pair<Integer, String> handleCheckUser(String usuarioString,
+          String passwordString) throws SQLException, Exception
    {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
+
+    pstmt = null;
 
     usuario_nombre = null;
     usuario_id = 0;
 
     // Preparing statement
-    String sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_nombre = ? and password = ?";
+    sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_nombre = ? and password = ?";
 
-    // Try connection
-    conn = connect();
     conn.setAutoCommit(false);
 
     // preparing statement
@@ -958,13 +934,15 @@ public class DataBaseController implements Initializable
     pstmt.setString(2, passwordString);
 
     //
-    ResultSet rs = pstmt.executeQuery();
+    rs = pstmt.executeQuery();
 
     if (rs.next()) {
       usuario_id = rs.getInt("usuario_id");
       usuario_nombre = rs.getString("usuario_nombre");
     }
-    conn.close();
+
+    resourcesClose();
+
     return new Pair(usuario_id, usuario_nombre);
    }
 
@@ -984,9 +962,9 @@ public class DataBaseController implements Initializable
           String respuestaString) throws SQLException, Exception
    {
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    String sql = null;
+
+    pstmt = null;
+    sql = null;
     usuario_id = 0;
     Pair<Integer, String> usuarioPair;
     int result = 0;
@@ -999,14 +977,12 @@ public class DataBaseController implements Initializable
         result = usuarioPair.getKey();
       } else {
 
-        // I create the user
-        conn = connect();
         conn.setAutoCommit(false);
         sp = conn.setSavepoint("Registration");
 
         // Preparing statement
-        sql = "INSERT INTO usuarios (usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
-                 "VALUES (?,?,?,?,?)";
+        sql = "INSERT INTO usuarios (usuario_nombre, password, usuario_activo," +
+                " pregunta, respuesta) VALUES (?,?,?,?,?)";
         pstmt = conn.prepareStatement(sql);
         // set the value
         pstmt.setString(1, usuarioString);
@@ -1022,11 +998,7 @@ public class DataBaseController implements Initializable
       conn.rollback(sp);
       throw new Exception(e);
     } finally {
-      if (!isNull(conn)) {
-        pstmt.close();
-        conn.close();
-      } else {
-      }
+      resourcesClose();
     }
     return result;
    }
@@ -1039,8 +1011,8 @@ public class DataBaseController implements Initializable
    * @param activoBoolean
    * @throws java.lang.Exception
    */
-  public void handleRegistro02(String usuarioString, String passwordString, boolean activoBoolean)
-          throws Exception
+  public void handleRegistro02(String usuarioString, String passwordString,
+          boolean activoBoolean) throws Exception
    {
 
     Pair<Integer, String> usuarioPair;
@@ -1100,9 +1072,9 @@ public class DataBaseController implements Initializable
   public int handleUpdate(Usuario usu) throws Exception
    {
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    String sql = null;
+
+    pstmt = null;
+    sql = null;
 
     try {
 
@@ -1111,8 +1083,6 @@ public class DataBaseController implements Initializable
       usuario_nombre = usu.getUsuario_nombre();
       handleBorrarMarcar(false, usuario_id);
 
-      // I create the user
-      conn = connect();
       conn.setAutoCommit(false);
       sp = conn.setSavepoint("handleUpdate");
 
@@ -1132,7 +1102,6 @@ public class DataBaseController implements Initializable
       pstmt.setInt(6, usuario_id);
       pstmt.executeUpdate();
       conn.commit();
-      pstmt.close();
 
       // Updated in the tableview
       if (usu.getUsuario_activo()) {
@@ -1149,7 +1118,7 @@ public class DataBaseController implements Initializable
       conn.rollback(sp);
       throw new Exception(e);
     } finally {
-      conn.close();
+      resourcesClose();
     }
     return 0;
    }
@@ -1164,16 +1133,15 @@ public class DataBaseController implements Initializable
   public void handleDelete(Usuario u) throws SQLException, Exception
    {
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    String sql = null;
+
+    pstmt = null;
+    sql = null;
 
     try {
 
       //put all the usuario_id to 0 except the usuario_id
       usuario_id = u.getUsuario_id();
 
-      conn = connect();
       conn.setAutoCommit(false);
       sp = conn.setSavepoint("handleUpdate");
 
@@ -1184,7 +1152,6 @@ public class DataBaseController implements Initializable
 
       pstmt.executeUpdate();
       conn.commit();
-      pstmt.close();
 
       usuarioObservableList.remove(u);
       usuarioTableView.refresh();
@@ -1194,7 +1161,7 @@ public class DataBaseController implements Initializable
       conn.rollback(sp);
       throw new Exception(e);
     } finally {
-      conn.close();
+      resourcesClose();
     }
 
    }
@@ -1213,12 +1180,16 @@ public class DataBaseController implements Initializable
         fOut.setToValue(0.0);
         fOut.setNode((Node) formDataBaseView);
         fOut.setOnFinished((e) -> {
-          formStage.close();
+          try {
+            formStage.close();
+          } catch (Exception ex) {
+            showException(ex);
+          }
         });
         fOut.play();
         formStage.close();
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        showException(e);
       }
     });
    }
@@ -1236,15 +1207,14 @@ public class DataBaseController implements Initializable
   public String handleRecordar(String usuarioString, String preguntaString, String respuestaString) throws SQLException, Exception
    {
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
+
+    pstmt = null;
     String pass = null;
 
     // Preparing statement
-    String sql = "SELECT password FROM usuarios WHERE usuario_nombre = ? and pregunta = ? and respuesta = ?";
+    sql = "SELECT password FROM usuarios WHERE usuario_nombre = ? " +
+            "and pregunta = ? and respuesta = ?";
 
-    // Try connection
-    conn = connect();
     conn.setAutoCommit(false);
 
     // preparing statement
@@ -1264,11 +1234,10 @@ public class DataBaseController implements Initializable
       return pass;
     }
 
-    pstmt.close();
-    conn.close();
+    resourcesClose();
+
     return pass;
    }
-
 
 
   /**
@@ -1281,30 +1250,29 @@ public class DataBaseController implements Initializable
    * @throws java.sql.SQLException
    * @throws java.lang.Exception
    */
-  public Pair<String, String> handleUpdateCorrection(String trans, String currentTab,
-          int indexItemV, double success) throws SQLException, Exception
+  public Pair<String, String> handleUpdateCorrection(String trans,
+          String currentTab, int indexItemV, double success)
+          throws SQLException, Exception
    {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
+
+    pstmt = null;
     escritura = "0.0";
     traduccion = "0.0";
     double escribirDouble = 0.0, traducirDouble = 0.0;
     String action = "insert";
 
-    // Try connection
-    conn = connect();
     conn.setAutoCommit(false);
 
     usuario_id = getUsuario_id();
 
-    String sql = "SELECT m.materia_id, i.idioma_id FROM materias m " +
+    sql = "SELECT m.materia_id, i.idioma_id FROM materias m " +
             "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
             "INNER JOIN idiomas i ON m.materia_id = i.fk_materia_id " +
             "WHERE u.usuario_id = ? AND m.materia_activo = 1 AND i.idioma_nombre = ?";
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, usuario_id);
     pstmt.setString(2, trans);
-    ResultSet rs = pstmt.executeQuery();
+    rs = pstmt.executeQuery();
     conn.commit();
 
     if (rs.next()) {
@@ -1345,7 +1313,8 @@ public class DataBaseController implements Initializable
     traduccion = String.valueOf(traducirDouble);
 
     if (action.equals("insert")) {
-      sql = "INSERT INTO datos (fk_idioma_id, indice, escribir, traducir) VALUES (?,?,?,?)";
+      sql = "INSERT INTO datos (fk_idioma_id, indice, escribir, traducir) " +
+              "VALUES (?,?,?,?)";
       pstmt = conn.prepareStatement(sql);
       // set the value
       pstmt.setInt(1, idioma_id);
@@ -1365,8 +1334,8 @@ public class DataBaseController implements Initializable
       conn.commit();
     }
 
-    pstmt.close();
-    conn.close();
+    resourcesClose();
+
     return new Pair<>(escritura, traduccion);
    }
   //</editor-fold>
@@ -1374,7 +1343,6 @@ public class DataBaseController implements Initializable
   //<editor-fold defaultstate="collapsed" desc="FormDataBase">
 
   //<editor-fold defaultstate="collapsed" desc="Setting initial formDatabase and events">
-
   /**
    *
    * @throws Exception
@@ -1387,14 +1355,16 @@ public class DataBaseController implements Initializable
     settingIdiomaEvent();
 
     // Setting and events of the tableColumns and cells
-    usuario_idTableColumn.setCellValueFactory(new PropertyValueFactory<>("usuario_id"));
+    usuario_idTableColumn.setCellValueFactory(
+            new PropertyValueFactory<>("usuario_id"));
     setTableColumnUser(usuario_nombreTableColumn, "usuario_nombre");
     setTableColumnUser(passwordTableColumn, "password");
     setTableColumnUser(usuario_activoTableColumn, "usuario_activo");
     setTableColumnUser(preguntaTableColumn, "pregunta");
     setTableColumnUser(respuestaTableColumn, "respuesta");
 
-    materia_idTableColumn.setCellValueFactory(new PropertyValueFactory<>("materia_id"));
+    materia_idTableColumn.setCellValueFactory(
+            new PropertyValueFactory<>("materia_id"));
     setTableColumnSubjects(fk_usuario_nombreTableColumn, "usuario_nombre");
     setTableColumnSubjects(materia_nombreTableColumn, "materia_nombre");
     setTableColumnSubjects(directorioTableColumn, "directorio");
@@ -1429,8 +1399,8 @@ public class DataBaseController implements Initializable
 
 
       //tableColumn.setCellFactory(CheckBoxTableCell.forTableColumn(tableColumn));
-
       tableColumn.setCellFactory(p -> {
+
         CheckBox checkBox = new CheckBox();
 
         TableCell<Usuario, Boolean> tableCell = new TableCell<Usuario, Boolean>()
@@ -1438,12 +1408,16 @@ public class DataBaseController implements Initializable
           @Override
           protected void updateItem(Boolean item, boolean empty)
            {
-            super.updateItem(item, empty);
-            if (empty || item == null)
-              setGraphic(null);
-            else {
-              setGraphic(checkBox);
-              checkBox.setSelected(item);
+            try {
+              super.updateItem(item, empty);
+              if (empty || item == null)
+                setGraphic(null);
+              else {
+                setGraphic(checkBox);
+                checkBox.setSelected(item);
+              }
+            } catch (Exception e) {
+              showException(e);
             }
            }
 
@@ -1458,7 +1432,7 @@ public class DataBaseController implements Initializable
               handleUpdate(usu);
               event.consume();
             } catch (Exception e) {
-              throw new RuntimeException(e);
+              showException(e);
             }
           }
         });
@@ -1472,7 +1446,7 @@ public class DataBaseController implements Initializable
               event.consume();
             }
           } catch (Exception e) {
-            throw new RuntimeException(e);
+            showException(e);
           }
         });
 
@@ -1551,11 +1525,12 @@ public class DataBaseController implements Initializable
           showModalForm(u);
         }
         usuarioTableView.getSelectionModel().clearAndSelect(indiceUsuario);
-        usuario_IdEnviar = usuarioTableView.getSelectionModel().getSelectedItem().getUsuario_id();
+        usuario_IdEnviar = usuarioTableView.getSelectionModel().getSelectedItem()
+                .getUsuario_id();
         settingTableViewMateria();
         event.consume();
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        showException(e);
       }
     });
 
@@ -1571,7 +1546,7 @@ public class DataBaseController implements Initializable
         settingTableViewMateria();
         event.consume();
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        showException(e);
       }
     });
    }
@@ -1600,21 +1575,23 @@ public class DataBaseController implements Initializable
           materiasTableView.getSelectionModel().clearAndSelect(indiceMateria);
         }
         event.consume();
-        materia_IdEnviar = materiasTableView.getSelectionModel().getSelectedItem().getMateria_id();
+        materia_IdEnviar = materiasTableView.getSelectionModel()
+                .getSelectedItem().getMateria_id();
         settingTableViewIdioma();
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        showException(e);
       }
     });
 
     // Events Mouse
     materiasTableView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
       try {
-        materia_IdEnviar = materiasTableView.getSelectionModel().getSelectedItem().getMateria_id();
+        materia_IdEnviar = materiasTableView.getSelectionModel()
+                .getSelectedItem().getMateria_id();
         settingTableViewIdioma();
         event.consume();
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        showException(e);
       }
     });
    }
@@ -1627,47 +1604,53 @@ public class DataBaseController implements Initializable
    {
     // Events Key
     idiomasTableView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      try {
+        indiceIdioma = idiomasTableView.getSelectionModel().getSelectedIndex();
 
-      indiceIdioma = idiomasTableView.getSelectionModel().getSelectedIndex();
-
-      if ((event.getCode() == KeyCode.TAB && !event.isShiftDown()) ||
-              (event.getCode() == KeyCode.DOWN)) {
-        int indexLast = idiomasTableView.getItems().size();
-        if (indiceIdioma < indexLast) indiceIdioma++;
-        idiomasTableView.getSelectionModel().clearAndSelect(indiceIdioma);
-        event.consume();
-      }
-      if ((event.getCode() == KeyCode.TAB && event.isShiftDown()) ||
-              (event.getCode() == KeyCode.UP)) {
-        if (indiceIdioma > 0) indiceIdioma--;
-        idiomasTableView.getSelectionModel().clearAndSelect(indiceIdioma);
-        event.consume();
+        if ((event.getCode() == KeyCode.TAB && !event.isShiftDown()) ||
+                (event.getCode() == KeyCode.DOWN)) {
+          int indexLast = idiomasTableView.getItems().size();
+          if (indiceIdioma < indexLast) indiceIdioma++;
+          idiomasTableView.getSelectionModel().clearAndSelect(indiceIdioma);
+          event.consume();
+        }
+        if ((event.getCode() == KeyCode.TAB && event.isShiftDown()) ||
+                (event.getCode() == KeyCode.UP)) {
+          if (indiceIdioma > 0) indiceIdioma--;
+          idiomasTableView.getSelectionModel().clearAndSelect(indiceIdioma);
+          event.consume();
+        }
+      } catch (Exception e) {
+        showException(e);
       }
     });
    }
-
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Show tableview with actual data">
-
   /**
    *
+   * @throws java.lang.Exception
    */
   public void actualizarUsuario() throws Exception
    {
-    // A TableColumn must have a cell value factory set on it. 
-    // The cell value factory extracts the value to be displayed in each cell (on each row) in the column.
-    // The PropertyValueFactory factory can extract a property value (field value) from a Java object. 
-    // The name of the property is passed as a parameter to the PropertyValueFactory constructor.
-    // The property name "usuario_nombre" will match the getter method getUsuario_nombre of 
-    // the Usuario objects which contain the values are displayed on each row. 
+    /* A TableColumn must have a cell value factory set on it. 
+    The cell value factory extracts the value to be displayed in 
+    each cell (on each row) in the column.
+    The PropertyValueFactory factory can extract a property value (field value) 
+    from a Java object. 
+    The name of the property is passed as a parameter to the 
+    PropertyValueFactory constructor.
+    The property name "usuario_nombre" will match the getter method 
+    getUsuario_nombre of the Usuario objects which contain the values are 
+    displayed on each row.  */
 
     Object nombre = handleCheckNombre().getValue();
     Object id = handleCheckNombre().getKey();
     indiceUsuario = 0;
 
-    usuario_nombre = (nombre != null) ? nombre.toString() : null;
-    usuario_id = (id != null) ? (Integer) id : 0;
+    usuario_nombre = (!isNull(nombre)) ? nombre.toString() : null;
+    usuario_id = (!isNull(id)) ? (Integer) id : 0;
 
     usuarioArrayList = new ArrayList();
     materiaArrayList = new ArrayList();
@@ -1702,7 +1685,6 @@ public class DataBaseController implements Initializable
     }
    }
 
-
   /**
    *
    * @throws SQLException
@@ -1710,16 +1692,15 @@ public class DataBaseController implements Initializable
   private void settingTableViewUsuario() throws Exception
    {
 
-    Connection conn = null;
-    Statement stmt = null;
-    PreparedStatement pstmt = null;
-    String sql = null;
+
+    stmt = null;
+    pstmt = null;
+    sql = null;
     usuario_IdEnviar = 0;
     usuarioArrayList.clear();
     rsUsuario = null;
-    // Setting the tableview Usuario
 
-    conn = connect();
+    // Setting the tableview Usuario
     conn.setAutoCommit(false);
 
     if (usuario_nombre.equals("root") &&
@@ -1760,12 +1741,13 @@ public class DataBaseController implements Initializable
     usuarioTableView.getSelectionModel().clearAndSelect(0);
     usuarioTableView.scrollTo(0);
 
-    usuario_IdEnviar = usuarioTableView.getSelectionModel().getSelectedItem().getUsuario_id();
+    usuario_IdEnviar = usuarioTableView.getSelectionModel().getSelectedItem()
+            .getUsuario_id();
 
     // Change settingTableViewMateria()
     settingTableViewMateria();
 
-    conn.close();
+    resourcesClose();
    }
 
 
@@ -1775,14 +1757,13 @@ public class DataBaseController implements Initializable
    */
   private void settingTableViewMateria() throws Exception
    {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    String sql = null;
+
+    pstmt = null;
+    sql = null;
     materia_IdEnviar = 0;
     materiaArrayList.clear();
 
     // Setting the tableview Materias
-    conn = connect();
     conn.setAutoCommit(false);
 
     sql = "SELECT u.usuario_nombre, m.materia_id, m.fk_usuario_id, " +
@@ -1815,12 +1796,14 @@ public class DataBaseController implements Initializable
       materiasTableView.requestFocus();
       materiasTableView.getSelectionModel().clearAndSelect(0);
       materiasTableView.scrollTo(0);
-      materia_IdEnviar = materiasTableView.getSelectionModel().getSelectedItem().getMateria_id();
+      materia_IdEnviar = materiasTableView.getSelectionModel().getSelectedItem()
+              .getMateria_id();
     }
 
     settingTableViewIdioma();
 
-    conn.close();
+    resourcesClose();
+
    }
 
 
@@ -1830,74 +1813,67 @@ public class DataBaseController implements Initializable
    */
   private void settingTableViewIdioma() throws Exception
    {
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    String sql = null;
+
+    pstmt = null;
+    sql = null;
     idiomaArrayList.clear();
 
-    try {
+    // Setting the tableview Materias
+    conn.setAutoCommit(false);
+    sql = "SELECT m.materia_nombre, i.idioma_id, i.idioma_nombre " +
+            "FROM materias m " +
+            "INNER JOIN idiomas i on m.materia_id = i.fk_materia_id " +
+            "WHERE i.fk_materia_id = ? " +
+            "GROUP BY i.idioma_id";
 
-      // Setting the tableview Materias
-      conn = connect();
-      conn.setAutoCommit(false);
-      sql = "SELECT m.materia_nombre, i.idioma_id, i.idioma_nombre " +
-              "FROM materias m " +
-              "INNER JOIN idiomas i on m.materia_id = i.fk_materia_id " +
-              "WHERE i.fk_materia_id = ? " +
-              "GROUP BY i.idioma_id";
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setInt(1, materia_IdEnviar);
+    rsIdioma = pstmt.executeQuery();
 
+    while (rsIdioma.next()) {
+      idioma_id = rsIdioma.getInt("idioma_id");
+      materia_nombreEnIdioma = rsIdioma.getString("materia_nombre");
+      idioma_nombre = rsIdioma.getString("idioma_nombre");
+
+      sql = "SELECT SUM(d.escribir) / COUNT(d.escribir) as escribir, " +
+              "SUM(d.traducir) / COUNT(d.traducir) as traducir " +
+              "FROM datos d " +
+              "WHERE d.fk_idioma_id = ? ";
       pstmt = conn.prepareStatement(sql);
-      pstmt.setInt(1, materia_IdEnviar);
-      rsIdioma = pstmt.executeQuery();
+      pstmt.setInt(1, idioma_id);
+      rsIdiomaSuma = pstmt.executeQuery();
+      if (rsIdiomaSuma.next()) {
 
-      while (rsIdioma.next()) {
-        idioma_id = rsIdioma.getInt("idioma_id");
-        materia_nombreEnIdioma = rsIdioma.getString("materia_nombre");
-        idioma_nombre = rsIdioma.getString("idioma_nombre");
-
-        sql = "SELECT SUM(d.escribir) / COUNT(d.escribir) as escribir, " +
-                "SUM(d.traducir) / COUNT(d.traducir) as traducir " +
-                "FROM datos d " +
-                "WHERE d.fk_idioma_id = ? ";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(1, idioma_id);
-        rsIdiomaSuma = pstmt.executeQuery();
-        if (rsIdiomaSuma.next()) {
-
-          escritura = rsIdiomaSuma.getString("escribir");
-          traduccion = rsIdiomaSuma.getString("traducir");
-          if (escritura == null) escritura = "0.0";
-          if (traduccion == null) traduccion = "0.0";
-          escritura = escritura.concat(" %");
-          traduccion = traduccion.concat(" %");
-          idiomaArrayList.add(new Idioma(idioma_id, materia_nombreEnIdioma, idioma_nombre,
-                  escritura, traduccion));
-        }
+        escritura = rsIdiomaSuma.getString("escribir");
+        traduccion = rsIdiomaSuma.getString("traducir");
+        if (escritura == null) escritura = "0.0";
+        if (traduccion == null) traduccion = "0.0";
+        escritura = escritura.concat(" %");
+        traduccion = traduccion.concat(" %");
+        idiomaArrayList.add(new Idioma(idioma_id, materia_nombreEnIdioma,
+                idioma_nombre, escritura, traduccion));
       }
-
-
-      // Display row data -------------------
-      idiomaObservableList = FXCollections.observableArrayList(idiomaArrayList);
-      idiomasTableView.setItems(idiomaObservableList);
-
-      if (!idiomaArrayList.isEmpty()) {
-
-        // Setting the initial row
-        idiomasTableView.requestFocus();
-        idiomasTableView.getSelectionModel().clearAndSelect(0);
-        idiomasTableView.scrollTo(0);
-      }
-    } catch (Exception e) {
-      conn.rollback(sp);
-      throw new Exception(e);
-    } finally {
-      conn.close();
     }
+
+
+    // Display row data -------------------
+    idiomaObservableList = FXCollections.observableArrayList(idiomaArrayList);
+    idiomasTableView.setItems(idiomaObservableList);
+
+    if (!idiomaArrayList.isEmpty()) {
+
+      // Setting the initial row
+      idiomasTableView.requestFocus();
+      idiomasTableView.getSelectionModel().clearAndSelect(0);
+      idiomasTableView.scrollTo(0);
+    }
+
+    resourcesClose();
+
    }
 
 
   //</editor-fold>
-
   /**
    *
    * @param u
@@ -1907,7 +1883,8 @@ public class DataBaseController implements Initializable
    {
 
     URL urlFXML = new URL(getClass().getClassLoader()
-            .getResource("LanguageApp/view/FormDataBaseView.fxml").toExternalForm());
+            .getResource("LanguageApp/view/FormDataBaseView.fxml")
+            .toExternalForm());
     FXMLLoader loader = new FXMLLoader(urlFXML, resources);
     formDataBaseView = (AnchorPane) loader.load();
     formDataBaseScene = new Scene(formDataBaseView);
@@ -1921,7 +1898,8 @@ public class DataBaseController implements Initializable
     formStage.initOwner(mainStage);
     formStage.initModality(Modality.APPLICATION_MODAL);
 
-    Image icon = new Image(getClass().getClassLoader()
+    Image icon = new Image(getClass()
+            .getClassLoader()
             .getResourceAsStream("LanguageApp/resources/images/languages_128.png"));
     formStage.getIcons().add(icon);
     formStage.setTitle(toLocale("Modificar la base de datos"));
@@ -1931,18 +1909,20 @@ public class DataBaseController implements Initializable
     jMetro.setScene(formDataBaseScene);
 
     formStage.setOnCloseRequest(e -> {
-      e.consume();
-      usuarioTableView.refresh();
-      formStage.close();
+      try {
+        e.consume();
+        usuarioTableView.refresh();
+        formStage.close();
+      } catch (Exception ex) {
+        showException(ex);
+      }
     });
 
     formStage.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent key) -> {
-      if (key.getCode() == KeyCode.ESCAPE) {
-        try {
-          handleCloseModal();
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
+      try {
+        if (key.getCode() == KeyCode.ESCAPE) handleCloseModal();
+      } catch (Exception e) {
+        showException(e);
       }
     });
     formStage.showAndWait();
@@ -1951,7 +1931,6 @@ public class DataBaseController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Setting the borders">
-
   /**
    * Setting the border (cursor) of the node
    *
