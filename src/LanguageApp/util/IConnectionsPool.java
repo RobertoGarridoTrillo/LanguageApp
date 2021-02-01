@@ -19,6 +19,8 @@ public interface IConnectionsPool
 
   /**
    *
+   * @param className
+   * @param methodName
    * @return
    * @throws java.sql.SQLException
    * @throws java.lang.Exception
@@ -32,7 +34,8 @@ public interface IConnectionsPool
    * @throws java.sql.SQLException
    * @throws java.lang.Exception
    */
-  boolean releaseConnection(Connection connection) throws Exception;
+  boolean releaseConnection(Connection connection)
+          throws Exception;
 
   /**
    * 

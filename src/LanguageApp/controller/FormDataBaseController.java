@@ -576,8 +576,7 @@ public class FormDataBaseController implements Initializable
     int original = preguntaComboBoxFormDataBase.getSelectionModel().getSelectedIndex();
     /*/*fieldString[2] = preguntasRegistro.get(original);*/
 
-    int newUser = (Integer) mainScene.handleCheckUser(fieldString[0],
-            fieldString[1]).getKey();
+    int newUser = mainScene.handleCheckUser(fieldString[0], fieldString[1]).getKey();
     // if the fields aren't valid then return
     if (!(registro[0] == true && registro[1] == true && registro[2] == true))
       return;
@@ -607,6 +606,8 @@ public class FormDataBaseController implements Initializable
         u.setRespuesta(fieldString[2]);
 
         mainScene.handleUpdate(u);
+        mainScene.handleCloseModal();
+        
         break;
       case "create":
         mainScene.handleCreate(fieldString[0], fieldString[1], activoBoolean,

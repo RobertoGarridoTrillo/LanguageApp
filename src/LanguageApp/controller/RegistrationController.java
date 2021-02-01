@@ -123,7 +123,7 @@ public class RegistrationController implements Initializable
     try {
 
       this.resources = resources;
-      
+
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
@@ -317,6 +317,7 @@ public class RegistrationController implements Initializable
         }
        }
 
+
      });
 
     // setting onClick
@@ -382,12 +383,13 @@ public class RegistrationController implements Initializable
     m.put(oldUserButtonRegistro, HBoxAntiguoUsuarioRegistro);
 
     eraserBorder();
-    
+
     m.get(n).getStyleClass().add("borderLoginVisible");
     oldNode = currentNode;
     currentNode = n;
    }
   //</editor-fold>
+
 
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
   /**
@@ -422,16 +424,16 @@ public class RegistrationController implements Initializable
    */
   private int handleValidation(Node n) throws Exception
    {
-      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
 
-      handleValidation02(n, true);
-      if (registro[indNode] == false) return indNode;
+    handleValidation02(n, true);
+    if (registro[indNode] == false) return indNode;
 
-      for (int i = 0; i < fieldsNumber; i++) {
-        if (i != indNode) handleValidation02(fieldsChecked[i], false);
+    for (int i = 0; i < fieldsNumber; i++) {
+      if (i != indNode) handleValidation02(fieldsChecked[i], false);
 
-        if (registro[i] == false) return i;
-      }
+      if (registro[i] == false) return i;
+    }
     return (node[fieldsNumber].isDisable() ? -1 : fieldsNumber);
    }
 
@@ -444,58 +446,58 @@ public class RegistrationController implements Initializable
    */
   private void handleValidation02(Node n, boolean show) throws Exception
    {
-      int indNode = Arrays.asList(fieldsChecked).indexOf(n);
-      String instance = "";
-      Object preguntaObject = null;
+    int indNode = Arrays.asList(fieldsChecked).indexOf(n);
+    String instance = "";
+    Object preguntaObject = null;
 
-      errorLabelMap = new HashMap<>();
-      errorLabelMap.put(0, errorUserLabel);
-      errorLabelMap.put(1, errorPasswordLabel);
-      errorLabelMap.put(2, errorPasswordLabel);
-      errorLabelMap.put(3, errorRespuestaLabel);
+    errorLabelMap = new HashMap<>();
+    errorLabelMap.put(0, errorUserLabel);
+    errorLabelMap.put(1, errorPasswordLabel);
+    errorLabelMap.put(2, errorPasswordLabel);
+    errorLabelMap.put(3, errorRespuestaLabel);
 
-      if (n instanceof JFXTextField) {
-        fieldString[indNode] = ((JFXTextField) n).getText().trim();
-        instance = "JFXTextField";
+    if (n instanceof JFXTextField) {
+      fieldString[indNode] = ((JFXTextField) n).getText().trim();
+      instance = "JFXTextField";
+    }
+    if (n instanceof JFXPasswordField) {
+      fieldString[indNode] = ((JFXPasswordField) n).getText().trim();
+      instance = "JFXPasswordField";
+    }
+    if (n instanceof JFXComboBox) {
+      preguntaObject = ((JFXComboBox) n).getValue();
+      if (preguntaObject != null) {
+        fieldString[indNode] = preguntaObject.toString();
+      } else {
+        fieldString[indNode] = "";
       }
-      if (n instanceof JFXPasswordField) {
-        fieldString[indNode] = ((JFXPasswordField) n).getText().trim();
-        instance = "JFXPasswordField";
-      }
-      if (n instanceof JFXComboBox) {
-        preguntaObject = ((JFXComboBox) n).getValue();
-        if (preguntaObject != null) {
-          fieldString[indNode] = preguntaObject.toString();
-        } else {
-          fieldString[indNode] = "";
-        }
-        instance = "JFXComboBox";
-      }
-      String text = "";
-      registro[indNode] = true;
+      instance = "JFXComboBox";
+    }
+    String text = "";
+    registro[indNode] = true;
 
-      if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
-        text = "No puede estar vacío";
-      }
-      if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
-        text = "No puede tener mas de 100 letras";
-      }
-      if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
-        text = "No puede tener mas de 20 letras";
-      }
-      if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
-              instance.equals("JFXComboBox")) {
-        text = "Elige una pregunta de seguridad";
-      }
-      if (!text.equals("")) {
-        registro[indNode] = false;
+    if (fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) {
+      text = "No puede estar vacío";
+    }
+    if (fieldString[indNode].length() > 100 && instance.equals("JFXTextField")) {
+      text = "No puede tener mas de 100 letras";
+    }
+    if (fieldString[indNode].length() > 20 && instance.equals("JFXPasswordField")) {
+      text = "No puede tener mas de 20 letras";
+    }
+    if ((fieldString[indNode].isEmpty() || fieldString[indNode].length() == 0) &&
+            instance.equals("JFXComboBox")) {
+      text = "Elige una pregunta de seguridad";
+    }
+    if (!text.equals("")) {
+      registro[indNode] = false;
 
-        if (show) {
-          Label tempLabel = (Label) errorLabelMap.get(indNode);
-          tempLabel.setManaged(true);
-          tempLabel.setText(toLocale(text));
-        }
+      if (show) {
+        Label tempLabel = (Label) errorLabelMap.get(indNode);
+        tempLabel.setManaged(true);
+        tempLabel.setText(toLocale(text));
       }
+    }
    }
 
 
@@ -514,11 +516,12 @@ public class RegistrationController implements Initializable
     fieldString[2] = preguntasRegistro.get(original);
 
     /*/*boolean activoBoolean = activoCheckBox.isSelected(); */
-    if (registro[0] == true && registro[1] == true && 
+    if (registro[0] == true && registro[1] == true &&
             registro[2] == true && registro[3] == true) {
 
       int userExist = mainScene.handleRegistro(fieldString[0], fieldString[1],
               true, fieldString[2], fieldString[3]);
+      mainScene.handleRegistro02(fieldString[0], fieldString[1], true);
 
       if (userExist != 0) {
         errorUserLabel.setManaged(true);

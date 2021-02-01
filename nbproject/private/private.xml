@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="347">
-        <file>
-            <url>src/LanguageApp/main/MainScene.java</url>
-            <bookmark id="347">
-                <name/>
-                <line>805</line>
-                <key/>
-            </bookmark>
-        </file>
-    </editor-bookmarks>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="350"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="Desarrollo de interfaces">
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/Message.java</file>
-            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/ConnectionPool.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/WelcomeController.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/FormController.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/model/Initial.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/Directory.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/util/ConnectionsPool.java</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/main/MainScene.java</file>
+            <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/PrincipalController.java</file>
             <file>file:/D:/wamp64/www/dreamweaver/NetBeansProjects/LanguageApp/src/LanguageApp/controller/DataBaseController.java</file>
         </group>
     </open-files>

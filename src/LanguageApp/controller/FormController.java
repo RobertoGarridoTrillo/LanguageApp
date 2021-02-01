@@ -30,10 +30,6 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 //</editor-fold>
 
-/**
- *
- * @author Roberto Garrido Trillo
- */
 public class FormController implements Initializable
  {
 
@@ -69,46 +65,41 @@ public class FormController implements Initializable
   private HashMap<Integer, Node> errorLabelMap;
 
   // The focused and old node
-  Node currentNode, oldNode;
+  private Node currentNode, oldNode;
 
   // Reference to the main Stage from the main Scene
   private Stage mainStage;
   // Reference to the main Scene
   private MainScene mainScene;
 
+  // Instances
+  Directory dire;
+
   // The Login or not Login
-  Node[] fieldsChecked;
-  String[] fieldString;
+  private Node[] fieldsChecked;
+  private String[] fieldString;
 
   // The Login or not Login
   private Boolean[] registro;
   private int fieldsNumber;
 
   // For the bounle of idioms
-  ResourceBundle resources;
+  private ResourceBundle resources;
 
   // The value of the progressBar in mainScene
-  DoubleProperty progressBarValue = new SimpleDoubleProperty(0.0);
-
+  private DoubleProperty progressBarValue = new SimpleDoubleProperty(0.0);
 //</editor-fold>
 
+
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-  /**
-   *
-   * @param aThis
-   * @throws java.lang.Exception
-   */
   public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Initialize">
 
-  /**
-   * When the method is initialize
-   */
+//<editor-fold defaultstate="collapsed" desc="Initialize">
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
@@ -119,6 +110,9 @@ public class FormController implements Initializable
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
+      // Instances 
+      dire = new Directory();
+      // Nodes with border
       node = new Node[]{
         usuarioTextFieldLogin,
         passwordTextFieldLogin,
@@ -165,11 +159,8 @@ public class FormController implements Initializable
    }
 //</editor-fold> 
 
+
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-  /**
-   *
-   * @throws Exception
-   */
   private void setJFXTextField() throws Exception
    {
     eventButton(usuarioTextFieldLogin, 5, 1);
@@ -181,10 +172,6 @@ public class FormController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws java.lang.Exception
-   */
   public void setText() throws Exception
    {
     usuarioTextFieldLogin.setText("");
@@ -192,19 +179,9 @@ public class FormController implements Initializable
    }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
+//<editor-fold defaultstate="collapsed" desc="Helpers Fields">
   //<editor-fold defaultstate="collapsed" desc="Button">
-  /**
-   * Helper to the play button event
-   *
-   * @param up the above node
-   * @param down the belong node
-   * @param right the right node
-   * @param left the left node
-   * @param button The play button
-   * @throws Exception
-   */
   private void eventButton(Node n, int up, int down) throws Exception
    {
     // setting onFocus (USe of Tab)
@@ -288,6 +265,7 @@ public class FormController implements Initializable
         }
        }
 
+
      });
 
     // setting onClick
@@ -327,11 +305,8 @@ public class FormController implements Initializable
    }
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Erase Error">
-  /**
-   *
-   * @throws Exception
-   */
   private void handleEraseError() throws Exception
    {
     errorUserLabel.setManaged(false);
@@ -341,13 +316,8 @@ public class FormController implements Initializable
    }
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-  /**
-   * Setting the border (cursor) of the node
-   *
-   * @param n the node to put the border
-   * @throws Exception
-   */
   private void setBorder(Node n) throws Exception
    {
     HashMap<Node, Node> m = new HashMap<>();
@@ -365,13 +335,8 @@ public class FormController implements Initializable
    }
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-  /**
-   *
-   * Helper to setting Color Border
-   *
-   * @throws Exception
-   */
   private void eraserBorder() throws Exception
    {
     currentNode.getStyleClass()
@@ -390,26 +355,16 @@ public class FormController implements Initializable
             .removeAll("borderLoginVisible", "borderLoginInvisible");
    }
   //</editor-fold>
-
 //</editor-fold>
 
+
 //<editor-fold defaultstate="collapsed" desc="Handles">   
-  /**
-   *
-   * @throws Exception
-   */
   private void handleForget() throws Exception
    {
     mainScene.handleForgetUsuario();
    }
 
 
-  /**
-   *
-   * @param n
-   * @return
-   * @throws Exception
-   */
   private int handleValidation(Node n) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
@@ -427,12 +382,6 @@ public class FormController implements Initializable
    }
 
 
-  /**
-   *
-   * @param n
-   * @param show
-   * @throws Exception
-   */
   private void handleValidation02(Node n, boolean show) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
@@ -489,10 +438,6 @@ public class FormController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   private void handlelogin() throws Exception
    {
     handleValidation(usuarioTextFieldLogin);
@@ -535,7 +480,6 @@ public class FormController implements Initializable
           Pair<Boolean, String> mate_act_new =
                   mainScene.handleCheckMateriaActivo(usuario_id);
 
-          Directory dire = new Directory();
           dire.getLastDirectory();
 
           if (usuario_id_last != usuario_id) {
@@ -569,10 +513,6 @@ public class FormController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   private void handleNuevoUsuario() throws Exception
    {
     mainScene.buttonRegistro();
@@ -580,11 +520,6 @@ public class FormController implements Initializable
    }
 
 
-  /**
-   *
-   * @param progressBarValue
-   * @throws java.lang.Exception
-   */
   public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
     this.progressBarValue.setValue(progressBarValue.getValue());

@@ -20,7 +20,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
@@ -41,7 +40,7 @@ public class Message
 
   // For the bounle of idioms
   private static ResourceBundle resources;
-  
+
   // For the list of classes of the app
   private static String[] classesApp;
 
@@ -61,7 +60,6 @@ public class Message
 
   /**
    *
-   * @param mainStage
    * @param resources
    * @throws java.lang.Exception
    */
@@ -79,6 +77,7 @@ public class Message
 
    }
   //</editor-fold>
+
 
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
   /**
@@ -111,6 +110,7 @@ public class Message
         return (name.endsWith(".java"));
        }
 
+
      };
 
     FileFilter dirFilter = new FileFilter()
@@ -120,6 +120,7 @@ public class Message
        {
         return f.isDirectory();
        }
+
 
      };
 
@@ -256,18 +257,14 @@ public class Message
     } catch (Exception ex) {
       // show message, if the exception is in message.java the exit  
       if (!showMessage(header, body, ex)) {
-        try {
-          mainScene.shutdown();
-          exit();
-        } catch (Exception e1) {          
-          exit();
-        }
+        exit();
       }
     }
    }
 
+
   /**
-   * 
+   *
    */
   private static void exit()
    {
@@ -336,7 +333,8 @@ public class Message
 
       at = elements[i].indexOf("at") + 3;
       openedParenth = elements[i].indexOf('(');
-      dot = (int) elements[i].substring(0, openedParenth).lastIndexOf('.');
+      dot = (int) elements[i].substring(
+              0, openedParenth).lastIndexOf('.');
       colon = elements[i].indexOf(':');
       closedParenth = elements[i].lastIndexOf(')');
 
@@ -356,10 +354,10 @@ public class Message
       }
       if (b) {
         if (body == null) body = "";
-        body += toLocale("Clase") + "-> " + className + " " +
-                toLocale("Archivo") + "-> " + fileName + " " +
-                toLocale("Metodo") + "-> " + methodName + "()" + " " +
-                toLocale("Numero de linea") + "-> " + lineNumber + "\n\n";
+        body += toLocale("Clase") + "> " + className + " |  " +
+                toLocale("Archivo") + "> " + fileName + " |  " +
+                toLocale("Metodo") + "> " + methodName + "()" + " |  " +
+                toLocale("Numero de linea") + "> " + lineNumber + "\n";
       }
     }
     return body;
@@ -466,11 +464,17 @@ public class Message
       alert.getDialogPane().setHeaderText(header);
     }
     double largo = header.length();
+    double alto = body.split("\\r\\n|\\n|\\r").length;
+
     for (String s : body.split("\\r\\n|\\n|\\r")) {
       if (s.length() > largo) largo = s.length();
     }
-    alert.getDialogPane().setPrefWidth(largo * 8.5);
+
+    alert.getDialogPane().setPrefWidth(largo * 8.7);
     alert.getDialogPane().setMinWidth(500);
+    alert.getDialogPane().setMinHeight(alto * 100);
+    //alert.getDialogPane().setMinHeight(300);
+
     if (body.equals("Autor: Roberto Garrido Trillo")) {
       alert.getDialogPane().setContentText(toLocale(body));
     } else {
@@ -505,7 +509,8 @@ public class Message
 
     alert.getDialogPane().getStylesheets().
             add(Message.class
-                    .getResource("/LanguageApp/style/messages.css").toExternalForm());
+                    .getResource("/LanguageApp/style/messages.css")
+                    .toExternalForm());
     alert.getDialogPane().getStyleClass().add("messages");
 
     Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -545,5 +550,6 @@ public class Message
     );
     return false;
    }
+
 
  }

@@ -1,21 +1,22 @@
 package LanguageApp.controller;
 
 //<editor-fold defaultstate="collapsed" desc="Import">
-
 import LanguageApp.main.MainScene;
 import static LanguageApp.main.MainScene.setUsuario_id;
 import static LanguageApp.main.MainScene.getUsuario_id;
+import static LanguageApp.main.MainScene.resourcesClose;
 import static LanguageApp.main.MainScene.setUsuario_nombre;
 import LanguageApp.model.Idioma;
 import LanguageApp.model.Materia;
 import LanguageApp.model.Usuario;
-import LanguageApp.util.ConnectionsPool;
 import static LanguageApp.util.HandleLocale.toLocale;
+import LanguageApp.util.Message;
 import static LanguageApp.util.Message.showException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -57,43 +59,58 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
-
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteOpenMode;
 //</editor-fold>
 
-/**
- *
- * @author Roberto Garrido Trillo
- */
 public class DataBaseController implements Initializable
  {
 
   //<editor-fold defaultstate="collapsed" desc="Field Class">
+  @FXML
+  private TabPane tabPanelDataBase;
 
-  @FXML private TabPane tabPanelDataBase;
+  @FXML
+  private TableView<Usuario> usuarioTableView;
 
-  @FXML private TableView<Usuario> usuarioTableView;
+  @FXML
+  private TableColumn<Usuario, Integer> usuario_idTableColumn;
+  @FXML
+  private TableColumn<Usuario, String> usuario_nombreTableColumn;
+  @FXML
+  private TableColumn<Usuario, String> passwordTableColumn;
+  @FXML
+  private TableColumn<Usuario, Integer> usuario_activoTableColumn;
+  @FXML
+  private TableColumn<Usuario, String> preguntaTableColumn;
+  @FXML
+  private TableColumn<Usuario, String> respuestaTableColumn;
 
-  @FXML private TableColumn<Usuario, Integer> usuario_idTableColumn;
-  @FXML private TableColumn<Usuario, String> usuario_nombreTableColumn;
-  @FXML private TableColumn<Usuario, String> passwordTableColumn;
-  @FXML private TableColumn<Usuario, Integer> usuario_activoTableColumn;
-  @FXML private TableColumn<Usuario, String> preguntaTableColumn;
-  @FXML private TableColumn<Usuario, String> respuestaTableColumn;
+  @FXML
+  private TableView<Materia> materiasTableView;
 
-  @FXML private TableView<Materia> materiasTableView;
+  @FXML
+  private TableColumn<Materia, Integer> materia_idTableColumn;
+  @FXML
+  private TableColumn<Materia, String> fk_usuario_nombreTableColumn;
+  @FXML
+  private TableColumn<Materia, String> materia_nombreTableColumn;
+  @FXML
+  private TableColumn<Materia, String> directorioTableColumn;
 
-  @FXML private TableColumn<Materia, Integer> materia_idTableColumn;
-  @FXML private TableColumn<Materia, String> fk_usuario_nombreTableColumn;
-  @FXML private TableColumn<Materia, String> materia_nombreTableColumn;
-  @FXML private TableColumn<Materia, String> directorioTableColumn;
+  @FXML
+  private TableView<Idioma> idiomasTableView;
 
-  @FXML private TableView<Idioma> idiomasTableView;
-
-  @FXML private TableColumn<Idioma, Integer> idioma_idTableColumn;
-  @FXML private TableColumn<Idioma, String> subject_nombreTableColumn;
-  @FXML private TableColumn<Idioma, String> idiomaTableColumn;
-  @FXML private TableColumn<Idioma, Integer> escribirTableColumn;
-  @FXML private TableColumn<Idioma, Integer> traducirTableColumn;
+  @FXML
+  private TableColumn<Idioma, Integer> idioma_idTableColumn;
+  @FXML
+  private TableColumn<Idioma, String> subject_nombreTableColumn;
+  @FXML
+  private TableColumn<Idioma, String> idiomaTableColumn;
+  @FXML
+  private TableColumn<Idioma, Integer> escribirTableColumn;
+  @FXML
+  private TableColumn<Idioma, Integer> traducirTableColumn;
 
   // for modal formDatabase
   private AnchorPane formDataBaseView;
@@ -118,8 +135,11 @@ public class DataBaseController implements Initializable
   private Statement stmt;
   private PreparedStatement pstmt;
   private String sql;
+  private String db_url, driver;
+
   // Resulset of the tableview
-  private ResultSet rs, rsUsuario, rsMateria, rsIdioma, rsIdiomaSuma;
+  //rs = 0, rsUsuario = 1, rsMateria = 2, rsIdioma = 3, rsIdiomaSuma = 4;
+  private ResultSet[] rs;
 
   // Tab text constants multilanguge
   private String usuario, materias, datosMaterias;
@@ -165,26 +185,18 @@ public class DataBaseController implements Initializable
 
   // For the bounle of idioms
   private ResourceBundle resources;
-
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-  /**
-   *
-   * @param aThis
-   * @throws java.lang.Exception
-   */
   public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
-
   //</editor-fold>  
 
+
   //<editor-fold defaultstate="collapsed" desc="Initialize">
-  /**
-   * When the method is initialize
-   */
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
@@ -194,20 +206,15 @@ public class DataBaseController implements Initializable
 
       // References to mainStage
       mainStage = MainScene.getMainStage();
-
-      // References to mainScene
       mainScene = MainScene.getMainScene();
 
       // The path is an absolute path (relarive to the initial instalation)    
       path = System.getProperty("user.dir");
       se = System.getProperty("file.separator");
 
-      // Creating the conection
-      conn = mainScene.getConnection();
-
-      // Creating the initial database
-      createDatabase();
-      //insertData(); // Only for testing purpose
+      // Create a new connection
+      conn = connect();
+      rs = new ResultSet[5];
 
 
       // Creating multilingual constans
@@ -235,57 +242,38 @@ public class DataBaseController implements Initializable
       pstmt = null;
       sql = null;
       // Resulset of the tableview
-      rsUsuario = null;
-      rsMateria = null;
-      rsIdioma = null;
+      /*/*rs[1] = null;
+      rs[2] = null;
+      rs[3] = null;*/
 
       // Setting TableView
       settingTableColumn();
 
       // Settiong the intial border
       setBorder(tabPanelDataBase);
-    } catch (Exception e) {
-      resourcesClose();
-      mainScene.releaseConnection(conn);
-      showException(e);
-    }
-   }
 
-  /**
-   *
-   * @throws Exception
-   */
-  public void resourcesClose()
-   {
-    try {
-      if (!isNull(stmt)) stmt.close();
-      if (!isNull(pstmt)) pstmt.close();
-      if (!isNull(rs)) rs.close();
-      if (!isNull(rsUsuario)) rsUsuario.close();
-      if (!isNull(rsMateria)) rsMateria.close();
-      if (!isNull(rsIdioma)) rsIdioma.close();
-      if (!isNull(rsIdiomaSuma)) rsIdiomaSuma.close();
+      // Creating the initial database
+      createDatabase();
+      //insertData(); // Only for testing purpose
+
     } catch (Exception e) {
       showException(e);
     }
-   }
 
+   }
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="CreateDataBase">
-  /**
-   *
-   * @param conn
-   * @throws SQLException
-   * @throws Exception
-   */
-  private void createDatabase() throws SQLException, Exception
+  public void createDatabase() throws SQLException, Exception
    {
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
+
     stmt = null;
 
     try {
 
-      conn.setAutoCommit(false);
       sp = conn.setSavepoint("crear_database");
 
       sql = "PRAGMA foreign_keys = ON;";
@@ -339,35 +327,34 @@ public class DataBaseController implements Initializable
       handleRegistro("root", "1234", true,
               "¿Cuál es tu comida favorita?", "1234");
 
-    } catch (SQLException e) {
+      resourcesClose(conn, rs);
+
+    } catch (Exception e) {
+
+      resourcesClose(conn, rs);
       conn.rollback(sp);
       throw new Exception(e);
-    } finally {
-      resourcesClose();
     }
+
    }
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="insertData">
-  /**
-   *
-   * @param conn
-   * @throws SQLException
-   * @throws Exception
-   */
   private void insertData() throws SQLException, Exception
    {
+
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     stmt = null;
 
     try {
 
-      conn.setAutoCommit(false);
       sp = conn.setSavepoint("insertar_tablas");
 
       //<editor-fold defaultstate="collapsed" desc="data">
-
-      String sql = "INSERT INTO main.usuarios " +
+      sql = "INSERT INTO main.usuarios " +
               "(usuario_nombre, password, usuario_activo, pregunta, respuesta) " +
               "VALUES ('2', '2222', '0', '¿Cuál es tu comida favorita?', '2');";
       sql += "INSERT INTO main.usuarios " +
@@ -476,7 +463,6 @@ public class DataBaseController implements Initializable
       sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
               "VALUES ('6', 'French.json');";
 
-
       sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
               "VALUES ('7', 'English.json');";
       sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
@@ -487,7 +473,6 @@ public class DataBaseController implements Initializable
               "VALUES ('7', 'Italian.json');";
       sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
               "VALUES ('7', 'French.json');";
-
 
       sql += "INSERT INTO main.idiomas (fk_materia_id, idioma_nombre) " +
               "VALUES ('8', 'English.json');";
@@ -781,28 +766,29 @@ public class DataBaseController implements Initializable
               "VALUES ('40', '3', '47', '48');";
 
       //</editor-fold>
-
       stmt = conn.createStatement();
       stmt.executeUpdate(sql);
       conn.commit();
 
+      resourcesClose(conn, rs);
+
     } catch (Exception e) {
+      resourcesClose(conn, rs);
       conn.rollback(sp);
       throw new Exception(e);
-    } finally {
-      if (!isNull(stmt)) stmt.close();
     }
-   }
 
-//</editor-fold>
+   }
+  //</editor-fold>
+
 
   //<editor-fold defaultstate="collapsed" desc="Handles">
-  /**
-   *
-   * @return @throws java.sql.SQLException
-   */
   public Pair<Integer, String> handleCheckNombre() throws SQLException, Exception
    {
+
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
+
     stmt = null;
     int id = 0;
     String nombre = null;
@@ -813,32 +799,29 @@ public class DataBaseController implements Initializable
 
     stmt = conn.createStatement();
     //
-    rs = stmt.executeQuery(sql);
+    rs[0] = stmt.executeQuery(sql);
+    conn.commit();
 
-    if (rs.next()) {
-      id = rs.getInt("usuario_id");
-      nombre = rs.getString("usuario_nombre");
-      password = rs.getString("password");
+    if (rs[0].next()) {
+      id = rs[0].getInt("usuario_id");
+      nombre = rs[0].getString("usuario_nombre");
+      password = rs[0].getString("password");
     } else {
       id = 0;
     }
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
     return new Pair(id, nombre);
    }
 
 
-  /**
-   *
-   * @param usuarioId
-   * @return
-   * @throws java.sql.SQLException
-   * @throws java.lang.Exception
-   */
   public Pair<Boolean, String> handleCheckMateriaActivo(int usuarioId)
           throws SQLException, Exception
    {
+
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
     usuario_id = 0;
@@ -849,36 +832,32 @@ public class DataBaseController implements Initializable
             "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
             "WHERE u.usuario_id = ? AND m.materia_activo = 1";
 
-    conn.setAutoCommit(false);
 
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, usuarioId);
 
-    rs = pstmt.executeQuery();
+    rs[0] = pstmt.executeQuery();
     conn.commit();
 
-    while (rs.next()) {
+    while (rs[0].next()) {
       pair = new Pair<>(
-              rs.getInt("materia_activo") == 1,
-              rs.getString("directorio") + se +
-              rs.getString("materia_nombre"));
+              rs[0].getInt("materia_activo") == 1,
+              rs[0].getString("directorio") + se +
+              rs[0].getString("materia_nombre"));
     }
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
     return pair;
    }
 
 
-  /**
-   *
-   * @param activoBoolean If only wants to delete, put it false
-   * @param usuario_id
-   * @throws java.sql.SQLException
-   */
   public void handleBorrarMarcar(boolean activoBoolean, int usuario_id)
           throws SQLException, Exception
    {
+
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     stmt = null;
     pstmt = null;
@@ -886,7 +865,6 @@ public class DataBaseController implements Initializable
     // In SQLinte doesn't exit boolean
     usuario_activo = activoBoolean;
 
-    conn.setAutoCommit(false);
 
     sql = "UPDATE usuarios SET usuario_activo = 0;";
     stmt = conn.createStatement();
@@ -900,21 +878,17 @@ public class DataBaseController implements Initializable
     pstmt.executeUpdate();
     conn.commit();
 
-    resourcesClose();
+    resourcesClose(conn, rs);
+
    }
 
 
-  /**
-   *
-   * @param usuarioString
-   * @param passwordString
-   * @return
-   * @throws java.sql.SQLException
-   * @throws java.lang.Exception
-   */
   public Pair<Integer, String> handleCheckUser(String usuarioString,
           String passwordString) throws SQLException, Exception
    {
+
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
 
@@ -922,9 +896,9 @@ public class DataBaseController implements Initializable
     usuario_id = 0;
 
     // Preparing statement
-    sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_nombre = ? and password = ?";
+    sql = "SELECT usuario_id, usuario_nombre FROM usuarios WHERE usuario_nombre = ? " +
+            "and password = ?";
 
-    conn.setAutoCommit(false);
 
     // preparing statement
     pstmt = conn.prepareStatement(sql);
@@ -934,34 +908,26 @@ public class DataBaseController implements Initializable
     pstmt.setString(2, passwordString);
 
     //
-    rs = pstmt.executeQuery();
+    rs[0] = pstmt.executeQuery();
 
-    if (rs.next()) {
-      usuario_id = rs.getInt("usuario_id");
-      usuario_nombre = rs.getString("usuario_nombre");
+    if (rs[0].next()) {
+      usuario_id = rs[0].getInt("usuario_id");
+      usuario_nombre = rs[0].getString("usuario_nombre");
     }
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
     return new Pair(usuario_id, usuario_nombre);
    }
 
 
-  /**
-   * @param usuarioString
-   * @param passwordString
-   * @param activoBoolean
-   * @param preguntaString
-   * @param respuestaString
-   * @return
-   * @throws java.sql.SQLException
-   * @throws java.lang.Exception
-   */
   public int handleRegistro(String usuarioString, String passwordString,
           boolean activoBoolean, String preguntaString,
           String respuestaString) throws SQLException, Exception
    {
 
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
     sql = null;
@@ -977,7 +943,6 @@ public class DataBaseController implements Initializable
         result = usuarioPair.getKey();
       } else {
 
-        conn.setAutoCommit(false);
         sp = conn.setSavepoint("Registration");
 
         // Preparing statement
@@ -992,25 +957,19 @@ public class DataBaseController implements Initializable
         pstmt.setString(5, respuestaString);
         pstmt.executeUpdate();
         conn.commit();
-      }
 
+
+      }
     } catch (Exception e) {
+      resourcesClose(conn, rs);
       conn.rollback(sp);
-      throw new Exception(e);
-    } finally {
-      resourcesClose();
+      showException(e);
     }
+    resourcesClose(conn, rs);
     return result;
    }
 
 
-  /**
-   *
-   * @param usuarioString
-   * @param passwordString
-   * @param activoBoolean
-   * @throws java.lang.Exception
-   */
   public void handleRegistro02(String usuarioString, String passwordString,
           boolean activoBoolean) throws Exception
    {
@@ -1028,15 +987,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   * @param usuarioString
-   * @param passwordString
-   * @param activoBoolean
-   * @param preguntaString
-   * @param respuestaString
-   * @throws java.lang.Exception
-   */
   public void handleRegistro03(String usuarioString, String passwordString,
           boolean activoBoolean, String preguntaString, String respuestaString)
           throws Exception
@@ -1055,23 +1005,20 @@ public class DataBaseController implements Initializable
     usuario_id = usuarioPair.getKey();
     usuario_nombre = usuarioPair.getValue();
 
-    usuarioObservableList.add(new Usuario(usuario_id, usuarioString, passwordString, activoBoolean, preguntaString, respuestaString));
+    usuarioObservableList.add(new Usuario(usuario_id, usuarioString, passwordString,
+            activoBoolean, preguntaString, respuestaString));
     usuarioTableView.refresh();
 
     // Updated in the database
-    handleBorrarMarcar(activoBoolean, usuario_id);
+    mainScene.handleBorrarMarcar(activoBoolean, usuario_id);
    }
 
 
-  /**
-   *
-   * @param usu
-   * @return
-   * @throws java.lang.Exception
-   */
   public int handleUpdate(Usuario usu) throws Exception
    {
 
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
     sql = null;
@@ -1081,9 +1028,8 @@ public class DataBaseController implements Initializable
       //put all the usuario_id to 0 except the usuario_id
       usuario_id = usu.getUsuario_id();
       usuario_nombre = usu.getUsuario_nombre();
-      handleBorrarMarcar(false, usuario_id);
+      mainScene.handleBorrarMarcar(false, usuario_id);
 
-      conn.setAutoCommit(false);
       sp = conn.setSavepoint("handleUpdate");
 
       password = usu.getPassword();
@@ -1114,25 +1060,23 @@ public class DataBaseController implements Initializable
       usuarioObservableList.set(index, usu);
       usuarioTableView.refresh();
 
+      resourcesClose(conn, rs);
+
     } catch (Exception e) {
+
+      resourcesClose(conn, rs);
       conn.rollback(sp);
       throw new Exception(e);
-    } finally {
-      resourcesClose();
     }
     return 0;
    }
 
 
-  /**
-   *
-   * @param u
-   * @throws java.sql.SQLException
-   * @throws java.lang.Exception
-   */
   public void handleDelete(Usuario u) throws SQLException, Exception
    {
 
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
     sql = null;
@@ -1142,7 +1086,6 @@ public class DataBaseController implements Initializable
       //put all the usuario_id to 0 except the usuario_id
       usuario_id = u.getUsuario_id();
 
-      conn.setAutoCommit(false);
       sp = conn.setSavepoint("handleUpdate");
 
       sql = "DELETE FROM usuarios WHERE usuario_id = ? ";
@@ -1155,22 +1098,21 @@ public class DataBaseController implements Initializable
 
       usuarioObservableList.remove(u);
       usuarioTableView.refresh();
-      handleCloseModal();
+      mainScene.handleCloseModal();
+
+      resourcesClose(conn, rs);
+
 
     } catch (Exception e) {
+
+      resourcesClose(conn, rs);
       conn.rollback(sp);
-      throw new Exception(e);
-    } finally {
-      resourcesClose();
+      showException(e);
     }
 
    }
 
 
-  /**
-   *
-   * @throws java.lang.Exception
-   */
   public void handleCloseModal() throws Exception
    {
     Platform.runLater(() -> {
@@ -1195,18 +1137,11 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   * @param usuarioString
-   * @param preguntaString
-   * @param respuestaString
-   * @return
-   * @throws java.lang.Exception
-   * @throws java.sql.SQLException
-   */
   public String handleRecordar(String usuarioString, String preguntaString, String respuestaString) throws SQLException, Exception
    {
 
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
     String pass = null;
@@ -1215,7 +1150,6 @@ public class DataBaseController implements Initializable
     sql = "SELECT password FROM usuarios WHERE usuario_nombre = ? " +
             "and pregunta = ? and respuesta = ?";
 
-    conn.setAutoCommit(false);
 
     // preparing statement
     pstmt = conn.prepareStatement(sql);
@@ -1226,34 +1160,27 @@ public class DataBaseController implements Initializable
     pstmt.setString(3, respuestaString);
 
     //
-    ResultSet rs = pstmt.executeQuery();
+    rs[0] = pstmt.executeQuery();
     conn.commit();
 
-    while (rs.next()) {
-      pass = rs.getString(1);
-      return pass;
+    while (rs[0].next()) {
+      pass = rs[0].getString(1);
+      /*/*return pass;*/
     }
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
     return pass;
    }
 
 
-  /**
-   *
-   * @param trans = The actual language
-   * @param currentTab = Escribir o Traducir
-   * @param indexItemV = Index of the listViewH
-   * @param success = The score of the exercise
-   * @return
-   * @throws java.sql.SQLException
-   * @throws java.lang.Exception
-   */
   public Pair<String, String> handleUpdateCorrection(String trans,
           String currentTab, int indexItemV, double success)
           throws SQLException, Exception
    {
+
+    /*/*Connection conn = mainScene.getConnection(); */
+ /*/*conn.setAutoCommit(false); */
 
     pstmt = null;
     escritura = "0.0";
@@ -1261,7 +1188,6 @@ public class DataBaseController implements Initializable
     double escribirDouble = 0.0, traducirDouble = 0.0;
     String action = "insert";
 
-    conn.setAutoCommit(false);
 
     usuario_id = getUsuario_id();
 
@@ -1272,12 +1198,12 @@ public class DataBaseController implements Initializable
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, usuario_id);
     pstmt.setString(2, trans);
-    rs = pstmt.executeQuery();
+    rs[0] = pstmt.executeQuery();
     conn.commit();
 
-    if (rs.next()) {
-      materia_id = rs.getInt("materia_id");
-      idioma_id = rs.getInt("idioma_id");
+    if (rs[0].next()) {
+      materia_id = rs[0].getInt("materia_id");
+      idioma_id = rs[0].getInt("idioma_id");
     }
 
     // I check if there is any equal record
@@ -1290,25 +1216,30 @@ public class DataBaseController implements Initializable
     pstmt.setInt(1, materia_id);
     pstmt.setString(2, trans);
     pstmt.setInt(3, indexItemV);
-    rs = pstmt.executeQuery();
+    rs[0] = pstmt.executeQuery();
     conn.commit();
 
-
-    if (rs.next()) {
+    if (rs[0].next()) {
       action = "update";
-      datos_id = rs.getInt("datos_id");
-      escritura = rs.getString("escribir");
-      traduccion = rs.getString("traducir");
-      if (escritura == null) escritura = "0";
-      if (traduccion == null) traduccion = "0";
+      datos_id = rs[0].getInt("datos_id");
+      escritura = rs[0].getString("escribir");
+      traduccion = rs[0].getString("traducir");
+      if (escritura == null) {
+        escritura = "0";
+      }
+      if (traduccion == null) {
+        traduccion = "0";
+      }
     }
 
     escribirDouble = Double.parseDouble(escritura);
     traducirDouble = Double.parseDouble(traduccion);
-    if (currentTab.equals(escribir))
+    if (currentTab.equals(escribir)) {
       escribirDouble = (escribirDouble > success) ? escribirDouble : success;
-    if (currentTab.equals(traducir))
+    }
+    if (currentTab.equals(traducir)) {
       traducirDouble = (traducirDouble > success) ? traducirDouble : success;
+    }
     escritura = String.valueOf(escribirDouble);
     traduccion = String.valueOf(traducirDouble);
 
@@ -1334,19 +1265,241 @@ public class DataBaseController implements Initializable
       conn.commit();
     }
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
     return new Pair<>(escritura, traduccion);
    }
+
+
+  public ResultSet handleCheckInit(int usuario_id) throws Exception
+   {
+
+    pstmt = null;
+    this.usuario_id = usuario_id;
+
+    // Preparing statement
+    /*
+         SELECT u.usuario_nombre, u.usuario_activo, m.materia_nombre, m.materia_id, 
+         i.idioma_nombre, d.escribir, d.traducir
+         FROM usuarios u
+         INNER JOIN materias m on u.usuario_id = m.fk_usuario_id 
+         INNER JOIN idiomas i on m.materia_id = i.fk_materia_id
+         INNER JOIN datos d on  i.idioma_id = d.fk_idioma_id
+         WHERE u.usuario_activo = 1 and m.materia_activo = 1
+     */
+    sql = "SELECT m.directorio, m.materia_nombre FROM materias m " +
+            "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
+            "WHERE u.usuario_id = ? and m.materia_activo = 1";
+
+
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setInt(1, usuario_id);
+
+    rs[0] = pstmt.executeQuery();
+    conn.commit();
+    return rs[0];
+
+   }
+
+
+  public void handleCreateinit(int usuario_id) throws Exception
+   {
+
+    pstmt = null;
+
+    sql = "UPDATE materias set materia_activo = 0 " +
+            "WHERE materia_id IN ( " +
+            "SELECT m.materia_id FROM materias m " +
+            "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
+            "WHERE u.usuario_id = ?)";
+
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setInt(1, usuario_id);
+
+    pstmt.executeUpdate();
+    conn.commit();
+   }
+
+
+  public int handleCheckAndSetLastDirectory(String lastFile, String lastDirectory,
+          int usuario_id) throws Exception
+   {
+
+    pstmt = null;
+    rs[0] = null;
+    materia_id = 0;
+    boolean salida = false; // false create a new registre
+
+
+    // I check if there is any equal record
+    sql = "SELECT m.materia_id, m.materia_nombre FROM materias m " +
+            "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
+            "WHERE u.usuario_id = ?";
+
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setInt(1, usuario_id);
+    //pstmt.setString(2, name);
+
+    rs[0] = pstmt.executeQuery();
+    conn.commit();
+
+    while (rs[0].next()) {
+
+      // si hay un registro igual al pedido por el filechoose
+      if (rs[0].getString("materia_nombre").equals(lastFile)) {
+        materia_id = rs[0].getInt("materia_id");
+        sql = "UPDATE materias set materia_activo = 0 " +
+                "WHERE materia_id IN ( " +
+                "SELECT m.materia_id FROM materias m " +
+                "INNER JOIN usuarios u " +
+                "ON u.usuario_id = m.fk_usuario_id " +
+                "WHERE u.usuario_id = ?)";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, usuario_id);
+        pstmt.executeUpdate();
+        conn.commit();
+
+        // set the value on active
+        sql = "UPDATE materias set materia_activo = 1, directorio = ? " +
+                "WHERE materia_id IN ( " +
+                "SELECT m.materia_id FROM materias m " +
+                "INNER JOIN usuarios u " +
+                "ON u.usuario_id = m.fk_usuario_id " +
+                "WHERE u.usuario_id = ? and m.materia_id = ? )";
+        pstmt = null;
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, lastDirectory);
+        pstmt.setInt(2, usuario_id);
+        pstmt.setInt(3, materia_id);
+        pstmt.executeUpdate();
+        conn.commit();
+
+        salida = true;
+
+        resourcesClose(conn, rs);
+      }
+    }
+
+    // si no hay un registro igual al pedido por el filechoose
+    if (salida == false) {
+
+      sql = "UPDATE materias set materia_activo = 0 " +
+              "WHERE materia_id IN ( " +
+              "SELECT m.materia_id FROM materias m " +
+              "INNER JOIN usuarios u " +
+              "ON u.usuario_id = m.fk_usuario_id " +
+              "WHERE u.usuario_id = ?)";
+
+      pstmt = conn.prepareStatement(sql);
+      pstmt.setInt(1, usuario_id);
+      pstmt.executeUpdate();
+      conn.commit();
+
+      sql = "INSERT INTO materias (fk_usuario_id, materia_nombre, directorio," +
+              " materia_activo) " + "VALUES (?,?,?,?)";
+      pstmt = conn.prepareStatement(sql);
+      // set the value
+      pstmt.setInt(1, usuario_id);
+      pstmt.setString(2, lastFile);
+      pstmt.setString(3, lastDirectory);
+      pstmt.setInt(4, 1);
+      pstmt.executeUpdate();
+      conn.commit();
+
+      rs[0] = conn.prepareStatement("SELECT last_insert_rowid();")
+              .executeQuery();
+      if (rs[0].next()) materia_id = rs[0].getInt(1);
+
+      resourcesClose(conn, rs);
+
+    }
+
+    return materia_id;
+   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="FormDataBase">
+  
+  public int handleCheckAndSetIdioma(String[] subtitle) throws Exception
+   {
+   
+    pstmt = null;
 
+    sql = "SELECT m.materia_id FROM materias m " +
+            "INNER JOIN usuarios u ON u.usuario_id = m.fk_usuario_id " +
+            "WHERE u.usuario_id = ? AND m.materia_activo = 1";
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setInt(1, usuario_id);
+    rs[0] = pstmt.executeQuery();
+    
+    if (rs[0].next()) {
+      materia_id = rs[0].getInt("materia_id");
+    }
+
+    // I check if there is any equal record
+    sql = "SELECT i.idioma_nombre FROM idiomas i WHERE i.fk_materia_id = ?";
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setInt(1, materia_id);
+    rs[0] = pstmt.executeQuery();
+   conn.commit();
+
+    while (rs[0].next()) {
+    
+
+        sql = "INSERT INTO idiomas (fk_materia_id, idioma_nombre) VALUES (?,?)";
+        pstmt = conn.prepareStatement(sql);
+        // set the value
+        pstmt.setInt(1, materia_id);
+        pstmt.setString(2, rs[0].getString("idioma_nombre"));
+        pstmt.executeUpdate();
+        conn.commit();
+      }
+    
+    resourcesClose(conn, rs);
+    return materia_id;
+   }
+
+  public void handleDeleteFromMateria(int usuario_id) throws Exception
+   {
+    pstmt = null;
+
+    // set the value
+    sql = "DELETE FROM materias  " +
+            "WHERE materia_id IN ( " +
+            "SELECT m.materia_id FROM materias m " +
+            "INNER JOIN usuarios u " +
+            "ON u.usuario_id = m.fk_usuario_id " +
+            "WHERE u.usuario_id = ? and m.materia_activo = 1)";
+
+    pstmt = conn.prepareStatement(sql);
+
+    pstmt.setInt(1, usuario_id);
+
+    pstmt.executeUpdate();
+    conn.commit();
+
+    resourcesClose(conn, rs);
+
+    Platform.runLater(() -> {
+      try {
+
+        Message.message(
+                Alert.AlertType.ERROR,
+                "Mensaje de error",
+                "Archivos multimedia movidos o perdidos",
+                "La aplicación se reiniciará ...",
+                null);
+
+
+      } catch (Exception ex) {
+
+        showException(ex);
+      }
+      Platform.exit();
+      System.exit(0);
+    });
+  }
+  //<editor-fold defaultstate="collapsed" desc="FormDataBase">
   //<editor-fold defaultstate="collapsed" desc="Setting initial formDatabase and events">
-  /**
-   *
-   * @throws Exception
-   */
   private void settingTableColumn() throws Exception
    {
     // Events of the tableview
@@ -1377,12 +1530,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   * @param event
-   * @throws IOException
-   * @throws MalformedURLException
-   */
   private void setTableColumnUser(TableColumn<?, ?> tc, String valueFactory)
           throws IOException, MalformedURLException, Exception
    {
@@ -1397,7 +1544,6 @@ public class DataBaseController implements Initializable
       tableColumn.setEditable(false);
       tableColumn.setCellValueFactory(new PropertyValueFactory<>(valueFactory));
 
-
       //tableColumn.setCellFactory(CheckBoxTableCell.forTableColumn(tableColumn));
       tableColumn.setCellFactory(p -> {
 
@@ -1410,9 +1556,9 @@ public class DataBaseController implements Initializable
            {
             try {
               super.updateItem(item, empty);
-              if (empty || item == null)
+              if (empty || item == null) {
                 setGraphic(null);
-              else {
+              } else {
                 setGraphic(checkBox);
                 checkBox.setSelected(item);
               }
@@ -1420,6 +1566,7 @@ public class DataBaseController implements Initializable
               showException(e);
             }
            }
+
 
          };
 
@@ -1459,12 +1606,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   * @param event
-   * @throws IOException
-   * @throws MalformedURLException
-   */
   private void setTableColumnSubjects(TableColumn<Materia, String> tc, String valueFactory) throws IOException, MalformedURLException
    {
 
@@ -1474,12 +1615,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   * @param event
-   * @throws IOException
-   * @throws MalformedURLException
-   */
   private void setTableColumnIdioma(TableColumn<?, ?> tc, String valueFactory) throws IOException, MalformedURLException
    {
 
@@ -1496,9 +1631,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   */
   private void settingUsuarioEvent() throws Exception
    {
     // Events Key
@@ -1552,9 +1684,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   */
   private void settingMateriaEvent() throws Exception
    {
     // Events Key
@@ -1566,12 +1695,16 @@ public class DataBaseController implements Initializable
         if ((event.getCode() == KeyCode.TAB && !event.isShiftDown()) ||
                 (event.getCode() == KeyCode.DOWN)) {
           int indexLast = materiasTableView.getItems().size();
-          if (indiceMateria < indexLast) indiceMateria++;
+          if (indiceMateria < indexLast) {
+            indiceMateria++;
+          }
           materiasTableView.getSelectionModel().clearAndSelect(indiceMateria);
         }
         if ((event.getCode() == KeyCode.TAB && event.isShiftDown()) ||
                 (event.getCode() == KeyCode.UP)) {
-          if (indiceMateria > 0) indiceMateria--;
+          if (indiceMateria > 0) {
+            indiceMateria--;
+          }
           materiasTableView.getSelectionModel().clearAndSelect(indiceMateria);
         }
         event.consume();
@@ -1597,9 +1730,6 @@ public class DataBaseController implements Initializable
    }
 
 
-  /**
-   *
-   */
   private void settingIdiomaEvent() throws Exception
    {
     // Events Key
@@ -1610,13 +1740,17 @@ public class DataBaseController implements Initializable
         if ((event.getCode() == KeyCode.TAB && !event.isShiftDown()) ||
                 (event.getCode() == KeyCode.DOWN)) {
           int indexLast = idiomasTableView.getItems().size();
-          if (indiceIdioma < indexLast) indiceIdioma++;
+          if (indiceIdioma < indexLast) {
+            indiceIdioma++;
+          }
           idiomasTableView.getSelectionModel().clearAndSelect(indiceIdioma);
           event.consume();
         }
         if ((event.getCode() == KeyCode.TAB && event.isShiftDown()) ||
                 (event.getCode() == KeyCode.UP)) {
-          if (indiceIdioma > 0) indiceIdioma--;
+          if (indiceIdioma > 0) {
+            indiceIdioma--;
+          }
           idiomasTableView.getSelectionModel().clearAndSelect(indiceIdioma);
           event.consume();
         }
@@ -1627,11 +1761,8 @@ public class DataBaseController implements Initializable
    }
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Show tableview with actual data">
-  /**
-   *
-   * @throws java.lang.Exception
-   */
   public void actualizarUsuario() throws Exception
    {
     /* A TableColumn must have a cell value factory set on it. 
@@ -1655,7 +1786,9 @@ public class DataBaseController implements Initializable
     usuarioArrayList = new ArrayList();
     materiaArrayList = new ArrayList();
     idiomaArrayList = new ArrayList();
-    if (usuario_id == 0 || usuario_nombre == null) return;
+    if (usuario_id == 0 || usuario_nombre == null) {
+      return;
+    }
 
     // placeholder
     usuarioTableView.setPlaceholder(new Label(resources
@@ -1685,47 +1818,44 @@ public class DataBaseController implements Initializable
     }
    }
 
-  /**
-   *
-   * @throws SQLException
-   */
+
   private void settingTableViewUsuario() throws Exception
    {
 
-
+    /*/*Connection conn = mainScene.getConnection(); */
     stmt = null;
     pstmt = null;
     sql = null;
     usuario_IdEnviar = 0;
     usuarioArrayList.clear();
-    rsUsuario = null;
+    rs[1] = null;
 
     // Setting the tableview Usuario
-    conn.setAutoCommit(false);
+    /*/*conn.setAutoCommit(false); */
 
     if (usuario_nombre.equals("root") &&
             (password.equals("1234"))) {
       root = true;
       sql = "SELECT * FROM usuarios";
       stmt = conn.createStatement();
-      rsUsuario = stmt.executeQuery(sql);
+      rs[1] = stmt.executeQuery(sql);
 
     } else {
       root = false;
       sql = "SELECT * FROM usuarios WHERE usuario_id = ?";
       pstmt = conn.prepareStatement(sql);
       pstmt.setInt(1, usuario_id);
-      rsUsuario = pstmt.executeQuery();
+      rs[1] = pstmt.executeQuery();
       usuario_id = mainScene.getUsuario_id();
       mainScene.setUsuario_id(usuario_id);
     }
-    while (rsUsuario.next()) {
-      usuario_id = rsUsuario.getInt("usuario_id");
-      usuario_nombre = rsUsuario.getString("usuario_nombre");
-      password = rsUsuario.getString("password");
-      usuario_activo = rsUsuario.getInt("usuario_activo") == 1;
-      pregunta = rsUsuario.getString("pregunta");
-      respuesta = rsUsuario.getString("respuesta");
+    while (rs[1].next()) {
+      usuario_id = rs[1].getInt("usuario_id");
+      usuario_nombre = rs[1].getString("usuario_nombre");
+      password = rs[1].getString("password");
+      usuario_activo = rs[1].getInt("usuario_activo") == 1;
+      pregunta = rs[1].getString("pregunta");
+      respuesta = rs[1].getString("respuesta");
 
       usuarioArrayList.add(new Usuario(usuario_id, usuario_nombre, password,
               usuario_activo, pregunta, respuesta));
@@ -1747,24 +1877,22 @@ public class DataBaseController implements Initializable
     // Change settingTableViewMateria()
     settingTableViewMateria();
 
-    resourcesClose();
+    resourcesClose(conn, rs);
+
    }
 
 
-  /**
-   *
-   * @throws SQLException
-   */
   private void settingTableViewMateria() throws Exception
    {
 
+    /*/*Connection conn = mainScene.getConnection(); */
     pstmt = null;
     sql = null;
     materia_IdEnviar = 0;
     materiaArrayList.clear();
 
     // Setting the tableview Materias
-    conn.setAutoCommit(false);
+    /*/*conn.setAutoCommit(false); */
 
     sql = "SELECT u.usuario_nombre, m.materia_id, m.fk_usuario_id, " +
             "m.materia_nombre, m.directorio " +
@@ -1773,14 +1901,14 @@ public class DataBaseController implements Initializable
             "WHERE m.fk_usuario_id = ?";
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, usuario_IdEnviar);
-    rsMateria = pstmt.executeQuery();
+    rs[2] = pstmt.executeQuery();
 
-    while (rsMateria.next()) {
-      usuario_nombreEnMateria = rsMateria.getString("usuario_nombre");
-      materia_id = rsMateria.getInt("materia_id");
-      //fk_usuario_id = rsMateria.getInt("fk_usuario_id");
-      materia_nombre = rsMateria.getString("materia_nombre");
-      directorio = rsMateria.getString("directorio");
+    while (rs[2].next()) {
+      usuario_nombreEnMateria = rs[2].getString("usuario_nombre");
+      materia_id = rs[2].getInt("materia_id");
+      //fk_usuario_id = rs[2].getInt("fk_usuario_id");
+      materia_nombre = rs[2].getString("materia_nombre");
+      directorio = rs[2].getString("directorio");
 
       materiaArrayList.add(new Materia(materia_id, usuario_nombreEnMateria,
               materia_nombre, directorio));
@@ -1802,24 +1930,22 @@ public class DataBaseController implements Initializable
 
     settingTableViewIdioma();
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
    }
 
 
-  /**
-   *
-   * @throws SQLException
-   */
   private void settingTableViewIdioma() throws Exception
    {
 
+    /*/*Connection conn = mainScene.getConnection(); */
     pstmt = null;
     sql = null;
     idiomaArrayList.clear();
 
     // Setting the tableview Materias
-    conn.setAutoCommit(false);
+    /*/*conn.setAutoCommit(false); */
+
     sql = "SELECT m.materia_nombre, i.idioma_id, i.idioma_nombre " +
             "FROM materias m " +
             "INNER JOIN idiomas i on m.materia_id = i.fk_materia_id " +
@@ -1828,12 +1954,12 @@ public class DataBaseController implements Initializable
 
     pstmt = conn.prepareStatement(sql);
     pstmt.setInt(1, materia_IdEnviar);
-    rsIdioma = pstmt.executeQuery();
+    rs[3] = pstmt.executeQuery();
 
-    while (rsIdioma.next()) {
-      idioma_id = rsIdioma.getInt("idioma_id");
-      materia_nombreEnIdioma = rsIdioma.getString("materia_nombre");
-      idioma_nombre = rsIdioma.getString("idioma_nombre");
+    while (rs[3].next()) {
+      idioma_id = rs[3].getInt("idioma_id");
+      materia_nombreEnIdioma = rs[3].getString("materia_nombre");
+      idioma_nombre = rs[3].getString("idioma_nombre");
 
       sql = "SELECT SUM(d.escribir) / COUNT(d.escribir) as escribir, " +
               "SUM(d.traducir) / COUNT(d.traducir) as traducir " +
@@ -1841,20 +1967,23 @@ public class DataBaseController implements Initializable
               "WHERE d.fk_idioma_id = ? ";
       pstmt = conn.prepareStatement(sql);
       pstmt.setInt(1, idioma_id);
-      rsIdiomaSuma = pstmt.executeQuery();
-      if (rsIdiomaSuma.next()) {
+      rs[4] = pstmt.executeQuery();
+      if (rs[4].next()) {
 
-        escritura = rsIdiomaSuma.getString("escribir");
-        traduccion = rsIdiomaSuma.getString("traducir");
-        if (escritura == null) escritura = "0.0";
-        if (traduccion == null) traduccion = "0.0";
+        escritura = rs[4].getString("escribir");
+        traduccion = rs[4].getString("traducir");
+        if (escritura == null) {
+          escritura = "0.0";
+        }
+        if (traduccion == null) {
+          traduccion = "0.0";
+        }
         escritura = escritura.concat(" %");
         traduccion = traduccion.concat(" %");
         idiomaArrayList.add(new Idioma(idioma_id, materia_nombreEnIdioma,
                 idioma_nombre, escritura, traduccion));
       }
     }
-
 
     // Display row data -------------------
     idiomaObservableList = FXCollections.observableArrayList(idiomaArrayList);
@@ -1868,17 +1997,12 @@ public class DataBaseController implements Initializable
       idiomasTableView.scrollTo(0);
     }
 
-    resourcesClose();
+    resourcesClose(conn, rs);
 
    }
 
 
   //</editor-fold>
-  /**
-   *
-   * @param u
-   * @param indexBorder
-   */
   private void showModalForm(Usuario u) throws Exception
    {
 
@@ -1900,7 +2024,8 @@ public class DataBaseController implements Initializable
 
     Image icon = new Image(getClass()
             .getClassLoader()
-            .getResourceAsStream("LanguageApp/resources/images/languages_128.png"));
+            .getResourceAsStream(
+                    "LanguageApp/resources/images/languages_128.png"));
     formStage.getIcons().add(icon);
     formStage.setTitle(toLocale("Modificar la base de datos"));
 
@@ -1920,22 +2045,27 @@ public class DataBaseController implements Initializable
 
     formStage.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent key) -> {
       try {
-        if (key.getCode() == KeyCode.ESCAPE) handleCloseModal();
+        if (key.getCode() == KeyCode.ESCAPE) {
+          handleCloseModal();
+        }
       } catch (Exception e) {
         showException(e);
       }
     });
     formStage.showAndWait();
    }
-
   //</editor-fold>
 
+
+  //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
+  private String getClassName()
+   {
+    return this.getClass().getSimpleName();
+   }
+//</editor-fold>  
+
+
   //<editor-fold defaultstate="collapsed" desc="Setting the borders">
-  /**
-   * Setting the border (cursor) of the node
-   *
-   * @param n the node to put the border
-   */
   private void setBorder(Node n) throws Exception
    {
     currentNode.getStyleClass().removeAll(Collections.singleton("borderVisible"));
@@ -1944,7 +2074,41 @@ public class DataBaseController implements Initializable
     currentNode = n;
 
    }
-
   //</editor-fold> 
 
+
+  //<editor-fold defaultstate="collapsed" desc="Connect">
+  public Connection connect() throws Exception
+   {
+    Connection c = null;
+    db_url = "jdbc:sqlite:" + path + se + "database.db";
+    driver = "org.sqlite.JDBC";
+    Class.forName(driver);// See the explication
+
+    // To force to sqlite to enable Foreign Keys
+    SQLiteConfig config = new SQLiteConfig();
+
+    config.setOpenMode(SQLiteOpenMode.READWRITE);
+    config.setOpenMode(SQLiteOpenMode.CREATE);
+    config.setOpenMode(SQLiteOpenMode.NOMUTEX);
+    config.setEncoding(SQLiteConfig.Encoding.UTF_8);
+    config.setTransactionMode(SQLiteConfig.TransactionMode.DEFERRED);
+    config.enforceForeignKeys(true);
+    config.setPragma(SQLiteConfig.Pragma.FOREIGN_KEYS, "true");
+    config.enableFullSync(true);
+    config.setSynchronous(SQLiteConfig.SynchronousMode.OFF);
+
+    c = DriverManager.getConnection(db_url, config.toProperties());
+    c.setAutoCommit(false);
+    return c;
+   }
+
+
+  //</editor-fold>
  }
+
+/*
+En sistemas antiguos, para que DriverManager tuviera "registrados" los drivers, era necesario cargar la clase en la máquina virtual. Para eso es el Class.forName(), simplemente carga la clase con el nombre indicado.
+
+A partir de JDK 6, los drivers JDBC 4 ya se registran automáticamente y no es necesario el Class.forName(), sólo que estén en el classpath de la JVM.
+ */

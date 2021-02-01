@@ -19,6 +19,7 @@ import LanguageApp.util.SortPhrase;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -348,14 +349,16 @@ public class PrincipalController implements Initializable
     );
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Thread that prepare the dashboard (handleOpenMenu2)">
-    // syncronized with object
+    //<editor-fold defaultstate="collapsed" desc="Thread that prepare the 
+    // dashboard (handleOpenMenu2)"> syncronized with object
     handleOpenMenu2Thread = new Thread(new Runnable()
      {
       @Override
       public void run()
        {
         try {
+          Directory dire = new Directory();
+          
           while (!handleOpenMenu2.equals("stop")) {
             //System.out.println("Entrando " + " " + handleOpenMenu2Thread.getName());
             //System.out.println("handleOpenMenu2 " + handleOpenMenu2);
@@ -377,12 +380,19 @@ public class PrincipalController implements Initializable
             usuario_id = mainScene.getUsuario_id();
             usuario_nombre = mainScene.getUsuario_nombre();
             // Checking if exists some equal, if doesn't it's created
-            dire.checkIni(usuario_id);
+            dire.checkIni(mainScene.handleCheckIni(usuario_id));
+            
             // Si por error hay mas de una materia activa
             String ld = dire.getLastDirectory();
             String lf = dire.getLastFile();
-            dire.checkAndSetLastDirectory(lf, ld, usuario_id);
+             
+            int materiaId = mainScene.handleCheckAndSetLastDirectory(lf, ld, usuario_id);
+            dire.setMateriaId(materiaId);
+            dire.setName(lf);
+            dire.setUsuario(usuario_id);
+            
             materia_activo = mainScene.handleCheckMateriaActivo(usuario_id);
+            
             if (materia_activo.getKey()) {
               // Lock the name of the file idiomas.Json in the directory Json 
               // and load the idiomas[][]
@@ -391,9 +401,10 @@ public class PrincipalController implements Initializable
               // ir cargango jsons
               // Name of the carpets into Json (Englis, Spanish...)
               subtitle = jsonBinder.list();
+              
               // if the directoriy has problem (empty, moved...) delete 
               // the row database
-              if (subtitle == null) dire.delete(usuario_id);
+              if (subtitle == null) mainScene.handleDeleteFromMateria(usuario_id);
               while (subtitle == null) {
               }
               subtitleLength = subtitle.length;
@@ -410,9 +421,11 @@ public class PrincipalController implements Initializable
               audioClipsPhrases = new AudioClipPhrase[subtitleLength];
               //</editor-fold>     
 
-              //<editor-fold defaultstate="collapsed" desc="Comenzando a crear los audios">
+              //<editor-fold defaultstate="collapsed" desc="Comenzando a 
+              // crear los audios">
               setProgressBar(totalMessages, "Comenzando a crear los audios");
-              dire.checkAndSetIdioma(subtitle);
+              int materia_id = mainScene.handleCheckAndSetIdioma(subtitle);
+              dire.setMateriaId(materia_id);
               for (int x = 0; x < subtitleLength; x++) {
                 setProgressBar(totalMessages, "Leyendo Json en " +
                         subtitle[x].replaceAll(".json", ""));
@@ -427,6 +440,7 @@ public class PrincipalController implements Initializable
                   subtitle[x] = subtitle[x].substring(0, 1)
                           .toUpperCase() + subtitle[x].substring(1);
                   // Extract the languages of the media, the rest from subtitle[]
+
                   subtitleAudio = idiomas[x][idiomas[x].length - 1].getText();
                   setProgressBar(totalMessages, "Creando palabras en " + subtitle[x]);
                   wordSet[x] = swal.saveWordsAsList(idiomas[x]);
@@ -685,7 +699,7 @@ public class PrincipalController implements Initializable
       mediaToSliderPause();
       mediaToSlideThread.start();
       // Check if there´s an initial file
-      if (dire.checkIni(usuario_id)) {
+      if ( dire.checkIni(mainScene.handleCheckIni(usuario_id))) {
         handleOpenMenu2Play();
       }
     } catch (Exception e) {
@@ -713,9 +727,14 @@ public class PrincipalController implements Initializable
     }
     // Setting the globlal directory
     String lastDirectory = file.getParent() + se;//el que acabo de abrir con el filechooser
-    String name = file.getName();
+    String lastFile = file.getName();
+    
     // Checking if exists some equal, if doesn't it's created
-    dire.checkAndSetLastDirectory(name, lastDirectory, usuario_id);
+    int materiaId = mainScene.handleCheckAndSetLastDirectory(lastFile, lastDirectory, usuario_id);
+    dire.setMateriaId(materiaId);
+    dire.setName(lastDirectory);
+    dire.setUsuario(usuario_id);
+    
     handleOpenMenu2Play();
     return true;
    }
@@ -831,7 +850,8 @@ public class PrincipalController implements Initializable
     usuario_id = mainScene.getUsuario_id();
     // Put all the materias of that user to 0
     if (origen.equals("handleCloseMenu")) {
-      dire.createIni(usuario_id);
+      mainScene.handleCreateIni(usuario_id);
+      dire.setUsuario(usuario_id);
     }
    }
   //</editor-fold>
@@ -3697,7 +3717,7 @@ public class PrincipalController implements Initializable
    * Setting the border (cursor) of the node
    *
    * @param n the node to put the border
-      * @throws java.lang.Exception
+   * @throws java.lang.Exception
    */
   private void setBorder(Node n) throws Exception
    {

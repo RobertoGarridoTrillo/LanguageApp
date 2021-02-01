@@ -362,7 +362,6 @@ public class WelcomeController implements Initializable
     boolean activoBoolean = activoCheckBoxWelcome.isSelected();
 
     if (nombre != null) {
-
       mainScene.handleEntrar(activoBoolean, true);
     } else {
       mainScene.buttonLoginMenu();
