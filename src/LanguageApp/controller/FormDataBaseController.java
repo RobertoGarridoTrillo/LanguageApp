@@ -325,6 +325,7 @@ public class FormDataBaseController implements Initializable
         }
        }
 
+
      });
 
     // setting onClick
@@ -607,11 +608,15 @@ public class FormDataBaseController implements Initializable
 
         mainScene.handleUpdate(u);
         mainScene.handleCloseModal();
-        
+
         break;
       case "create":
-        mainScene.handleCreate(fieldString[0], fieldString[1], activoBoolean,
+        mainScene.handleRegistro(fieldString[0], fieldString[1], activoBoolean, 
                 preguntaString, fieldString[2]);
+
+        mainScene.handleRegistro03(fieldString[0], fieldString[1], activoBoolean, preguntaString, 
+                fieldString[2]);
+        mainScene.handleCloseModal();
         break;
       default:
         break;

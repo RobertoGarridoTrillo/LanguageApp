@@ -29,48 +29,49 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 //</editor-fold>
 
-/**
- *
- * @author Roberto Garrido Trillo
- */
 public class MainController implements Initializable
  {
 
   //<editor-fold defaultstate="collapsed" desc="fields class">
-
   @FXML private BorderPane mainViewBorderPane;
   @FXML private AnchorPane mainViewAnchorPaneBottom;
   @FXML private Label mainLabelBottom;
   @FXML private ProgressBar mainProgressBarBottom;
 
-  @FXML private MenuBar menuBar;
+  @FXML private MenuBar menuBarTools;
 
   @FXML private Menu fileMenu;
-  @FXML private Menu userMenu;
-  @FXML private Menu flagsMenu;
-  @FXML private Menu goMenu;
-  @FXML private Menu helpMenu;
-
   @FXML private MenuItem openMenu;
   @FXML private MenuItem closeMenu;
   @FXML private MenuItem exitMenu;
 
+  @FXML private Menu userMenu;
   @FXML private MenuItem loginMenu;
   @FXML private MenuItem unloginMenu;
   @FXML private MenuItem registroMenu;
 
+  @FXML private Menu flagsMenu;
   @FXML private MenuItem EnglishMenu;
   @FXML private MenuItem SpanishMenu;
   @FXML private MenuItem FrenchMenu;
   @FXML private MenuItem ItalianMenu;
   @FXML private MenuItem JapaneseMenu;
 
+  @FXML private Menu goMenu;
   @FXML private MenuItem dashBoard;
   @FXML private MenuItem databaseMenu;
 
+  @FXML private Menu helpMenu;
   @FXML private MenuItem controlesMenu;
   @FXML private MenuItem aboutMenu;
 
+  @FXML private Label mainLabelUserTitle;
+  @FXML private Label mainLabelUserName;
+  @FXML private Label mainLabelDirectoryName;
+  @FXML private Label mainLabelDirectoryTitle;
+
+
+  @FXML private MenuBar menuBarDirectory;
   // Reference to the main Stage from the main Scene
   private Stage mainStage;
 
@@ -87,6 +88,11 @@ public class MainController implements Initializable
   // Effect fade
   private FadeTransition fadeProgressBar;
   private FadeTransition fadeLabel;
+  private FadeTransition fadeUserName;
+  private FadeTransition fadeUserTitle;
+  private FadeTransition fadeDirectoryName;
+  private FadeTransition fadeDirectoryTitle;
+
 
   // Array of nodes (Flags)
   private MenuItem[] menuItemFlags;
@@ -109,26 +115,18 @@ public class MainController implements Initializable
   // Fade in / out
   FadeTransition mainFadeOldIn, mainFadeNewIn;
   FadeTransition mainFadeOldOut;
-
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-  /**
-   *
-   * @param aThis
-   * @throws java.lang.Exception
-   */
   public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="Initialize">
 
-  /**
-   * When the method is initialize
-   */
+  //<editor-fold defaultstate="collapsed" desc="Initialize">
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
@@ -151,42 +149,47 @@ public class MainController implements Initializable
       setImageFlags();
       setEventFlags();
 
-      // Effect fade
-      fadeProgressBar = new FadeTransition(Duration.millis(2000),
-              mainProgressBarBottom);
-      fadeLabel = new FadeTransition(Duration.millis(2000), mainLabelBottom);
-      fadeProgressBar.setFromValue(1.0);
-      fadeProgressBar.setToValue(0.0);
-      fadeLabel.setFromValue(1.0);
-      fadeLabel.setToValue(0.0);
-      fadeProgressBar.setDelay(Duration.millis(2000));
-      fadeLabel.setDelay(Duration.millis(2000));
-      fadeProgressBar.setOnFinished((e) -> {
+      // Setting the fade effect of the labels
+      fadeLabel = setFade(mainProgressBarBottom, true, 2000);
+      fadeProgressBar = setFade(mainLabelBottom, true, 2000);
+      fadeUserTitle = setFade(mainLabelUserTitle, true, 2000);
+      fadeUserName = setFade(mainLabelUserName, true, 2000);
+      fadeDirectoryTitle = setFade(mainLabelDirectoryTitle, true, 2000);
+      fadeDirectoryName = setFade(mainLabelDirectoryName, true, 2000);
+
+      // The value of the progressBar in mainScene
+      //inicioButtonWelcome.visibleProperty().bind(progressBarValue.greaterThanOrEqualTo(1));
+      progressBarValue.addListener((observable, oldValue, newValue) -> {
+        menuBarTools.setDisable(progressBarValue.lessThan(1).get());
+      });
+    } catch (Exception e) {
+      showException(e);
+    }
+   }
+  //</editor-fold>
+
+
+  private FadeTransition setFade(Node node, boolean visible, double d)
+   {
+    double x = (visible) ? 0.0 : 1.0;
+
+    FadeTransition ft = new FadeTransition(Duration.millis(d), node);
+    ft.setFromValue(1.0 - x);
+    ft.setToValue(0.0 + x);
+
+    if (node.equals(mainProgressBarBottom))
+      ft.setOnFinished((e) -> {
         mainProgressBarBottom.setVisible(false);
         mainLabelBottom.setVisible(false);
         mainProgressBarBottom.setOpacity(1);
         mainLabelBottom.setOpacity(1);
       });
 
-
-      // The value of the progressBar in mainScene
-      //inicioButtonWelcome.visibleProperty().bind(progressBarValue.greaterThanOrEqualTo(1));
-      progressBarValue.addListener((observable, oldValue, newValue) -> {
-        menuBar.setDisable(progressBarValue.lessThan(1).get());
-      });
-    } catch (Exception e) {
-      showException(e);
-    }
+    return ft;
    }
 
-  //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Setting menu-item flags">
-  /**
-   * Setting the image int the flags
-   *
-   * @throws java.lang.Exception
-   */
   private void setImageFlags() throws Exception
    {
     imageViews = new ImageView[5];
@@ -206,10 +209,6 @@ public class MainController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   private void setEventFlags() throws Exception
    {
     eventHandlerFlags = setEventHandlerFlags(); // Creo a new EventHandler
@@ -221,10 +220,6 @@ public class MainController implements Initializable
    }
 
 
-  /**
-   *
-   * @return @throws java.lang.Exception
-   */
   private EventHandler<ActionEvent> setEventHandlerFlags() throws Exception
    {
     return new EventHandler<ActionEvent>()
@@ -243,15 +238,11 @@ public class MainController implements Initializable
         }
        }
 
+
      };
    }
 
-  /**
-   *
-   * @param s
-   * @param ss
-   * @throws Exception
-   */
+
   public void setInvisibleFlagMenu(String[] s, String ss) throws Exception
    {
 
@@ -263,12 +254,6 @@ public class MainController implements Initializable
    }
 
 
-  /**
-   *
-   * @param s Array of String with the names of languages loaded.
-   * @param ss String, the audio lenguage
-   * @throws java.lang.Exception
-   */
   public void setVisibleFlagMenu(String[] s, String ss) throws Exception
    {
 
@@ -278,8 +263,8 @@ public class MainController implements Initializable
     // the language of the media is always disabled
     menuItemFlags[Arrays.asList(s).indexOf(ss)].setDisable(true);
    }
-
   //</editor-fold>
+
 
   //<editor-fold defaultstate="collapsed" desc="Buttond Menu">
   /**
@@ -432,8 +417,8 @@ public class MainController implements Initializable
       showException(e);
     }
    }
-
   //</editor-fold>
+
 
   //<editor-fold defaultstate="collapsed" desc="checkCenter">
   /**
@@ -458,28 +443,20 @@ public class MainController implements Initializable
     }
     return centerNode;
    }
-
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
-  /**
-   *
-   * @return double, the value of the progressBar
-   * @throws java.lang.Exception
-   */
   public double getProgressBarValue() throws Exception
    {
     return mainProgressBarBottom.getProgress();
    }
 
 
-  /**
-   *
-   * @param progressBarValue
-   * @throws java.lang.Exception
-   */
   public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
+
+    this.progressBarValue.setValue(progressBarValue.getValue());
 
     mainProgressBarBottom.setVisible(true);
     mainProgressBarBottom.setProgress(progressBarValue.getValue());
@@ -492,22 +469,12 @@ public class MainController implements Initializable
    }
 
 
-  /**
-   *
-   * @return double, the value of the progressBar
-   * @throws java.lang.Exception
-   */
   public String getLabelText() throws Exception
    {
     return mainLabelBottom.getText();
    }
 
 
-  /**
-   *
-   * @param text
-   * @throws Exception
-   */
   public void setLabelText(String text) throws Exception
    {
     Platform.runLater(() -> {
@@ -519,14 +486,10 @@ public class MainController implements Initializable
       }
     });
    }
-
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Fade in / out openMenu and Label-progressBar">
-  /**
-   *
-   * @throws Exception
-   */
   public void mainFadeNewIn() throws Exception
    {
     centerNode = checkCenter();
@@ -544,26 +507,14 @@ public class MainController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   public void mainFadeOldIn() throws Exception
    {
 
-    //mainFadeOldIn.setFromValue(0.0);
     mainFadeOldIn.setToValue(1.0);
     mainFadeOldIn.play();
-    //centerNodeOld.setVisible(true);
-
-    // System.out.println("mainFadeOldIn " + mainFadeOldIn.getNode() + "\n");
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   public void mainFadeOldOut() throws Exception
    {
     centerNode = checkCenter();
@@ -576,19 +527,12 @@ public class MainController implements Initializable
     mainFadeOldOut.setToValue(0.0);
 
     mainFadeOldOut.setOnFinished((e) -> {
-      //centerNodeOld.setVisible(false);
     });
 
-    /*/*centerNode.setDisable(false);*/
-    // centerNode.setVisible(true);
     mainFadeOldOut.play();
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   public void fadeLabel() throws Exception
    {
     fadeLabel.play();
@@ -600,6 +544,6 @@ public class MainController implements Initializable
     fadeProgressBar.play();
    }
 
+  //</editor-fold>
 
-  //</editor-fold>  
  }

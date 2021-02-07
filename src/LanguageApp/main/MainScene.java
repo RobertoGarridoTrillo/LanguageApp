@@ -10,18 +10,17 @@ import LanguageApp.controller.RegistrationController;
 import LanguageApp.controller.WelcomeController;
 import LanguageApp.model.Usuario;
 import LanguageApp.util.ConnectionsPool;
+import LanguageApp.util.Directory;
 import LanguageApp.util.HandleLocale;
 import LanguageApp.util.Message;
 import LanguageApp.util.PreguntasRegistro;
 import static LanguageApp.util.Message.message;
 import static LanguageApp.util.Message.showException;
 import java.net.URL;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Locale;
-import static java.util.Objects.isNull;
 import java.util.ResourceBundle;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -64,7 +63,8 @@ public class MainScene extends Application
   private FormController formController;
   private RegistrationController registrationController;
   private ForgetController forgetController;
-  private DataBaseController dataBaseController;
+  private static DataBaseController dataBaseController;
+  private Directory dire;
   private BorderPane mainView;
   private AnchorPane principalView;
   private HBox loginView;
@@ -136,6 +136,9 @@ public class MainScene extends Application
       resources = HandleLocale.getResource();
       message = new Message(resources);
 
+      // Instances
+      dire = new Directory();
+
       // Creating the pool conections
       connectionsPool = ConnectionsPool.create();
 
@@ -200,8 +203,8 @@ public class MainScene extends Application
 
       // in the init usuario_last and usuario_id are the same
       /*/* usuario_id = (id != null) ? (Integer) id : 0; */
-      usuario_id = (Integer) id;
-      usuario_ultimo = usuario_id;
+      setUsuario_id((Integer) id);
+      usuario_ultimo = getUsuario_id();
 
       // Put the name in the welcome label
       if (name == null) {
@@ -342,7 +345,8 @@ public class MainScene extends Application
 
     // Give the mainController access to the main app (It´s like a instance)
     principalController = loader.getController();
-    principalController.setMainScene(this);
+    // I use getMainScene in databaseController
+    //principalController.setMainScene(this);
    }
 //</editor-fold>  
 
@@ -362,15 +366,25 @@ public class MainScene extends Application
 
 
 //<editor-fold defaultstate="collapsed" desc="Handles">
+  //<editor-fold defaultstate="collapsed" desc="PrincipalController methods">
+  public synchronized void handleCloseMenu(String origen) throws Exception
+   {
+    principalController.handleCloseMenu(origen);
+   }
+
+  //</editor-fold>
+
+  /* ------------------------there are two methods of close*/
+  //<editor-fold defaultstate="collapsed" desc="MainScene methods">
   public synchronized void handleEntrar(boolean activoBoolean, boolean usuario_last)
           throws Exception
    {
 
     // In SQLinte doesn't exit boolean
     usuario_activo = (activoBoolean) ? 1 : 0;
-    usuario_ultimo = usuario_id;
+    usuario_ultimo = getUsuario_id();
 
-    handleBorrarMarcar(activoBoolean, usuario_id);
+    handleBorrarMarcar(activoBoolean, getUsuario_id());
 
     if (!usuario_last) {
       principalController.handleOpenMenu2Play();
@@ -386,55 +400,12 @@ public class MainScene extends Application
    }
 
 
-  public synchronized void handleCloseMenu(String origen) throws Exception
-   {
-    principalController.handleCloseMenu(origen);
-   }
-
-
-  public synchronized int handleCreate(String usuarioString, String passwordString,
-          boolean activoBoolean, String preguntaString, String respuestaString)
-          throws Exception
-   {
-
-    int ret = dataBaseController.handleRegistro(usuarioString, passwordString,
-            activoBoolean, preguntaString, respuestaString);
-
-    dataBaseController.handleRegistro03(usuarioString, passwordString, activoBoolean,
-            preguntaString, respuestaString);
-    dataBaseController.handleCloseModal();
-
-    return ret;
-   }
-
-
-  public synchronized String handleRecordar(String usuarioString, String preguntaString,
-          String respuestaString) throws Exception
-   {
-    return dataBaseController.handleRecordar(usuarioString, preguntaString,
-            respuestaString);
-   }
-
-
   public synchronized void handleForgetUsuario() throws Exception
    {
     setFadeLogin("forget");
    }
 
 
-  public synchronized void handleUpdate(Usuario user) throws Exception
-   {
-    dataBaseController.handleUpdate(user);
-   }
-
-
-  public synchronized void handleCloseModal() throws Exception
-   {
-    dataBaseController.handleCloseModal();
-   }
-
-
-  /* ------------------------there are two methods of close*/
   public synchronized void handleClose() throws Exception // the close button
    {
     mainStage.setOnCloseRequest(e -> {
@@ -457,13 +428,47 @@ public class MainScene extends Application
 
     });
    }
+  //</editor-fold>
+
+
+  //<editor-fold defaultstate="collapsed" desc="DataBase methods">
+  /*/*public synchronized int handleCreate(String usuarioString, String passwordString,
+          boolean activoBoolean, String preguntaString, String respuestaString)
+          throws Exception
+   {
+
+    int ret = dataBaseController.handleRegistro(usuarioString, passwordString,
+            activoBoolean, preguntaString, respuestaString);
+
+    dataBaseController.handleRegistro03(usuarioString, passwordString, activoBoolean,
+            preguntaString, respuestaString);
+    dataBaseController.handleCloseModal();
+
+    return ret;
+   }*/
+  public synchronized String handleRecordar(String usuarioString, String preguntaString,
+          String respuestaString) throws Exception
+   {
+    return dataBaseController.handleRecordar(usuarioString, preguntaString, respuestaString);
+   }
+
+
+  public synchronized void handleUpdate(Usuario user) throws Exception
+   {
+    dataBaseController.handleUpdate(user);
+   }
+
+
+  public synchronized void handleCloseModal() throws Exception
+   {
+    dataBaseController.handleCloseModal();
+   }
 
 
   public synchronized Pair<String, String> handleUpdateCorrection(String trans, String currentTab,
           int indexItemV, double success) throws Exception
    {
-    return dataBaseController.handleUpdateCorrection(trans, currentTab,
-            indexItemV, success);
+    return dataBaseController.handleUpdateCorrection(trans, currentTab, indexItemV, success);
    }
 
 
@@ -533,53 +538,99 @@ public class MainScene extends Application
    }
 
 
-  public synchronized ResultSet handleCheckIni(int usuario_id) throws Exception
+  public synchronized ResultSet handleCheckInit(int usuario_id) throws Exception
    {
     return dataBaseController.handleCheckInit(usuario_id);
    }
 
+
   public synchronized void handleCreateIni(int usuario_id) throws Exception
    {
-    dataBaseController.handleCreateinit(usuario_id);    
+    dataBaseController.handleCreateinit(usuario_id);
    }
-  
+
+
   public synchronized int handleCheckAndSetLastDirectory(String lastFile, String lastDirectory,
           int usuario_id) throws Exception
    {
-    return dataBaseController.handleCheckAndSetLastDirectory(lastFile, lastDirectory, usuario_id);    
+    return dataBaseController.handleCheckAndSetLastDirectory(lastFile, lastDirectory, usuario_id);
    }
-  
+
+
   public synchronized int handleCheckAndSetIdioma(String[] subtitle) throws Exception
    {
     return dataBaseController.handleCheckAndSetIdioma(subtitle);
    }
-  
+
 
   public void handleDeleteFromMateria(int usuario_id) throws Exception
    {
-    dataBaseController.handleDeleteFromMateria(usuario_id);    
+    dataBaseController.handleDeleteFromMateria(usuario_id);
+   }
+
+
+  public void handleActualizarUsuario() throws Exception
+   {
+    dataBaseController.handleActualizarUsuario();
    }
   //</editor-fold>
 
 
-//<editor-fold defaultstate="collapsed" desc="Static Resource close">
-  public static synchronized void resourcesClose(Connection connection, ResultSet[] rs)
+  //<editor-fold defaultstate="collapsed" desc="Directory methods">
+  public boolean direCheckIni(ResultSet rs) throws Exception
    {
-    try {
-      if (!isNull(rs))
-        for (ResultSet r : rs) {
-          if (!isNull(r)) {
-            r.close();
-          }
-        }
-    } catch (Exception e) {
-      showException(e);
-    }
-    /*/*finally {
-      if (!isNull(connection)) mainScene.releaseConnection(connection);
-    }*/
+    return dire.direCheckIni(rs);
    }
-//</editor-fold>
+
+
+  public void direSetMateriaId(int materia_id) throws Exception
+   {
+    dire.direSetMateriaId(materia_id);
+   }
+
+
+  public void direSetName(String name) throws Exception
+   {
+    dire.direSetName(name);
+   }
+
+
+  public String getPath() throws Exception
+   {
+    return dire.getPath();
+   }
+
+
+  public void setPath(String path) throws Exception
+   {
+    dire.setPath(path);
+   }
+
+
+  public String getLastDirectory() throws Exception
+   {
+    return dire.getLastDirectory();
+   }
+
+
+  public void setLastDirectory(String lastDirectory) throws Exception
+   {
+    dire.setLastDirectory(lastDirectory);
+   }
+
+
+  public String getLastFile() throws Exception
+   {
+    return dire.getLastFile();
+   }
+
+
+  public void setLastFile(String lastFile) throws Exception
+   {
+    dire.setLastFile(lastFile);
+   }
+  //</editor-fold>
+  //</editor-fold>
 
 
 //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
@@ -692,6 +743,12 @@ public class MainScene extends Application
    {
     mainScene = ms;
    }
+
+
+  public static void setDataBaseController(DataBaseController db) throws Exception
+   {
+    dataBaseController = db;
+   }
 //</editor-fold> 
 
 
@@ -703,8 +760,10 @@ public class MainScene extends Application
       return;
     }
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))
       return;
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
@@ -725,7 +784,7 @@ public class MainScene extends Application
 
 
       //Update the dashborad of the database
-      dataBaseController.actualizarUsuario();
+      mainScene.handleActualizarUsuario();
 
     } else {
       fadeOldIn();
@@ -739,8 +798,10 @@ public class MainScene extends Application
     // if doesn't be user, return
     if (welcomeScreen) return;
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))
       return;
 
     fadeOldOut();
@@ -784,8 +845,10 @@ public class MainScene extends Application
   public void buttonControlesMenu() throws Exception
    {
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))
       return;
 
     fadeOldOut();
@@ -799,7 +862,7 @@ public class MainScene extends Application
             "Control + Derecha / Izquierda: para mover los slider de volumen" +
             ", Balance, velocidad y control de la película.\n\n" +
             "Control o Shift: para seleccionar mas de una palabra al " +
-            "reproducirla.\n\n", null);
+            "reproducirla.\n", null);
 
     fadeOldIn();
     helperFadePlayIn("withFileChooser");
@@ -809,13 +872,17 @@ public class MainScene extends Application
   public void buttonAboutMenu() throws Exception
    {
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))    
       return;
+    
     fadeOldOut();
     helperFadePlayOut("withFileChooser");
 
-    message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:", "Autor: Roberto Garrido Trillo", null);
+    message(Alert.AlertType.INFORMATION, "LanguageApp", "Acerca de esta aplicación:",
+            "Autor: Roberto Garrido Trillo", null);
     fadeNewIn();
     fadeOldIn();
     helperFadePlayIn("withFileChooser");
@@ -825,9 +892,10 @@ public class MainScene extends Application
   public void buttonLoginMenu() throws Exception
    {
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState()
-                    .equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))
       return;
 
     centerNode = mainController.checkCenter();
@@ -843,9 +911,10 @@ public class MainScene extends Application
     // if doesn't be user, return
     if (welcomeScreen) return;
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState()
-                    .equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))
       return;
 
     fadeOldOut();
@@ -869,10 +938,10 @@ public class MainScene extends Application
     mainView.setCenter(loginView);
 
     // Deleting the active in the database
-    handleBorrarMarcar(false, usuario_id);
+    handleBorrarMarcar(false, getUsuario_id());
 
     // Deleting the global variables
-    usuario_id = 0;
+    setUsuario_id(0);
     usuario_nombre = null;
     usuario_activo = 0;
     welcomeScreen = true;
@@ -888,9 +957,10 @@ public class MainScene extends Application
   public void buttonRegistro() throws Exception
    {
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState()
-                    .equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))
       return;
 
     centerNode = mainController.checkCenter();
@@ -906,15 +976,16 @@ public class MainScene extends Application
    {
 
     // if doesn't be user, return
-    if (usuario_id == 0 || welcomeScreen ||
+    if (getUsuario_id() == 0 || welcomeScreen ||
             mainController.checkCenter().getId().equals("principalViewAnchorPane"))
       return;
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState()
-                    .equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))   
       return;
-
+    
     setFadeLogin("dashboard");
    }
 
@@ -922,18 +993,19 @@ public class MainScene extends Application
   public void buttonDatabaseMenu() throws Exception
    {
     // if doesn't be user, return
-    if (usuario_id == 0 || welcomeScreen ||
+    if (getUsuario_id() == 0 || welcomeScreen ||
             mainController.checkCenter().getId().equals("dataBaseViewAnchorPane")) {
       return;
     }
     // if the app is loading a film return
+    /*/*if (principalController.handleOpenMenu2Thread == null ||
+            !principalController.handleOpenMenu2Thread.getState().equals(Thread.State.WAITING))*/
     if (principalController.handleOpenMenu2Thread == null ||
-            !principalController.handleOpenMenu2Thread.getState()
-                    .equals(Thread.State.WAITING))
+            principalController.handleOpenMenu2Thread.getState().equals(Thread.State.RUNNABLE))    
       return;
 
     //Update the dashborad of the database
-    dataBaseController.actualizarUsuario();
+    mainScene.handleActualizarUsuario();
 
     setFadeLogin("database");
    }
@@ -1143,8 +1215,8 @@ public class MainScene extends Application
    {
     mainController.fadeProgressBar();
    }
-  //</editor-fold>
 
+  //</editor-fold>
 //</editor-fold>
 
   public static void main(String[] args)

@@ -29,16 +29,13 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 //</editor-fold>
 
-/**
- *
- * @author Roberto Garrido Trillo
- */
 public class RegistrationController implements Initializable
  {
 
 //<editor-fold defaultstate="collapsed" desc="Field Class">
 
   @FXML public AnchorPane registrationViewanchorRight;
+  
   @FXML private HBox HBoxUsuarioRegistro;
   @FXML private JFXTextField usuarioTextFieldRegistro;
 
@@ -54,6 +51,9 @@ public class RegistrationController implements Initializable
   @FXML private HBox HBoxPreguntaRegistro;
   @FXML private JFXComboBox preguntaComboBoxRegistro;
 
+  @FXML private HBox HBoxErrorPregunta;
+  @FXML private Label errorPreguntaLabel;
+  
   @FXML private HBox HBoxRespuestaRegistro;
   @FXML private JFXPasswordField respuestaTextFieldRegistro;
 
@@ -98,11 +98,6 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-  /**
-   *
-   * @param aThis
-   * @throws java.lang.Exception
-   */
   public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
@@ -111,12 +106,6 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
-  /**
-   * When the method is initialize
-   *
-   * @param location
-   * @param resources
-   */
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
@@ -189,9 +178,6 @@ public class RegistrationController implements Initializable
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-  /**
-   *
-   */
   private void setJFXTextField() throws Exception
    {
     eventButton(usuarioTextFieldRegistro, 5, 1);
@@ -203,10 +189,6 @@ public class RegistrationController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws java.lang.Exception
-   */
   public void setText() throws Exception
    {
     usuarioTextFieldRegistro.setText("");
@@ -218,15 +200,6 @@ public class RegistrationController implements Initializable
 
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
   //<editor-fold defaultstate="collapsed" desc="Button">
-  /**
-   * Helper to the play button event
-   *
-   * @param up the above node
-   * @param down the belong node
-   * @param right the right node
-   * @param left the left node
-   * @param button The play button
-   */
   private void eventButton(Node n, int up, int down) throws Exception
    {
 
@@ -351,15 +324,14 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="Erase Error">
-  /**
-   *
-   */
   private void handleEraseError() throws Exception
    {
     errorUserLabel.setManaged(false);
     errorUserLabel.setText(null);
     errorPasswordLabel.setManaged(false);
     errorPasswordLabel.setText(null);
+    errorPreguntaLabel.setManaged(false);
+    errorPreguntaLabel.setText(null);
     errorRespuestaLabel.setManaged(false);
     errorRespuestaLabel.setText(null);
    }
@@ -367,11 +339,6 @@ public class RegistrationController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-  /**
-   * Setting the border (cursor) of the node
-   *
-   * @param n the node to put the border
-   */
   private void setBorder(Node n) throws Exception
    {
     HashMap<Node, Node> m = new HashMap<>();
@@ -390,11 +357,7 @@ public class RegistrationController implements Initializable
    }
   //</editor-fold>
 
-
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-  /**
-   * Helper to setting Color Border
-   */
   private void eraserBorder() throws Exception
    {
     currentNode.getStyleClass()
@@ -417,11 +380,6 @@ public class RegistrationController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handlers">
-  /**
-   *
-   * @param n
-   * @return
-   */
   private int handleValidation(Node n) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
@@ -438,12 +396,6 @@ public class RegistrationController implements Initializable
    }
 
 
-  /**
-   *
-   * @param n
-   * @param indNode
-   * @param show
-   */
   private void handleValidation02(Node n, boolean show) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
@@ -453,7 +405,7 @@ public class RegistrationController implements Initializable
     errorLabelMap = new HashMap<>();
     errorLabelMap.put(0, errorUserLabel);
     errorLabelMap.put(1, errorPasswordLabel);
-    errorLabelMap.put(2, errorPasswordLabel);
+    errorLabelMap.put(2, errorPreguntaLabel);
     errorLabelMap.put(3, errorRespuestaLabel);
 
     if (n instanceof JFXTextField) {
@@ -501,11 +453,10 @@ public class RegistrationController implements Initializable
    }
 
 
-  /**
-   *
-   */
   private void handleRegistro() throws Exception
    {
+    int userExist = 0;
+
     handleValidation(usuarioTextFieldRegistro);
     handleValidation(passwordTextFieldRegistro);
     handleValidation(preguntaComboBoxRegistro);
@@ -519,7 +470,7 @@ public class RegistrationController implements Initializable
     if (registro[0] == true && registro[1] == true &&
             registro[2] == true && registro[3] == true) {
 
-      int userExist = mainScene.handleRegistro(fieldString[0], fieldString[1],
+      userExist = mainScene.handleRegistro(fieldString[0], fieldString[1],
               true, fieldString[2], fieldString[3]);
       mainScene.handleRegistro02(fieldString[0], fieldString[1], true);
 
@@ -536,20 +487,12 @@ public class RegistrationController implements Initializable
    }
 
 
-  /**
-   *
-   */
   private void handleAntiguoUsuario() throws Exception
    {
     mainScene.buttonLoginMenu();
    }
 
 
-  /**
-   *
-   * @param progressBarValue
-   * @throws java.lang.Exception
-   */
   public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
     this.progressBarValue.setValue(progressBarValue.getValue());

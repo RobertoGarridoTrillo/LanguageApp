@@ -56,13 +56,8 @@ public class Message
   private static final String SUBKEY_JAVA = "CurrentVersion";
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="Constructors">
 
-  /**
-   *
-   * @param resources
-   * @throws java.lang.Exception
-   */
+  //<editor-fold defaultstate="collapsed" desc="Constructors">
   public Message(ResourceBundle resources) throws Exception
    {
 
@@ -80,22 +75,14 @@ public class Message
 
 
   //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-  /**
-   *
-   * @param aThis
-   * @throws java.lang.Exception
-   */
   public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
    }
-
   //</editor-fold>
 
+
   //<editor-fold defaultstate="collapsed" desc="Check if Java exists">
-  /**
-   *
-   */
   private void handleCreateClassesList() throws Exception
    {
 
@@ -168,14 +155,6 @@ public class Message
    }
 
 
-  /**
-   * Replace the file separator original by the file separator of the system
-   *
-   * @param s String, the string to replace
-   * @param t String the resulting string of System.getProperty("file.separator");
-   * @return String, the string replaced
-   * @throws Exception
-   */
   private String handleFileSeparatorReplace(String s, String t) throws Exception
    {
     s = s.replace("/", t);
@@ -185,9 +164,6 @@ public class Message
    }
 
 
-  /**
-   *
-   */
   private boolean handleCheckJava() throws Exception
    {
     CheckJava checkJava = new CheckJava();
@@ -232,11 +208,7 @@ public class Message
 
   //</editor-fold>  
 
-  /**
-   *
-   * @param e
-   */
-  public static void showException(Exception e)
+  public synchronized static void showException(Exception e)
    {
     String header = null, body = null;
     String elements[] = null;
@@ -256,16 +228,13 @@ public class Message
 
     } catch (Exception ex) {
       // show message, if the exception is in message.java the exit  
-      if (!showMessage(header, body, ex)) {
+      if (!showMessage(header, body, e)) {
         exit();
       }
     }
    }
 
 
-  /**
-   *
-   */
   private static void exit()
    {
     Platform.exit();
@@ -273,11 +242,6 @@ public class Message
    }
 
 
-  /**
-   *
-   * @param e
-   * @return
-   */
   private static String getHeader(Exception e)
    {
     String eMessage = null;
@@ -310,12 +274,6 @@ public class Message
    }
 
 
-  /**
-   *
-   * @param elements
-   * @return
-   * @throws Exception
-   */
   private static String getBody(String[] elements) throws Exception
    {
 
@@ -354,22 +312,17 @@ public class Message
       }
       if (b) {
         if (body == null) body = "";
-        body += toLocale("Clase") + "> " + className + " |  " +
+        body += //toLocale("Clase") + "> " + className + " |  " +
                 toLocale("Archivo") + "> " + fileName + " |  " +
                 toLocale("Metodo") + "> " + methodName + "()" + " |  " +
                 toLocale("Numero de linea") + "> " + lineNumber + "\n";
       }
     }
+
     return body;
    }
 
 
-  /**
-   *
-   * @param e
-   * @param text
-   * @return
-   */
   private static String[] getElements(Exception e) throws Exception
    {
     String[] elements = null, temp = null;
@@ -404,13 +357,6 @@ public class Message
    }
 
 
-  /**
-   *
-   * @param header
-   * @param body
-   * @param e
-   * @return
-   */
   public static boolean showMessage(String header, String body, Exception e)
    {
     boolean salida = true;
@@ -427,17 +373,6 @@ public class Message
    }
 
 
-  /**
-   * show a standard emergent message
-   *
-   * @param alertType alertType.CONFIRMATION, ERROR, INFORMATION, NONE, WARNING
-   * @param title The title of the windows
-   * @param header The them to expose
-   * @param body The showed header
-   * @param e The thrown exception
-   * @return
-   * @throws java.lang.Exception
-   */
   public static boolean message(Alert.AlertType alertType, String title,
           String header, String body, Exception e) throws Exception
    {
@@ -463,6 +398,17 @@ public class Message
     } else {
       alert.getDialogPane().setHeaderText(header);
     }
+    // Deleting the last line jump
+    int bl = body.length();
+    char[] cs = body.toCharArray();
+
+    for (int i = 0; i < bl; i++) {
+      if (cs[bl - 1] == '\n') {
+        body = body.substring(0, bl - 1);
+        bl --;
+      } else break;
+    }
+
     double largo = header.length();
     double alto = body.split("\\r\\n|\\n|\\r").length;
 
@@ -470,10 +416,10 @@ public class Message
       if (s.length() > largo) largo = s.length();
     }
 
-    alert.getDialogPane().setPrefWidth(largo * 8.7);
     alert.getDialogPane().setMinWidth(500);
-    alert.getDialogPane().setMinHeight(alto * 100);
-    //alert.getDialogPane().setMinHeight(300);
+    alert.getDialogPane().setPrefWidth(largo * 8.7);
+    //alert.getDialogPane().setMinHeight(alto * 60);
+    //alert.getDialogPane().setPrefHeight(300);
 
     if (body.equals("Autor: Roberto Garrido Trillo")) {
       alert.getDialogPane().setContentText(toLocale(body));
@@ -520,16 +466,12 @@ public class Message
 
 
     Optional<ButtonType> result = alert.showAndWait();
-    return result.isPresent();
-    /*/* return result.get() == ButtonType.OK; */
+
+    if (result.isPresent()) return result.get().equals(ButtonType.OK);
+    else return false;
    }
 
 
-  /**
-   *
-   * @param e
-   * @throws HeadlessException
-   */
   private static boolean message(Exception e)
    {
     String string = getHeader(e) + "\n";

@@ -3,7 +3,6 @@ package LanguageApp.controller;
 //<editor-fold defaultstate="collapsed" desc="Import">
 
 import LanguageApp.main.MainScene;
-import LanguageApp.util.Directory;
 import static LanguageApp.util.HandleLocale.toLocale;
 import static LanguageApp.util.Message.showException;
 import com.jfoenix.controls.JFXButton;
@@ -72,9 +71,6 @@ public class FormController implements Initializable
   // Reference to the main Scene
   private MainScene mainScene;
 
-  // Instances
-  Directory dire;
-
   // The Login or not Login
   private Node[] fieldsChecked;
   private String[] fieldString;
@@ -110,8 +106,6 @@ public class FormController implements Initializable
       // References to mainStage
       mainStage = MainScene.getMainStage();
 
-      // Instances 
-      dire = new Directory();
       // Nodes with border
       node = new Node[]{
         usuarioTextFieldLogin,
@@ -463,7 +457,6 @@ public class FormController implements Initializable
         mainScene.setUsuario_id(usuario_id);
         mainScene.setUsuario_nombre(usuario_nombre);
 
-        // id of the old user active
         int old_id_active = mainScene.handleCheckNombre().getKey();
         int usuario_id_last = (old_id_active != 0) ?
                 old_id_active : mainScene.getUsuario_ultimo();
@@ -480,7 +473,7 @@ public class FormController implements Initializable
           Pair<Boolean, String> mate_act_new =
                   mainScene.handleCheckMateriaActivo(usuario_id);
 
-          dire.getLastDirectory();
+          mainScene.getLastDirectory();
 
           if (usuario_id_last != usuario_id) {
 

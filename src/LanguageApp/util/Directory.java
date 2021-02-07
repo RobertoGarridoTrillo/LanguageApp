@@ -1,6 +1,5 @@
 package LanguageApp.util;
 
-import static LanguageApp.main.MainScene.resourcesClose;
 import LanguageApp.main.MainScene;
 import LanguageApp.model.Initial;
 import static LanguageApp.util.Message.showException;
@@ -23,18 +22,10 @@ public class Directory
   private Initial initial;
 
   // Global variables
-  private int usuario_id;
+  /*/*private int usuario_id;*/
   private int materia_id;
   private String materia_nombre;
   private int materia_activo;
-
-  // Connetion varibles
-  /*/*private Connection conn;
-  private Statement stmt;
-  private PreparedStatement pstmt;
-  private String sql;
-  // Resulset of the tableview */
-  private ResultSet rs[];
 
   // Reference to the main Scene
   private MainScene mainScene;
@@ -51,11 +42,6 @@ public class Directory
       // References to mainScene
       mainScene = MainScene.getMainScene();
 
-      // Get a connetion
-      /*/*conn = mainScene.getConnection();
-      conn.setAutoCommit(false);*/
-      rs = new ResultSet[1];
-
       // The path is an absolute path (retarive to the initial instalation)    
       path = System.getProperty("user.dir");
       path = path.replace("/", se);
@@ -68,32 +54,25 @@ public class Directory
       lastDirectory = path + se + "media" + se;
       initialFile = "";
 
-      // Setting the connetion variables
-      /*/*stmt = null;
-      pstmt = null;
-      sql = null; */
     } catch (Exception e) {
-      resourcesClose(null, rs);
       showException(e);
     }
    }
 
-
-  public void setUsuario(int usuario_id) throws Exception
+/*/*
+  public void direSetUsuario(int usuario_id) throws Exception
    {
     this.usuario_id = usuario_id;
    }
+*/
 
-
-  public boolean checkIni(ResultSet resultSet) throws Exception
+  public boolean direCheckIni(ResultSet rs) throws Exception
    {
     boolean salida = false;
 
-    rs[0] = resultSet;
-
-    if (rs[0].next()) {
-      lastDirectory = rs[0].getString(1);
-      initialFile = rs[0].getString(2);
+    if (rs.next()) {
+      lastDirectory = rs.getString(1);
+      initialFile = rs.getString(2);
       salida = true;
 
     } else {
@@ -104,24 +83,24 @@ public class Directory
     setPath(path);
     setLastDirectory(lastDirectory);
     setLastFile(initialFile);
-    resourcesClose(null, rs);
     return salida;
    }
 
 
-  public void setMateriaId(int materia_id) throws Exception
+  public void direSetMateriaId(int materia_id) throws Exception
    {
     this.materia_id = materia_id;
    }
-  
-  public void setName(String name) throws Exception
+
+
+  public void direSetName(String name) throws Exception
    {
     // save in the model the global conn
     setPath(path);
     setLastDirectory(lastDirectory);
     setLastFile(name);
    }
-   
+
 
   //<editor-fold defaultstate="collapsed" desc="Setters and Getters">
   public String getPath() throws Exception
@@ -163,6 +142,5 @@ public class Directory
    }
 
 //</editor-fold>
-
 
  }

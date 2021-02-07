@@ -29,10 +29,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 //</editor-fold>
 
-/**
- *
- * @author Roberto Garrido Trillo
- */
+
 public class ForgetController implements Initializable
  {
 
@@ -47,6 +44,9 @@ public class ForgetController implements Initializable
 
   @FXML private HBox HBoxPreguntaForget;
   @FXML private JFXComboBox preguntaComboBoxForget;
+  
+  @FXML private HBox HBoxErrorPregunta;
+  @FXML private Label errorPreguntaLabel;  
 
   @FXML private HBox HBoxRespuestaForget;
   @FXML private JFXTextField respuestaTextFieldForget;
@@ -95,11 +95,6 @@ public class ForgetController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Reference to MainScene">
-  /**
-   *
-   * @param aThis
-   * @throws java.lang.Exception
-   */
   public void setMainScene(MainScene aThis) throws Exception
    {
     mainScene = aThis;
@@ -108,12 +103,6 @@ public class ForgetController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Initialize">
-  /**
-   * When the method is initialize
-   *
-   * @param location
-   * @param resources
-   */
   @Override
   public void initialize(URL location, ResourceBundle resources)
    {
@@ -187,10 +176,6 @@ public class ForgetController implements Initializable
 //</editor-fold> 
 
 //<editor-fold defaultstate="collapsed" desc="Setting Field">
-  /**
-   *
-   * @throws Exception
-   */
   private void setJFXTextField() throws Exception
    {
     eventButton(usuarioTextFieldForget, 4, 1);
@@ -201,10 +186,6 @@ public class ForgetController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws java.lang.Exception
-   */
   public void setText() throws Exception
    {
     usuarioTextFieldForget.setText("");
@@ -215,13 +196,6 @@ public class ForgetController implements Initializable
 //<editor-fold defaultstate="collapsed" desc="Helpers Fields">
 
   //<editor-fold defaultstate="collapsed" desc="Button">
-  /**
-   *
-   * @param n
-   * @param up
-   * @param down
-   * @throws Exception
-   */
   private void eventButton(Node n, int up, int down) throws Exception
    {
 
@@ -345,16 +319,14 @@ public class ForgetController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="EraseError">
-  /**
-   *
-   * @throws Exception
-   */
   private void handleEraseError() throws Exception
    {
     errorUserLabel.setManaged(false);
     errorUserLabel.setText(null);
     errorPasswordLabel.setManaged(false);
     errorPasswordLabel.setText(null);
+    errorPreguntaLabel.setManaged(false);
+    errorPreguntaLabel.setText(null);    
     errorRespuestaLabel.setManaged(false);
     errorRespuestaLabel.setText(null);
    }
@@ -362,12 +334,6 @@ public class ForgetController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="setBorder">
-  /**
-   * Setting the border (cursor) of the node
-   *
-   * @param n the node to put the border
-   * @throws Exception
-   */
   private void setBorder(Node n) throws Exception
    {
     HashMap<Node, Node> m = new HashMap<>();
@@ -386,10 +352,6 @@ public class ForgetController implements Initializable
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="eraserBorder">
-  /**
-   *
-   * @throws Exception
-   */
   private void eraserBorder() throws Exception
    {
     currentNode.getStyleClass()
@@ -410,12 +372,6 @@ public class ForgetController implements Initializable
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Handlers">
-  /**
-   *
-   * @param n
-   * @return
-   * @throws Exception
-   */
   private int handleValidation(Node n) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
@@ -435,12 +391,6 @@ public class ForgetController implements Initializable
    }
 
 
-  /**
-   *
-   * @param n
-   * @param show
-   * @throws Exception
-   */
   private void handleValidation02(Node n, boolean show) throws Exception
    {
     int indNode = Arrays.asList(fieldsChecked).indexOf(n);
@@ -449,7 +399,7 @@ public class ForgetController implements Initializable
 
     errorLabelMap = new HashMap<>();
     errorLabelMap.put(0, errorUserLabel);
-    errorLabelMap.put(1, errorUserLabel);
+    errorLabelMap.put(1, errorPreguntaLabel);
     errorLabelMap.put(2, errorRespuestaLabel);
 
     if (n instanceof JFXTextField) {
@@ -500,10 +450,6 @@ public class ForgetController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   private void handleEnviar() throws Exception
    {
     handleValidation(usuarioTextFieldForget);
@@ -534,21 +480,12 @@ public class ForgetController implements Initializable
    }
 
 
-  /**
-   *
-   * @throws Exception
-   */
   private void handleAntiguoUsuario() throws Exception
    {
     mainScene.buttonRegistro();
    }
 
 
-  /**
-   *
-   * @param progressBarValue
-   * @throws java.lang.Exception
-   */
   public void setProgressBarValue(DoubleProperty progressBarValue) throws Exception
    {
     this.progressBarValue.setValue(progressBarValue.getValue());
